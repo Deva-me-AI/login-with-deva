@@ -8,7 +8,7 @@ export default defineConfig({
       entry: "src/index.ts",
       name: "deva-sdk",
       fileName: (format) => `index.${format}.js`,
-      formats: ["es", "cjs"],
+      formats: ["es"],
     },
     rollupOptions: {
       external: ["react", "react-dom"],
