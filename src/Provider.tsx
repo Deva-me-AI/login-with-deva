@@ -1,8 +1,20 @@
-export function DevaProvider({ children }: { children: React.ReactNode }) {
+import { createContext } from "react";
+
+type DevaContext = {
+  appId: string;
+}
+
+export const DevaContext = createContext<DevaContext | null>(null);
+
+export type DevaProviderProps = {
+  appId: string
+  children: React.ReactNode
+}
+
+export function DevaProvider({ appId, children }: DevaProviderProps) {
   return (
-    <div>
-      <h1>Provider</h1>
+    <DevaContext.Provider value={{ appId }}>
       {children}
-    </div>
+    </DevaContext.Provider>
   );
 }
