@@ -2,22 +2,19 @@
   "name": "deva-sdk",
   "version": "0.1.0",
   "private": true,
-  "type": "module",
   "scripts": {
-    "build": "next build",
-    "check": "next lint && tsc --noEmit",
-    "dev": "next dev --turbo",
+    "build": "vite build",
+    "dev": "vite build --watch",
+    "preview": "vite preview",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",
     "format:write": "prettier --write \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
-    "preview": "next build && next start",
     "start": "next start",
     "typecheck": "tsc --noEmit"
   },
-  "main": "dist/index.js",
-  "module": "dist/index.esm.js",
-  "types": "dist/index.d.ts",
+  "type": "module",
+  "exports": "./src/index.ts",
   "files": [
     "dist"
   ],
@@ -42,13 +39,15 @@
     "@types/react-dom": "^18.3.0",
     "@typescript-eslint/eslint-plugin": "^8.1.0",
     "@typescript-eslint/parser": "^8.1.0",
+    "@vitejs/plugin-react": "^4.3.4",
     "eslint": "^8.57.0",
     "eslint-config-next": "^15.0.1",
     "postcss": "^8.4.39",
     "prettier": "^3.3.2",
     "prettier-plugin-tailwindcss": "^0.6.5",
     "tailwindcss": "^3.4.3",
-    "typescript": "^5.5.3"
+    "typescript": "^5.5.3",
+    "vite": "^6.0.11"
   },
   "ct3aMetadata": {
     "initVersion": "7.38.1"
