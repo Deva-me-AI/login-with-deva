@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import {
   Dialog,
   DialogHeader,
@@ -38,42 +38,55 @@ export const LoginModal = ({
   const [step, setStep] = useState<"email" | "token">("email");
   const [isVerifying, setIsVerifying] = useState(false);
   const [tokenError, setTokenError] = useState<string | null>(null);
+
+  const { toast } = useToast();
   const { isValid: isEmailValid, error: emailError } =
     useEmailValidation(email);
-  const { toast } = useToast();
 
-  const handleEmailSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (isEmailValid) {
-      setStep("token");
-    }
-  };
+  const handleClose = useCallback(() => {
+    setEmail("");
+    setStep("email");
+    onClose();
+  }, [onClose]);
 
-  const handleTokenComplete = async (token: string) => {
-    setIsVerifying(true);
-    setTokenError(null);
-    try {
-      await verifyToken(email, token);
-      toast({
-        title: "Login Successful",
-        description: "You have been successfully logged in.",
-      });
-      onClose();
-    } catch (error) {
-      console.error(error);
-      setTokenError("Invalid token. Please try again.");
-      toast({
-        title: "Login Failed",
-        description: "Please check your token and try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsVerifying(false);
-    }
-  };
+  const handleEmailSubmit = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+      if (isEmailValid) {
+        setStep("token");
+      }
+    },
+    [isEmailValid],
+  );
+
+  const handleTokenComplete = useCallback(
+    async (token: string) => {
+      setIsVerifying(true);
+      setTokenError(null);
+      try {
+        await verifyToken(email, token);
+        toast({
+          title: "Login Successful",
+          description: "You have been successfully logged in.",
+        });
+        handleClose();
+      } catch (error) {
+        console.error(error);
+        setTokenError("Invalid token. Please try again.");
+        toast({
+          title: "Login Failed",
+          description: "Please check your token and try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsVerifying(false);
+      }
+    },
+    [email, handleClose, toast],
+  );
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
