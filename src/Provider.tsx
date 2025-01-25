@@ -1,6 +1,7 @@
 import { useCallback, useState, useMemo } from "react";
 import { DevaContext } from "./DevaContext";
 import { LoginModal } from "./login";
+import { Toaster } from "./components/ui/toaster";
 
 export type DevaProviderProps = {
   appId: string;
@@ -19,7 +20,11 @@ export function DevaProvider({ appId, children }: DevaProviderProps) {
   return (
     <DevaContext.Provider value={context}>
       {children}
-      <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
+      <LoginModal
+        isOpen={isLoginOpen}
+        onClose={useCallback(() => setIsLoginOpen(false), [])}
+      />
+      <Toaster />
     </DevaContext.Provider>
   );
 }
