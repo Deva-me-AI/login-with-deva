@@ -1,6 +1,6 @@
 import { useCallback, useState, useMemo } from "react";
 import { DevaContext } from "./DevaContext";
-import { LoginModal } from "./Login";
+import { LoginModal } from "./login";
 
 export type DevaProviderProps = {
   appId: string;
