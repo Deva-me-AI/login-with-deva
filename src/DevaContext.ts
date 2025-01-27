@@ -1,8 +1,9 @@
 import { createContext } from "react";
 
 export type DevaContext = {
-  appId: string;
-  login: () => void;
+  clientId: string;
+  redirectUri: string;
+  scopes: string[];
 };
 
 // const devaContextDefaults = {
