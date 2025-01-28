@@ -32,9 +32,15 @@ export const useLogin = () => {
     u.searchParams.append("client_id", clientId);
     u.searchParams.append("scopes", scopes.join(" "));
     u.searchParams.append("nonce", nonce);
+    u.searchParams.append("redirect_uri", devaContext.redirectUri);
 
     window.location.href = u.toString();
-  }, [devaContext.clientId, devaContext.scopes, loginUri]);
+  }, [
+    devaContext.clientId,
+    devaContext.redirectUri,
+    devaContext.scopes,
+    loginUri,
+  ]);
 
   return { login };
 };
