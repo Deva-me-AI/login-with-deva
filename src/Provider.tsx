@@ -3,10 +3,11 @@ import { DevaContext } from "./DevaContext";
 import { Toaster } from "./components/ui/toaster";
 import { generateCodeVerifier, generateCodeChallenge } from "./lib/crypto";
 import useStorage from "./hooks/use-storage";
+import useSWR from "swr";
+import { fetcher } from "./lib/fetcher";
 
-// TODO: need to get this from well known host
+// TODO: move env
 const baseUrl = "http://localhost:3000";
-const loginUri = `${baseUrl}/sso/authorize`;
 
 export type DevaProviderProps = {
   clientId: string;
@@ -15,12 +16,27 @@ export type DevaProviderProps = {
   children: React.ReactNode;
 };
 
+type OpenIdConfig = {
+  authorization_endpoint: string;
+  token_endpoint: string;
+  userinfo_endpoint: string;
+};
+
+const useOpenIdConfig = () => {
+  const { data, error, isLoading } = useSWR<OpenIdConfig>(
+    `${baseUrl}/.well-known/openid-configuration`,
+    fetcher,
+  );
+  return { openIdConfig: data, isOpenIdConfigLoading: isLoading, error };
+};
+
 export function DevaProvider({
   clientId,
   redirectUri,
   scopes,
   children,
 }: DevaProviderProps) {
+  const { openIdConfig, isOpenIdConfigLoading } = useOpenIdConfig();
   const fetchingTokensRef = useRef(false);
   const [, setCodeVerifier] = useStorage("code_verifier", "");
   const [authInProgress, setAuthInProgress] = useStorage(
@@ -43,6 +59,10 @@ export function DevaProvider({
   const login = useCallback(async () => {
     clearState();
     setAuthInProgress(true);
+    if (isOpenIdConfigLoading) {
+      return;
+    }
+
     const codeVerifier = generateCodeVerifier();
     const codeChallenge = await generateCodeChallenge(codeVerifier);
 
@@ -50,7 +70,7 @@ export function DevaProvider({
     setCodeVerifier(codeVerifier);
 
     // Redirect to the login page
-    const u = new URL(loginUri);
+    const u = new URL(openIdConfig?.authorization_endpoint ?? "");
 
     u.searchParams.append("client_id", clientId);
     u.searchParams.append("scopes", scopes.join(" "));
@@ -68,6 +88,8 @@ export function DevaProvider({
     setCodeVerifier,
     clearState,
     setAuthInProgress,
+    isOpenIdConfigLoading,
+    openIdConfig,
   ]);
 
   useEffect(() => {
