@@ -2,19 +2,14 @@ import { createContext } from "react";
 
 export type DevaContext = {
   clientId: string;
+  id?: string;
   redirectUri: string;
   scopes: string[];
+  authInProgress: boolean;
+  token?: string;
+  error?: string;
+
+  login: () => Promise<void>;
 };
-
-// const devaContextDefaults = {
-//   isLoginOpen: false,
-// };
-
-// export const getDefaults = (
-//   initial: { appId: string } & Partial<DevaContext>,
-// ): DevaContext => ({
-//   ...devaContextDefaults,
-//   ...initial,
-// });
 
 export const DevaContext = createContext<DevaContext | null>(null);
