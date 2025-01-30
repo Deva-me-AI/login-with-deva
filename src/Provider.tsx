@@ -37,8 +37,11 @@ export function DevaProvider({
   children,
 }: DevaProviderProps) {
   const { openIdConfig, isOpenIdConfigLoading, error } = useOpenIdConfig();
+  if (error) {
+    console.error(openIdConfig);
+  }
   const fetchingTokensRef = useRef(false);
-  const [, setCodeVerifier] = useStorage("code_verifier", "");
+  const [codeVerifier, setCodeVerifier] = useStorage("code_verifier", "");
   const [authInProgress, setAuthInProgress] = useStorage(
     "auth_in_progress",
     false,
@@ -97,22 +100,29 @@ export function DevaProvider({
   }, []);
 
   useEffect(() => {
-    if (authInProgress) {
-      const params = new URLSearchParams(window.location.search);
-      const code = params.get("code");
-      if (!code) {
-        const error_description =
-          params.get("error_description") ?? "An unknown error occurred";
+    let code = "";
 
-        console.error(
-          `${error_description}\nExpected  to find a '?code=' parameter in the URL but found none`,
-        );
-        setAuthError(error_description);
-        clearState();
-        return;
-      }
+
+    // check if openIdConfig is loaded
+    if (isOpenIdConfigLoading) {
+      return;
     }
 
+    if (!authInProgress) {
+      return;
+    const params = new URLSearchParams(window.location.search);
+    code = params.get("code") ?? "";
+    if (!code) {
+      const error_description =
+        params.get("error_description") ?? "An unknown error occurred";
+
+      console.error(
+        `${error_description}\nExpected  to find a '?code=' parameter in the URL but found none`,
+      );
+      setAuthError(error_description);
+      clearState();
+      return;
+    }
     // we can only attempt to fetch tokens once
     if (fetchingTokensRef.current) {
       return;
@@ -124,11 +134,29 @@ export function DevaProvider({
 
     // TODO: fetch tokens
 
+    fetcher(openIdConfig?.token_endpoint ?? "", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({
+        client_id: clientId,
+        redirect_uri: redirectUri,
+        code: "code",
+        code_verifier: codeVerifier,
+        grant_type: "authorization_code",
+      }),
+    })
+      .then((response) => {
+        console.log("response", response);
+      })
+      .catch((error) => {
+        console.error("error in fetching", error);
+      });
     // clear search params
     window.history.replaceState({}, document.title, window.location.pathname);
 
-    // run only once at page load
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [isOpenIdConfigLoading]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <DevaContext.Provider
