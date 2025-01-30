@@ -2,7 +2,7 @@ import { useCallback, useState, useEffect, useRef } from "react";
 import { DevaContext } from "./DevaContext";
 import { Toaster } from "./components/ui/toaster";
 import { generateCodeVerifier, generateCodeChallenge } from "./lib/crypto";
-import useStorage from "./hooks/use-storage";
+import { useStorage } from "./hooks/use-storage";
 import useSWR from "swr";
 import { fetcher } from "./lib/fetcher";
 
