@@ -23,7 +23,7 @@ type OpenIdConfig = {
 };
 
 const useOpenIdConfig = () => {
-  const { data, error, isLoading } = useSWR<OpenIdConfig>(
+  const { data, error, isLoading } = useSWR<OpenIdConfig, Error>(
     `${baseUrl}/.well-known/openid-configuration`,
     fetcher,
   );
@@ -36,7 +36,7 @@ export function DevaProvider({
   scopes,
   children,
 }: DevaProviderProps) {
-  const { openIdConfig, isOpenIdConfigLoading } = useOpenIdConfig();
+  const { openIdConfig, isOpenIdConfigLoading, error } = useOpenIdConfig();
   const fetchingTokensRef = useRef(false);
   const [, setCodeVerifier] = useStorage("code_verifier", "");
   const [authInProgress, setAuthInProgress] = useStorage(
