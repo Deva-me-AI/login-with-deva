@@ -9,7 +9,7 @@ import {
 import { useStorage } from "./hooks/use-storage";
 import useSWR from "swr";
 import { fetcher } from "./lib/fetcher";
-import type { OidcAccessTokenJWT } from "./server";
+import type { OidcAccessTokenJWT, UserInfo } from "./server";
 import { jwtDecode } from "jwt-decode";
 
 // TODO: move env
@@ -36,6 +36,27 @@ const useOpenIdConfig = () => {
   return { openIdConfig: data, isOpenIdConfigLoading: isLoading, error };
 };
 
+const useUserInfo = (
+  userInfoUrl: string | undefined,
+  authToken: string | null,
+) => {
+  const { data, error, isLoading } = useSWR<UserInfo, Error>(
+    authToken ?? userInfoUrl,
+    () =>
+      fetcher(userInfoUrl!, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      }),
+  );
+
+  return {
+    userInfo: data,
+    isUserInfoLoading: isLoading,
+    userInfoError: error,
+  };
+};
+
 export function DevaProvider({
   clientId,
   redirectUri,
@@ -52,9 +73,15 @@ export function DevaProvider({
     "auth_in_progress",
     false,
   );
-  const [idToken, setIdToken] = useStorage("id_token", "");
-  const [accessToken, setAccessToken] = useStorage("access_token", "");
-  const [refreshToken, setRefreshToken] = useStorage("refresh_token", "");
+  const [idToken, setIdToken] = useStorage<string | null>("id_token", null);
+  const [accessToken, setAccessToken] = useStorage<string | null>(
+    "access_token",
+    null,
+  );
+  const [refreshToken, setRefreshToken] = useStorage<string | null>(
+    "refresh_token",
+    null,
+  );
   const [expiresIn, setExpiresIn] = useStorage("expires_in", 0); // TODO: figure out sensible default
 
   let tokenExp = expiresIn;
@@ -79,25 +106,33 @@ export function DevaProvider({
 
   const [authError, setAuthError] = useState<string | null>(null);
 
+  const { userInfo, isUserInfoLoading, userInfoError } = useUserInfo(
+    openIdConfig?.userinfo_endpoint,
+    accessToken,
+  );
+
   const clearState = useCallback(() => {
     setCodeVerifier("");
-  }, [setCodeVerifier]);
-
-  const logout = useCallback(async () => {
-    clearState();
     setAuthInProgress(false);
     setAccessToken("");
     setIdToken("");
     setExpiresIn(0);
     setRefreshToken("");
   }, [
-    clearState,
+    setCodeVerifier,
     setAuthInProgress,
     setAccessToken,
     setIdToken,
     setExpiresIn,
     setRefreshToken,
   ]);
+
+  const logout = useCallback(async () => {
+    clearState();
+    setAuthError(null);
+
+    // TODO: revoke access
+  }, [clearState]);
 
   const login = useCallback(async () => {
     clearState();
