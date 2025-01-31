@@ -142,7 +142,7 @@ export function DevaProvider({
       body: new URLSearchParams({
         client_id: clientId,
         redirect_uri: redirectUri,
-        code: "code",
+        code,
         code_verifier: codeVerifier,
         grant_type: "authorization_code",
       }),
