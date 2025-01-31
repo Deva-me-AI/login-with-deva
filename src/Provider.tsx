@@ -1,10 +1,16 @@
 import { useCallback, useState, useEffect, useRef } from "react";
 import { DevaContext } from "./DevaContext";
 import { Toaster } from "./components/ui/toaster";
-import { generateCodeVerifier, generateCodeChallenge } from "./lib/crypto";
+import {
+  generateCodeVerifier,
+  generateCodeChallenge,
+  epochAtSecondsFromNow,
+} from "./lib/crypto";
 import { useStorage } from "./hooks/use-storage";
 import useSWR from "swr";
 import { fetcher } from "./lib/fetcher";
+import type { OidcAccessTokenJWT } from "./server";
+import { jwtDecode } from "jwt-decode";
 
 // TODO: move env
 const baseUrl = "http://localhost:3000";
@@ -21,7 +27,6 @@ type OpenIdConfig = {
   token_endpoint: string;
   userinfo_endpoint: string;
 };
-
 
 const useOpenIdConfig = () => {
   const { data, error, isLoading } = useSWR<OpenIdConfig, Error>(
@@ -47,6 +52,29 @@ export function DevaProvider({
     "auth_in_progress",
     false,
   );
+  const [idToken, setIdToken] = useStorage("id_token", "");
+  const [accessToken, setAccessToken] = useStorage("access_token", "");
+  const [refreshToken, setRefreshToken] = useStorage("refresh_token", "");
+  const [expiresIn, setExpiresIn] = useStorage("expires_in", 0); // TODO: figure out sensible default
+
+  let tokenExp = expiresIn;
+
+  const handleTokenResponse = (res: OidcAccessTokenJWT) => {
+    setAccessToken(res.id_token);
+    setIdToken(res.id_token);
+    // Decode IdToken, so we can use "exp" from that as fallback if expire not returned in the response
+    try {
+      const decodedToken = jwtDecode(res.id_token);
+      tokenExp = Math.round(Number(decodedToken.exp) - Date.now() / 1000); // number of seconds from now
+    } catch (e) {
+      console.warn(`Failed to decode idToken: ${(e as Error).message}`);
+    }
+
+    const tokenExpiresIn = res.expires_in ?? tokenExp;
+
+    setExpiresIn(epochAtSecondsFromNow(tokenExpiresIn));
+    setRefreshToken(res.refresh_token);
+  };
 
   const [authError, setAuthError] = useState<string | null>(null);
 
@@ -57,8 +85,18 @@ export function DevaProvider({
   const logout = useCallback(async () => {
     clearState();
     setAuthInProgress(false);
-    // TODO: clear tokens
-  }, [clearState, setAuthInProgress]);
+    setAccessToken("");
+    setIdToken("");
+    setExpiresIn(0);
+    setRefreshToken("");
+  }, [
+    clearState,
+    setAuthInProgress,
+    setAccessToken,
+    setIdToken,
+    setExpiresIn,
+    setRefreshToken,
+  ]);
 
   const login = useCallback(async () => {
     clearState();
@@ -103,7 +141,6 @@ export function DevaProvider({
   useEffect(() => {
     let code = "";
 
-
     // check if openIdConfig is loaded
     if (isOpenIdConfigLoading) {
       return;
@@ -111,8 +148,11 @@ export function DevaProvider({
 
     if (!authInProgress) {
       return;
+    }
+
     const params = new URLSearchParams(window.location.search);
     code = params.get("code") ?? "";
+
     if (!code) {
       const error_description =
         params.get("error_description") ?? "An unknown error occurred";
@@ -124,16 +164,15 @@ export function DevaProvider({
       clearState();
       return;
     }
+
+    setAuthInProgress(false);
+
     // we can only attempt to fetch tokens once
     if (fetchingTokensRef.current) {
       return;
     }
 
     fetchingTokensRef.current = true;
-
-    // TODO: validate state
-
-    // TODO: fetch tokens
 
     fetcher(openIdConfig?.token_endpoint ?? "", {
       method: "POST",
@@ -148,15 +187,14 @@ export function DevaProvider({
         grant_type: "authorization_code",
       }),
     })
-      .then((response) => {
-        console.log("response", response);
-      })
+      .then(handleTokenResponse)
       .catch((error) => {
         console.error("error in fetching", error);
+        setAuthError("An error occurred while fetching tokens");
       });
+
     // clear search params
     window.history.replaceState({}, document.title, window.location.pathname);
-
   }, [isOpenIdConfigLoading]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
@@ -171,6 +209,10 @@ export function DevaProvider({
 
         authInProgress,
         authError,
+
+        idToken,
+        accessToken,
+        refreshToken,
       }}
     >
       {children}

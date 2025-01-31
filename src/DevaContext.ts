@@ -10,6 +10,10 @@ export type DevaContext = {
 
   login: () => Promise<void>;
   logout: () => Promise<void>;
+
+  idToken: string;
+  accessToken: string;
+  refreshToken: string;
 };
 
 export const DevaContext = createContext<DevaContext | null>(null);
