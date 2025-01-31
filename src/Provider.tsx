@@ -22,6 +22,7 @@ type OpenIdConfig = {
   userinfo_endpoint: string;
 };
 
+
 const useOpenIdConfig = () => {
   const { data, error, isLoading } = useSWR<OpenIdConfig, Error>(
     `${baseUrl}/.well-known/openid-configuration`,

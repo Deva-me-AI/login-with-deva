@@ -19,3 +19,6 @@ export const generateCodeChallenge = async (
   const digest = await crypto.subtle.digest("SHA-256", data);
   return base64URLEncode(digest);
 };
+
+export const epochAtSecondsFromNow = (secondsFromNow: number | string) =>
+  Math.round(Date.now() / 1000 + Number(secondsFromNow))

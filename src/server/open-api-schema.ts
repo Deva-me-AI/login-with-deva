@@ -706,14 +706,18 @@ export interface paths {
   };
   "/internal/post/generate": {
     /**
-     * Internal Generate Post
+     * Generate Post
      * @description Generate a post for a persona
      */
-    post: operations["internal_generate_post_internal_post_generate_post"];
+    post: operations["generate_post_internal_post_generate_post"];
   };
   "/internal/post/twitter": {
     /** Create Tweet From Post */
     post: operations["create_tweet_from_post_internal_post_twitter_post"];
+  };
+  "/internal/post/{_id}": {
+    /** Update Post */
+    put: operations["update_post_internal_post___id__put"];
   };
   "/internal/retrieval": {
     /**
@@ -2015,6 +2019,10 @@ export interface components {
       scope?: string;
       /** Nonce */
       nonce?: string;
+      /** Code Challenge */
+      code_challenge?: string;
+      /** Code Challenge Method */
+      code_challenge_method?: string;
     };
     /** Body_create_voice_note_voice_note_post */
     Body_create_voice_note_voice_note_post: {
@@ -3732,6 +3740,10 @@ export interface components {
     FullOidcAuthorizationCodeDBModel: {
       /** Nonce */
       nonce: string;
+      /** Code Challenge */
+      code_challenge?: string;
+      /** Code Challenge Method */
+      code_challenge_method?: string;
       /**
        * Id
        * Format: uuid
@@ -4769,6 +4781,10 @@ export interface components {
     OidcAuthorizationCodeDBModel: {
       /** Nonce */
       nonce: string;
+      /** Code Challenge */
+      code_challenge?: string;
+      /** Code Challenge Method */
+      code_challenge_method?: string;
       /**
        * Id
        * Format: uuid
@@ -4978,6 +4994,23 @@ export interface components {
       erc20_balance?: string;
       /** Owner */
       owner?: string;
+    };
+    /** PCKERequest */
+    PCKERequest: {
+      /**
+       * Client Id
+       * Format: uuid4
+       */
+      client_id: string;
+      /**
+       * Authorization Code
+       * Format: uuid4
+       */
+      authorization_code: string;
+      /** Code Verifier */
+      code_verifier: string;
+      /** Expires In */
+      expires_in?: number;
     };
     /** PaginatedActivityFeed */
     PaginatedActivityFeed: {
@@ -5936,7 +5969,7 @@ export interface components {
       allow_model_override?: boolean;
       /**
        * Enable Custom Language
-       * @default true
+       * @default false
        */
       enable_custom_language?: boolean;
     };
@@ -6407,6 +6440,11 @@ export interface components {
        */
       updated_at: string;
     };
+    /** SkipPost */
+    SkipPost: {
+      /** Skipped */
+      skipped?: boolean;
+    };
     /** StripeCreateAccount */
     StripeCreateAccount: {
       /** Refresh Url */
@@ -6850,8 +6888,8 @@ export interface components {
     };
     /** UpdatePost */
     UpdatePost: {
-      /** Skipped */
-      skipped?: boolean;
+      /** Text */
+      text: string;
     };
     /** UpdateSession */
     UpdateSession: {
@@ -11177,10 +11215,10 @@ export interface operations {
     };
   };
   /**
-   * Internal Generate Post
+   * Generate Post
    * @description Generate a post for a persona
    */
-  internal_generate_post_internal_post_generate_post: {
+  generate_post_internal_post_generate_post: {
     parameters: {
       query: {
         persona_id: string;
@@ -11216,6 +11254,41 @@ export interface operations {
     requestBody: {
       content: {
         "application/json": components["schemas"]["PostTweetRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Update Post */
+  update_post_internal_post___id__put: {
+    parameters: {
+      query: {
+        persona_id: string;
+        raise_error?: boolean;
+      };
+      path: {
+        _id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UpdatePost"];
       };
     };
     responses: {
@@ -13234,7 +13307,7 @@ export interface operations {
   get_token_oidc_token_post: {
     requestBody: {
       content: {
-        "application/json": components["schemas"]["AuthTokenRequest"] | components["schemas"]["RefreshTokenRequest"];
+        "application/json": components["schemas"]["AuthTokenRequest"] | components["schemas"]["RefreshTokenRequest"] | components["schemas"]["PCKERequest"];
       };
     };
     responses: {
@@ -13967,7 +14040,7 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["UpdatePost"];
+        "application/json": components["schemas"]["SkipPost"];
       };
     };
     responses: {
