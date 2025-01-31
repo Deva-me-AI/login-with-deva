@@ -41,7 +41,7 @@ const useUserInfo = (
   authToken: string | null,
 ) => {
   const { data, error, isLoading } = useSWR<UserInfo, Error>(
-    authToken ?? userInfoUrl,
+    authToken ? userInfoUrl : false,
     () =>
       fetcher(userInfoUrl!, {
         headers: {
@@ -87,7 +87,7 @@ export function DevaProvider({
   let tokenExp = expiresIn;
 
   const handleTokenResponse = (res: OidcAccessTokenJWT) => {
-    setAccessToken(res.id_token);
+    setAccessToken(res.access_token);
     setIdToken(res.id_token);
     // Decode IdToken, so we can use "exp" from that as fallback if expire not returned in the response
     try {
@@ -249,6 +249,8 @@ export function DevaProvider({
         idToken,
         accessToken,
         refreshToken,
+
+        user: userInfo ?? null,
       }}
     >
       {children}

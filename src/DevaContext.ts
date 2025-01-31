@@ -1,4 +1,5 @@
 import { createContext } from "react";
+import type { UserInfo } from "./server";
 
 export type DevaContext = {
   clientId: string;
@@ -14,6 +15,8 @@ export type DevaContext = {
   idToken: string | null;
   accessToken: string | null;
   refreshToken: string | null;
+
+  user: UserInfo | null;
 };
 
 export const DevaContext = createContext<DevaContext | null>(null);
