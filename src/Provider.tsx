@@ -74,6 +74,7 @@ export function DevaProvider({
 
     setExpiresIn(epochAtSecondsFromNow(tokenExpiresIn));
     setRefreshToken(res.refresh_token);
+    setCodeVerifier("");
   };
 
   const [authError, setAuthError] = useState<string | null>(null);
