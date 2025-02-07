@@ -1,19 +1,22 @@
 import { createContext } from "react";
+import type { UserInfo } from "./server";
 
 export type DevaContext = {
-  appId: string;
-  login: () => void;
+  clientId: string;
+  redirectUri: string;
+  scopes: string[];
+
+  authInProgress: boolean;
+  authError: string | null;
+
+  login: () => Promise<void>;
+  logout: () => Promise<void>;
+
+  idToken: string | null;
+  accessToken: string | null;
+  refreshToken: string | null;
+
+  user: UserInfo | null;
 };
-
-// const devaContextDefaults = {
-//   isLoginOpen: false,
-// };
-
-// export const getDefaults = (
-//   initial: { appId: string } & Partial<DevaContext>,
-// ): DevaContext => ({
-//   ...devaContextDefaults,
-//   ...initial,
-// });
 
 export const DevaContext = createContext<DevaContext | null>(null);
