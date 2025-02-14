@@ -1,0 +1,31 @@
+import "./App.css";
+import { DevaProvider, useLogin } from "deva-sdk";
+
+function Content() {
+  const { login } = useLogin();
+  return (
+    <div>
+      <button onClick={login}>login</button>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <DevaProvider
+      clientId={import.meta.env.VITE_DEVA_CLIENT_ID!}
+      redirectUri={typeof window != "undefined" ? window.location.origin : ""}
+      scopes={["read", "write"]}
+      env="development"
+    >
+      <>
+        <h1>Deva-Sdk</h1>
+        <div className="card">
+          <Content />
+        </div>
+      </>
+    </DevaProvider>
+  );
+}
+
+export default App;
