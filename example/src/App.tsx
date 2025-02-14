@@ -1,11 +1,19 @@
 import "./App.css";
-import { DevaProvider, useLogin } from "deva-sdk";
+import { DevaProvider, useLogin, useDeva } from "deva-sdk";
 
 function Content() {
   const { login } = useLogin();
+  const { user, LogOut } = useDeva();
   return (
     <div>
-      <button onClick={login}>login</button>
+      {user ? (
+        <>
+          <h2>Welcome {user.name}</h2>
+          <button onClick={LogOut}>logout</button>
+        </>
+      ) : (
+        <button onClick={login}>login</button>
+      )}
     </div>
   );
 }
