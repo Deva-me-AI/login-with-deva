@@ -13,22 +13,35 @@ import type { OidcAccessTokenJWT, UserInfo } from "./server";
 import { jwtDecode } from "jwt-decode";
 
 // TODO: move env
-const baseUrl = "http://localhost:3000";
+type Envs = "development" | "staging" | "production";
+const envToUrl = (env: Envs) => {
+  switch (env) {
+    case "development":
+      return "http://localhost:3000";
+    case "staging":
+      return "https://staging.deva.me";
+    case "production":
+      return "https://deva.me";
+  }
+};
 
 export type DevaProviderProps = {
   clientId: string;
   redirectUri: string;
   scopes: string[];
   children: React.ReactNode;
+  env: Envs;
 };
 
 type OpenIdConfig = {
   authorization_endpoint: string;
   token_endpoint: string;
   userinfo_endpoint: string;
+  revocation_endpoint: string;
 };
 
-const useOpenIdConfig = () => {
+const useOpenIdConfig = (env: Envs) => {
+  const baseUrl = envToUrl(env);
   const { data, error, isLoading } = useSWR<OpenIdConfig, Error>(
     `${baseUrl}/.well-known/openid-configuration`,
     fetcher,
@@ -43,7 +56,7 @@ const useUserInfo = (
   const { data, error, isLoading } = useSWR<UserInfo, Error>(
     authToken ? userInfoUrl : false,
     () =>
-      fetcher(userInfoUrl!, {
+      fetcher<UserInfo>(userInfoUrl!, {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
@@ -57,13 +70,35 @@ const useUserInfo = (
   };
 };
 
+const useRevokeToken = (
+  accessToken: string | null,
+  clientId: string,
+  revokeUri?: string,
+) => {
+  const revoke = useCallback(async () => {
+    if (!revokeUri || !accessToken) {
+      return;
+    }
+    await fetcher<void>(revokeUri, {
+      method: "POST",
+      body: JSON.stringify({
+        access_token: accessToken,
+        client_id: clientId,
+      }),
+    });
+  }, [accessToken, clientId, revokeUri]);
+
+  return revoke;
+};
+
 export function DevaProvider({
   clientId,
   redirectUri,
   scopes,
   children,
+  env,
 }: DevaProviderProps) {
-  const { openIdConfig, isOpenIdConfigLoading, error } = useOpenIdConfig();
+  const { openIdConfig, isOpenIdConfigLoading, error } = useOpenIdConfig(env);
   if (error) {
     console.error(openIdConfig);
   }
@@ -111,6 +146,8 @@ export function DevaProvider({
     accessToken,
   );
 
+  console.log("userInfo", userInfo, isUserInfoLoading, userInfoError);
+
   const clearState = useCallback(() => {
     setCodeVerifier("");
     setAuthInProgress(false);
@@ -127,12 +164,16 @@ export function DevaProvider({
     setRefreshToken,
   ]);
 
+  const revokeToken = useRevokeToken(
+    accessToken,
+    clientId,
+    openIdConfig?.revocation_endpoint,
+  );
   const logout = useCallback(async () => {
     clearState();
     setAuthError(null);
-
-    // TODO: revoke access
-  }, [clearState]);
+    await revokeToken();
+  }, [clearState, revokeToken]);
 
   const login = useCallback(async () => {
     clearState();
@@ -210,7 +251,7 @@ export function DevaProvider({
 
     fetchingTokensRef.current = true;
 
-    fetcher(openIdConfig?.token_endpoint ?? "", {
+    fetcher<OidcAccessTokenJWT>(openIdConfig?.token_endpoint ?? "", {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
