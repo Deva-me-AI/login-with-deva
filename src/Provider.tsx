@@ -11,6 +11,7 @@ import useSWR from "swr";
 import { fetcher } from "./lib/fetcher";
 import type { OidcAccessTokenJWT, UserInfo } from "./server";
 import { jwtDecode } from "jwt-decode";
+import { useInterval } from "./hooks/use-timeout";
 
 // TODO: move env
 type Envs = "development" | "staging" | "production";
@@ -70,6 +71,32 @@ const useUserInfo = (
   };
 };
 
+const useRefreshToken = (
+  clientId: string,
+  refreshToken: string | null,
+  tokenEndpoint?: string,
+) => {
+  const refresh = useCallback(async () => {
+    if (!refreshToken || !tokenEndpoint) {
+      console.log("no refresh token or token endpoint");
+      return;
+    }
+
+    return fetcher<OidcAccessTokenJWT>(tokenEndpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({
+        client_id: clientId,
+        refresh_token: refreshToken,
+      }),
+    });
+  }, [refreshToken, clientId, tokenEndpoint]);
+
+  return refresh;
+};
+
 const useRevokeToken = (
   accessToken: string | null,
   clientId: string,
@@ -81,7 +108,10 @@ const useRevokeToken = (
     }
     await fetcher<void>(revokeUri, {
       method: "POST",
-      body: JSON.stringify({
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({
         access_token: accessToken,
         client_id: clientId,
       }),
@@ -141,12 +171,10 @@ export function DevaProvider({
 
   const [authError, setAuthError] = useState<string | null>(null);
 
-  const { userInfo, isUserInfoLoading, userInfoError } = useUserInfo(
+  const { userInfo } = useUserInfo(
     openIdConfig?.userinfo_endpoint,
     accessToken,
   );
-
-  console.log("userInfo", userInfo, isUserInfoLoading, userInfoError);
 
   const clearState = useCallback(() => {
     setCodeVerifier("");
@@ -170,8 +198,8 @@ export function DevaProvider({
     openIdConfig?.revocation_endpoint,
   );
   const logout = useCallback(async () => {
-    clearState();
-    setAuthError(null);
+    // clearState();
+    // setAuthError(null);
     await revokeToken();
   }, [clearState, revokeToken]);
 
@@ -211,9 +239,19 @@ export function DevaProvider({
     openIdConfig,
   ]);
 
-  useEffect(() => {
-    // TODO: refresh token timer
-  }, []);
+  const refresh = useRefreshToken(
+    clientId,
+    refreshToken,
+    openIdConfig?.token_endpoint,
+  );
+
+  useInterval(
+    () => {
+      void refresh().then((res) => (res ? handleTokenResponse(res) : null));
+    },
+    refreshToken ? expiresIn * 1000 : null,
+    [refreshToken, openIdConfig?.token_endpoint],
+  );
 
   useEffect(() => {
     let code = "";
