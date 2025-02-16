@@ -107,7 +107,7 @@ const useRevokeToken = (
     if (!revokeUri || !accessToken) {
       return;
     }
-    await fetcher<void>(revokeUri, {
+    await fetch(revokeUri, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
