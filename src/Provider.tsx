@@ -110,9 +110,9 @@ const useRevokeToken = (
     await fetcher<void>(revokeUri, {
       method: "POST",
       headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
+        "Content-Type": "application/json",
       },
-      body: new URLSearchParams({
+      body: JSON.stringify({
         access_token: accessToken,
         client_id: clientId,
       }),
