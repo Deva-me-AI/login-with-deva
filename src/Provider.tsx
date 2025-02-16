@@ -210,9 +210,9 @@ export function DevaProvider({
     openIdConfig?.revocation_endpoint,
   );
   const logout = useCallback(async () => {
-    // clearState();
-    // setAuthError(null);
     await revokeToken();
+    clearState();
+    setAuthError(null);
   }, [clearState, revokeToken]);
 
   const login = useCallback(async () => {
