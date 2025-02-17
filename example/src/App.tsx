@@ -1,5 +1,6 @@
 import "./App.css";
-import { DevaProvider, useLogin, useDeva } from "deva-sdk";
+import "deva-sdk/style.css";
+import { DevaProvider, useLogin, useDeva, SocialFeed } from "deva-sdk";
 
 function Content() {
   const { login } = useLogin();
@@ -14,6 +15,7 @@ function Content() {
       ) : (
         <button onClick={login}>login</button>
       )}
+      <SocialFeed />
     </div>
   );
 }
