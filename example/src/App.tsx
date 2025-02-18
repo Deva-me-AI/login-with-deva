@@ -1,19 +1,42 @@
-import "./App.css";
 import "deva-sdk/style.css";
+import "./index.css";
+import "./App.css";
 import { DevaProvider, useLogin, useDeva, SocialFeed } from "deva-sdk";
 
 function Content() {
   const { login } = useLogin();
   const { user, LogOut } = useDeva();
   return (
-    <div>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: "1rem",
+        padding: "1rem",
+        color: "white",
+        borderRadius: "1rem",
+        backgroundColor: "#333",
+      }}
+    >
       {user ? (
         <>
-          <h2>Welcome {user.name}</h2>
-          <button onClick={LogOut}>logout</button>
+          <h2
+            style={{
+              marginBottom: "1rem",
+              fontSize: "1rem",
+            }}
+          >
+            Welcome {user.name}
+          </h2>
+          <button className="button" onClick={LogOut}>
+            logout
+          </button>
         </>
       ) : (
-        <button onClick={login}>login</button>
+        <button className="button" onClick={login}>
+          login
+        </button>
       )}
       <SocialFeed />
     </div>
@@ -28,12 +51,19 @@ function App() {
       scopes={["read", "write"]}
       env="development"
     >
-      <>
-        <h1>Deva-Sdk</h1>
-        <div className="card">
+      <div>
+        <h1
+          style={{
+            textAlign: "center",
+            padding: "1.5rem",
+          }}
+        >
+          Deva-Sdk
+        </h1>
+        <div>
           <Content />
         </div>
-      </>
+      </div>
     </DevaProvider>
   );
 }
