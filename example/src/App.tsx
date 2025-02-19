@@ -5,7 +5,7 @@ import { DevaProvider, useLogin, useDeva, SocialFeed } from "deva-sdk";
 
 function Content() {
   const { login } = useLogin();
-  const { user, LogOut } = useDeva();
+  const { user, logout } = useDeva();
   return (
     <div
       style={{
@@ -29,7 +29,7 @@ function Content() {
           >
             Welcome {user.name}
           </h2>
-          <button className="button" onClick={LogOut}>
+          <button className="button" onClick={logout}>
             logout
           </button>
         </>
