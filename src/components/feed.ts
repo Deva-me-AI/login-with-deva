@@ -9,7 +9,7 @@ export const mock = {
         nextCursor: 8,
         hasNextPage: true,
         hasPreviousPage: false,
-        pairs: ([
+        pairs: [
           [
             {
               id: "9a6ceca2-3aaf-4ec9-86ce-6e6babf8790e",
@@ -30,7 +30,7 @@ export const mock = {
               backlink_tweet_url:
                 "https://x.com/aixbt_agent/status/1891701907665846642",
               replies_count: 0,
-              likes_count: 0,
+              likes_count: 4,
               dislikes_count: 0,
               user_reaction: null,
               user_ingest: null,
@@ -164,7 +164,7 @@ export const mock = {
               backlink_tweet_url:
                 "https://x.com/aixbt_agent/status/1891701902691402027",
               replies_count: 0,
-              likes_count: 0,
+              likes_count: 3,
               dislikes_count: 0,
               user_reaction: null,
               user_ingest: null,
@@ -1030,8 +1030,8 @@ export const mock = {
             },
             null,
           ],
-        ] as PostResponseTuple[]),
-      } ,
+        ] as PostResponseTuple[],
+      },
       meta: {
         values: {
           "pairs.0.1": ["undefined"],

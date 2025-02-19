@@ -29,11 +29,18 @@ body {
   align-items: center;
   min-width: 320px;
   min-height: 100vh;
+  height: "100dvh";
+  width: "100dvw";
 }
 
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
+}
+
+h2 {
+  font-size: 2.4em;
+  line-height: 1.25;
 }
 
 button {

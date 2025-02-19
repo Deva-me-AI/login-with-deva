@@ -2,6 +2,17 @@ import "deva-sdk/style.css";
 import "./index.css";
 import "./App.css";
 import { DevaProvider, useLogin, useDeva, SocialFeed } from "deva-sdk";
+import { ReactNode } from "react";
+
+export function Card({
+  children,
+  className = "",
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return <div className={`card ${className}`}>{children}</div>;
+}
 
 function Content() {
   const { login } = useLogin();
@@ -10,35 +21,37 @@ function Content() {
     <div
       style={{
         display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
+        flexDirection: "row",
+        flexWrap: "wrap",
+        justifyContent: "center",
         gap: "1rem",
-        padding: "1rem",
-        color: "white",
-        borderRadius: "1rem",
-        backgroundColor: "#333",
+        width: "100%",
+        height: "100%",
       }}
     >
-      {user ? (
-        <>
-          <h2
-            style={{
-              marginBottom: "1rem",
-              fontSize: "1rem",
-            }}
-          >
-            Welcome {user.name}
-          </h2>
-          <button className="button" onClick={logout}>
-            logout
+      <Card>
+        {user ? (
+          <>
+            <h2
+              style={{
+                marginBottom: "1rem",
+              }}
+            >
+              Welcome {user.name}
+            </h2>
+            <button className="button" onClick={logout}>
+              logout
+            </button>
+          </>
+        ) : (
+          <button className="button" onClick={login}>
+            login
           </button>
-        </>
-      ) : (
-        <button className="button" onClick={login}>
-          login
-        </button>
-      )}
-      <SocialFeed />
+        )}
+      </Card>
+      <Card>
+        <SocialFeed />
+      </Card>
     </div>
   );
 }
@@ -51,19 +64,12 @@ function App() {
       scopes={["read", "write"]}
       env="development"
     >
-      <div>
-        <h1
-          style={{
-            textAlign: "center",
-            padding: "1.5rem",
-          }}
-        >
-          Deva-Sdk
-        </h1>
-        <div>
-          <Content />
-        </div>
-      </div>
+      <>
+        <header>
+          <h1>Deva-Sdk</h1>
+        </header>
+        <Content />
+      </>
     </DevaProvider>
   );
 }

@@ -37,7 +37,7 @@ export function SocialFeed() {
   const { isAuthenticated, user } = useDeva();
 
   return (
-    <div className="mx-auto h-full max-w-xl bg-black text-white">
+    <div className="h-full w-full max-w-2xl bg-black text-white overflow-hidden">
       <div className="flex items-center justify-between border-b border-gray-800 p-4">
         <h1 className="text-lg font-bold">For you</h1>
         <Button variant="ghost" className="text-white hover:bg-gray-800">
@@ -47,7 +47,7 @@ export function SocialFeed() {
 
       {isAuthenticated && user && (
         <div className="border-b border-gray-800 p-4">
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3">
             <Avatar className="h-10 w-10">
               <AvatarImage
                 src={
@@ -80,7 +80,7 @@ export function SocialFeed() {
         </div>
       )}
 
-      <ScrollArea className="h-[calc(100vh-120px)]">
+      <ScrollArea className="h-[calc(100vh-120px)] sm:h-[600px]">
         {posts.map(([post, reply]) => (
           <div key={post.id}>
             <PostCard post={post} isParent={!!reply} hasReply={!!reply} />
@@ -124,12 +124,16 @@ function PostCard({
           </Avatar>
           <div className="flex-1">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                 <span className="cursor-pointer font-bold hover:underline">
                   {post.persona.display_name}
                 </span>
-                <span className="text-gray-500">@{post.persona.username}</span>
-                <span className="text-gray-500">· {post.created_at}</span>
+                <span className="text-sm text-gray-500">
+                  @{post.persona.username}
+                </span>
+                <span className="text-sm text-gray-500">
+                  · {post.created_at}
+                </span>
               </div>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -162,22 +166,22 @@ function PostCard({
             </p>
 
             {!isParent && (
-              <div className="mt-3 flex gap-8">
+              <div className="mt-3 flex flex-wrap gap-x-8 gap-y-2">
                 <Button
                   variant="ghost"
                   size="sm"
                   className="h-auto p-0 text-gray-500 hover:bg-transparent hover:text-white"
                 >
-                  <Heart className="mr-2 h-4 w-4" />
-                  {post.likes_count}
+                  <Heart className="mr-1.5 h-4 w-4" />
+                  <span className="text-sm">{post.likes_count}</span>
                 </Button>
                 <Button
                   variant="ghost"
                   size="sm"
                   className="h-auto p-0 text-gray-500 hover:bg-transparent hover:text-white"
                 >
-                  <MessageCircle className="mr-2 h-4 w-4" />
-                  {post.replies_count}
+                  <MessageCircle className="mr-1.5 h-4 w-4" />
+                  <span className="text-sm">{post.replies_count}</span>
                 </Button>
               </div>
             )}
