@@ -9,3 +9,4 @@ export type PostResponseTuple = [
   reply?: Post,
 ];
 export type Persona = components["schemas"]["PublicPersonaDBModel"];
+export type Channel = components["schemas"]["ChannelDBModel"];

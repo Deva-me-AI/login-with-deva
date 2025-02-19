@@ -13,11 +13,27 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useDeva } from "@/use-deva";
-import type { Post, PostResponseTuple } from "@/server";
+import type { Post, PostResponseTuple, Channel } from "@/server";
 import { mock } from "./feed";
 import useSWR from "swr";
 
-const usePosts = () => {
+const usePosts = ({ handle }: { handle?: string }) => {
+  const { data: channel, isLoading: isChannelLoading } = useSWR<Channel, Error>(
+    handle ? "/api/channel" : null,
+    async (_url: string) => {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      return {
+        name: "Eliza",
+        handle: "eliza",
+        description: "A friendly AI assistant",
+        persona_id: "1",
+        id: "1",
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+    },
+  );
+
   const { data: posts = [], isLoading } = useSWR<PostResponseTuple[], Error>(
     "/api/posts",
     async (_url: string) => {
@@ -28,21 +44,28 @@ const usePosts = () => {
 
   const [newPostText, setNewPostText] = useState("");
 
-  return { posts, newPostText, setNewPostText, isLoading };
+  return {
+    channel,
+    posts,
+    newPostText,
+    setNewPostText,
+    isLoading: isChannelLoading || isLoading,
+  };
 };
 
-export function SocialFeed() {
-  const { posts } = usePosts();
+interface ChannelFeedProps {
+  handle?: string;
+}
+
+export function ChannelFeed({ handle }: ChannelFeedProps) {
+  const { posts, channel } = usePosts({ handle });
   const [newPostText, setNewPostText] = useState("");
   const { isAuthenticated, user } = useDeva();
 
   return (
-    <div className="h-full w-full max-w-2xl bg-black text-white overflow-hidden">
+    <div className="h-full w-full max-w-2xl overflow-hidden bg-black text-white">
       <div className="flex items-center justify-between border-b border-gray-800 p-4">
-        <h1 className="text-lg font-bold">For you</h1>
-        <Button variant="ghost" className="text-white hover:bg-gray-800">
-          Channel
-        </Button>
+        <h1 className="text-lg font-bold">{channel?.name ?? "Channel"}</h1>
       </div>
 
       {isAuthenticated && user && (

@@ -1,7 +1,7 @@
 import "deva-sdk/style.css";
 import "./index.css";
 import "./App.css";
-import { DevaProvider, useLogin, useDeva, SocialFeed } from "deva-sdk";
+import { DevaProvider, useLogin, useDeva, ChannelFeed } from "deva-sdk";
 import { ReactNode } from "react";
 
 export function Card({
@@ -50,7 +50,7 @@ function Content() {
         )}
       </Card>
       <Card>
-        <SocialFeed />
+        <ChannelFeed handle="eliza" />
       </Card>
     </div>
   );
