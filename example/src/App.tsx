@@ -26,7 +26,7 @@ function Content() {
         justifyContent: "center",
         gap: "1rem",
         width: "100%",
-        height: "100%",
+        marginBottom: "2rem",
       }}
     >
       <Card>
@@ -34,11 +34,21 @@ function Content() {
           <>
             <h2
               style={{
+                marginTop: ".5rem",
                 marginBottom: "1rem",
               }}
             >
-              Welcome {user.name}
+              Welcome
             </h2>
+            <h3
+              style={{
+                marginBottom: "1rem",
+              }}
+            >
+              {user?.persona?.display_name ??
+                user?.persona?.username ??
+                user?.preferred_username}
+            </h3>
             <button className="button" onClick={logout}>
               logout
             </button>
@@ -65,7 +75,12 @@ function App() {
       env="development"
     >
       <>
-        <header>
+        <header
+          style={{
+            marginTop: "1rem",
+            marginBottom: "1rem",
+          }}
+        >
           <h1>Deva-Sdk</h1>
         </header>
         <Content />

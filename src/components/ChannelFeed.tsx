@@ -16,6 +16,7 @@ import { useDeva } from "@/use-deva";
 import type { Post, PostResponseTuple, Channel } from "@/server";
 import { mock } from "./feed";
 import useSWR from "swr";
+import { Skeleton } from "./ui/skeleton";
 
 const usePosts = ({ handle }: { handle?: string }) => {
   const { data: channel, isLoading: isChannelLoading } = useSWR<Channel, Error>(
@@ -35,7 +36,7 @@ const usePosts = ({ handle }: { handle?: string }) => {
   );
 
   const { data: posts = [], isLoading } = useSWR<PostResponseTuple[], Error>(
-    "/api/posts",
+    channel ? `/api/channel/${channel.handle}/posts` : null,
     async (_url: string) => {
       await new Promise((resolve) => setTimeout(resolve, 1000));
       return mock.result.data.json.pairs;
@@ -58,14 +59,18 @@ interface ChannelFeedProps {
 }
 
 export function ChannelFeed({ handle }: ChannelFeedProps) {
-  const { posts, channel } = usePosts({ handle });
+  const { posts, channel, isLoading } = usePosts({ handle });
   const [newPostText, setNewPostText] = useState("");
   const { isAuthenticated, user } = useDeva();
 
   return (
     <div className="h-full w-full max-w-2xl overflow-hidden bg-black text-white">
       <div className="flex items-center justify-between border-b border-gray-800 p-4">
-        <h1 className="text-lg font-bold">{channel?.name ?? "Channel"}</h1>
+        {isLoading ? (
+          <Skeleton className="h-7 w-32" />
+        ) : (
+          <h1 className="text-lg font-bold">{channel?.name ?? "Channel"}</h1>
+        )}
       </div>
 
       {isAuthenticated && user && (
@@ -73,11 +78,7 @@ export function ChannelFeed({ handle }: ChannelFeedProps) {
           <div className="flex flex-wrap gap-3">
             <Avatar className="h-10 w-10">
               <AvatarImage
-                src={
-                  user.persona?.avatar ??
-                  user.picture ??
-                  "/placeholder.svg?height=40&width=40"
-                }
+                src={user.persona?.avatar ?? user.picture ?? undefined}
                 alt="@deva_support"
               />
               <AvatarFallback className="text-black">
@@ -104,13 +105,49 @@ export function ChannelFeed({ handle }: ChannelFeedProps) {
       )}
 
       <ScrollArea className="h-[calc(100vh-120px)] sm:h-[600px]">
-        {posts.map(([post, reply]) => (
-          <div key={post.id}>
-            <PostCard post={post} isParent={!!reply} hasReply={!!reply} />
-            {reply && <PostCard key={reply.id} post={reply} hasReply={false} />}
-          </div>
-        ))}
+        {isLoading ? (
+          <>
+            <SkeletonPost />
+            <SkeletonPost />
+            <SkeletonPost />
+          </>
+        ) : (
+          posts.map(([post, reply]) => (
+            <div key={post.id}>
+              <PostCard post={post} isParent={!!reply} hasReply={!!reply} />
+              {reply && (
+                <PostCard key={reply.id} post={reply} hasReply={false} />
+              )}
+            </div>
+          ))
+        )}
       </ScrollArea>
+    </div>
+  );
+}
+
+function SkeletonPost() {
+  return (
+    <div className="border-b border-gray-800 p-4">
+      <div className="flex gap-3">
+        <Skeleton className="h-10 w-10 rounded-full" />
+        <div className="flex-1">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-4 w-20" />
+            </div>
+          </div>
+          <div className="mt-2 space-y-2">
+            <Skeleton className="h-4 w-[90%]" />
+            <Skeleton className="h-4 w-[70%]" />
+          </div>
+          <div className="mt-4 flex gap-8">
+            <Skeleton className="h-4 w-16" />
+            <Skeleton className="h-4 w-16" />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
