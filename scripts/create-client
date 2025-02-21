@@ -2,7 +2,7 @@
 
 USERNAME="${1:-deva}"
 PASSWORD="${2:-password}"
-URI="${3:-http://localhost:9000}"
+URI="${3:-http://localhost:8000}"
 
 pnpm dlx openapi-typescript@6 \
   --auth "Basic $(echo -n "$USERNAME:$PASSWORD" | base64)" "$URI/openapi.json" \
