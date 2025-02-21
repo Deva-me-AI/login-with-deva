@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,7 +19,16 @@ import { Skeleton } from "./ui/skeleton";
 import { useSWRFetcher } from "@/lib/fetcher";
 import { type Envs, envToUrl } from "@/config";
 
-const usePosts = ({ handle, env }: { handle?: string; env: Envs }) => {
+interface UsePostsParams {
+  handle?: string;
+  env: Envs;
+  limit?: number;
+  cursor?: string;
+}
+
+const usePosts = ({ handle, env, limit = 20 }: UsePostsParams) => {
+  const [cursor, setCursor] = useState(0);
+  const [allPosts, setAllPosts] = useState<PagintedPostWithReply["items"]>([]);
   const url = envToUrl(env);
   const { data: channel, isLoading: isChannelLoading } = useSWR<Channel, Error>(
     handle ? "/api/channel" : null,
@@ -37,18 +46,43 @@ const usePosts = ({ handle, env }: { handle?: string; env: Envs }) => {
     },
   );
 
-  const { data: posts, isLoading } = useSWRFetcher<PagintedPostWithReply, Error>(
-    channel ? `${url}/api/sdk/feed` : null,
-  );
+  const queryParams = new URLSearchParams({
+    limit: limit.toString(),
+    cursor: cursor.toString(),
+  }).toString();
 
-  const [newPostText, setNewPostText] = useState("");
+  const { data: posts, isLoading } = useSWRFetcher<
+    PagintedPostWithReply,
+    Error
+  >(channel ? `${url}/api/sdk/feed?${queryParams}` : null);
+
+  const total = posts?.total ?? 0;
+
+  // Update allPosts when new posts are loaded
+  useEffect(() => {
+    if (posts?.items) {
+      if (cursor === 0) {
+        setAllPosts(posts.items);
+      } else {
+        setAllPosts((prev) => [...prev, ...posts.items]);
+      }
+    }
+  }, [posts?.items, cursor]);
 
   return {
     channel,
-    posts: posts?.items ?? [],
-    newPostText,
-    setNewPostText,
+    posts: allPosts,
     isLoading: isChannelLoading || isLoading,
+    pagination: {
+      hasNext: total > cursor + limit,
+      next: () => {
+        setCursor((c) => c + limit);
+      },
+      hasPrev: cursor > 0,
+      prev: () => {
+        setCursor((c) => Math.min(c - limit, 0));
+      },
+    },
   };
 };
 
@@ -58,7 +92,7 @@ interface ChannelFeedProps {
 
 export function ChannelFeed({ handle }: ChannelFeedProps) {
   const { isAuthenticated, user, env } = useDeva();
-  const { posts, channel, isLoading } = usePosts({ handle, env });
+  const { posts, channel, isLoading, pagination } = usePosts({ handle, env });
   const [newPostText, setNewPostText] = useState("");
 
   return (
@@ -103,24 +137,60 @@ export function ChannelFeed({ handle }: ChannelFeedProps) {
       )}
 
       <ScrollArea className="h-[calc(100vh-120px)] sm:h-[600px]">
-        {isLoading ? (
+        {isLoading && posts.length === 0 ? (
           <>
             <SkeletonPost />
             <SkeletonPost />
             <SkeletonPost />
           </>
         ) : (
-          posts.map((_post) => {
-            const isParent = !_post.in_reply_to;
-            const post = _post.in_reply_to ?? _post;
-            const reply = _post.in_reply_to ? _post : _post.first_reply;
-            return (
-              <div key={post.in_reply_to_id ?? post.id}>
-                <PostCard post={post} isParent={isParent} hasReply={!!reply} />
-                {reply && <PostCard post={reply} hasReply={false} />}
+          <>
+            {posts.map((_post) => {
+              const isParent = !_post.in_reply_to;
+              const post = _post.in_reply_to ?? _post;
+              const reply = _post.in_reply_to ? _post : _post.first_reply;
+              return (
+                <div key={post.in_reply_to_id ?? post.id}>
+                  <PostCard
+                    post={post}
+                    isParent={isParent}
+                    hasReply={!!reply}
+                  />
+                  {reply && <PostCard post={reply} hasReply={false} />}
+                </div>
+              );
+            })}
+            {pagination.hasNext && (
+              <div
+                className="p-4"
+                ref={(el) => {
+                  if (!el) return;
+
+                  const observer = new IntersectionObserver(
+                    (entries) => {
+                      if (entries?.[0]?.isIntersecting && !isLoading) {
+                        pagination.next();
+                      }
+                    },
+                    { threshold: 0.5 },
+                  );
+
+                  observer.observe(el);
+                  return () => observer.disconnect();
+                }}
+              >
+                <div className="flex justify-center">
+                  {isLoading ? (
+                    <SkeletonPost />
+                  ) : (
+                    <span className="text-sm text-gray-500">
+                      Loading more...
+                    </span>
+                  )}
+                </div>
               </div>
-            );
-          })
+            )}
+          </>
         )}
       </ScrollArea>
     </div>
