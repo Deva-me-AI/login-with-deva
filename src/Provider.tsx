@@ -13,19 +13,7 @@ import { fetcher } from "./lib/fetcher";
 import type { OidcAccessTokenJWT, UserInfo } from "./server";
 import { jwtDecode } from "jwt-decode";
 import { useInterval } from "./hooks/use-timeout";
-
-// TODO: move env
-type Envs = "development" | "staging" | "production";
-const envToUrl = (env: Envs) => {
-  switch (env) {
-    case "development":
-      return "http://localhost:3000";
-    case "staging":
-      return "https://staging.deva.me";
-    case "production":
-      return "https://deva.me";
-  }
-};
+import { type Envs, envToUrl } from "./config";
 
 export type DevaProviderProps = {
   clientId: string;
@@ -374,6 +362,8 @@ export function DevaProvider({
         clientId,
         redirectUri,
         scopes,
+
+        env,
 
         login,
         logout,

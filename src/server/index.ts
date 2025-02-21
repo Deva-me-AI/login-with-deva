@@ -10,3 +10,5 @@ export type PostResponseTuple = [
 ];
 export type Persona = components["schemas"]["PublicPersonaDBModel"];
 export type Channel = components["schemas"]["ChannelDBModel"];
+export type PostWithReply = components["schemas"]["PostWithRepliesDBModel"];
+export type PagintedPostWithReply = components["schemas"]["PaginatedPostWithReplieses"];

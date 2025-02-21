@@ -13,12 +13,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useDeva } from "@/use-deva";
-import type { Post, PostResponseTuple, Channel } from "@/server";
-import { mock } from "./feed";
+import type { Post, Channel, PagintedPostWithReply } from "@/server";
 import useSWR from "swr";
 import { Skeleton } from "./ui/skeleton";
+import { useSWRFetcher } from "@/lib/fetcher";
+import { type Envs, envToUrl } from "@/config";
 
-const usePosts = ({ handle }: { handle?: string }) => {
+const usePosts = ({ handle, env }: { handle?: string; env: Envs }) => {
+  const url = envToUrl(env);
   const { data: channel, isLoading: isChannelLoading } = useSWR<Channel, Error>(
     handle ? "/api/channel" : null,
     async (_url: string) => {
@@ -35,19 +37,15 @@ const usePosts = ({ handle }: { handle?: string }) => {
     },
   );
 
-  const { data: posts = [], isLoading } = useSWR<PostResponseTuple[], Error>(
-    channel ? `/api/channel/${channel.handle}/posts` : null,
-    async (_url: string) => {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      return mock.result.data.json.pairs;
-    },
+  const { data: posts, isLoading } = useSWRFetcher<PagintedPostWithReply, Error>(
+    channel ? `${url}/api/sdk/feed` : null,
   );
 
   const [newPostText, setNewPostText] = useState("");
 
   return {
     channel,
-    posts,
+    posts: posts?.items ?? [],
     newPostText,
     setNewPostText,
     isLoading: isChannelLoading || isLoading,
@@ -59,9 +57,9 @@ interface ChannelFeedProps {
 }
 
 export function ChannelFeed({ handle }: ChannelFeedProps) {
-  const { posts, channel, isLoading } = usePosts({ handle });
+  const { isAuthenticated, user, env } = useDeva();
+  const { posts, channel, isLoading } = usePosts({ handle, env });
   const [newPostText, setNewPostText] = useState("");
-  const { isAuthenticated, user } = useDeva();
 
   return (
     <div className="h-full w-full max-w-2xl overflow-hidden bg-black text-white">
@@ -112,14 +110,17 @@ export function ChannelFeed({ handle }: ChannelFeedProps) {
             <SkeletonPost />
           </>
         ) : (
-          posts.map(([post, reply]) => (
-            <div key={post.id}>
-              <PostCard post={post} isParent={!!reply} hasReply={!!reply} />
-              {reply && (
-                <PostCard key={reply.id} post={reply} hasReply={false} />
-              )}
-            </div>
-          ))
+          posts.map((_post) => {
+            const isParent = !_post.in_reply_to;
+            const post = _post.in_reply_to ?? _post;
+            const reply = _post.in_reply_to ? _post : _post.first_reply;
+            return (
+              <div key={post.in_reply_to_id ?? post.id}>
+                <PostCard post={post} isParent={isParent} hasReply={!!reply} />
+                {reply && <PostCard post={reply} hasReply={false} />}
+              </div>
+            );
+          })
         )}
       </ScrollArea>
     </div>
@@ -169,7 +170,7 @@ function PostCard({
       className={`relative ${isParent ? "pb-0" : "border-b border-gray-800"} transition-colors hover:bg-gray-900/50`}
     >
       {/* Connection line for replies */}
-      {post.in_reply_to_id && connector}
+      {isParent && connector}
 
       <div className={`p-4 ${isParent ? "pb-2" : ""}`}>
         <div className="flex gap-3">

@@ -12,6 +12,8 @@ export const useDeva = () => {
     accessToken: devaContext.accessToken,
     user: devaContext.user,
     logout: devaContext.logout,
+    
+    env: devaContext.env,
 
     isAuthenticated: devaContext.accessToken !== null,
   };

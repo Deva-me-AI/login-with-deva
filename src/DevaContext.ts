@@ -1,10 +1,13 @@
 import { createContext } from "react";
 import type { UserInfo } from "./server";
+import type { Envs } from "./config";
 
 export type DevaContext = {
   clientId: string;
   redirectUri: string;
   scopes: string[];
+
+  env: Envs;
 
   authInProgress: boolean;
   authError: string | null;
