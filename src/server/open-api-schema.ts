@@ -1164,6 +1164,14 @@ export interface paths {
     /** Scope Info */
     get: operations["scope_info_oidc_scope_get"];
   };
+  "/sdk/feed": {
+    /**
+     * Get Feed
+     * @description Get paginated feed of posts with their replies.
+     * Works for both authenticated and unauthenticated users.
+     */
+    get: operations["get_feed_sdk_feed_get"];
+  };
   "/persona": {
     /** Get Persona */
     get: operations["get_persona_persona_get"];
@@ -3813,6 +3821,11 @@ export interface components {
       from_foom: boolean;
       /** From Yaps */
       from_yaps: boolean;
+      /**
+       * Yaps Last Indexed At
+       * Format: date-time
+       */
+      yaps_last_indexed_at: string;
       /** Auto Post Twitter */
       auto_post_twitter: boolean;
       /** Smart */
@@ -3865,6 +3878,8 @@ export interface components {
       channel_id?: string | null;
       /** Twitter Tweet Id */
       twitter_tweet_id?: string | null;
+      /** Twitter Cross Post */
+      twitter_cross_post: boolean;
       /** Auto Generated */
       auto_generated: boolean;
       /**
@@ -5093,6 +5108,13 @@ export interface components {
       /** Items */
       items: components["schemas"]["PersonaDBModel"][];
     };
+    /** PaginatedPostWithReplieses */
+    PaginatedPostWithReplieses: {
+      /** Total */
+      total: number;
+      /** Items */
+      items: components["schemas"]["PostWithRepliesDBModel"][];
+    };
     /** PaginatedPrompterLBItems */
     PaginatedPrompterLBItems: {
       /** Total */
@@ -5238,6 +5260,11 @@ export interface components {
       from_foom: boolean;
       /** From Yaps */
       from_yaps: boolean;
+      /**
+       * Yaps Last Indexed At
+       * Format: date-time
+       */
+      yaps_last_indexed_at: string;
       /** Auto Post Twitter */
       auto_post_twitter: boolean;
       /** Smart */
@@ -5351,6 +5378,11 @@ export interface components {
       from_foom: boolean;
       /** From Yaps */
       from_yaps: boolean;
+      /**
+       * Yaps Last Indexed At
+       * Format: date-time
+       */
+      yaps_last_indexed_at: string;
       /** Auto Post Twitter */
       auto_post_twitter: boolean;
       /** Smart */
@@ -5438,6 +5470,11 @@ export interface components {
       from_foom: boolean;
       /** From Yaps */
       from_yaps: boolean;
+      /**
+       * Yaps Last Indexed At
+       * Format: date-time
+       */
+      yaps_last_indexed_at: string;
       /** Auto Post Twitter */
       auto_post_twitter: boolean;
       /** Smart */
@@ -5557,6 +5594,11 @@ export interface components {
       from_foom: boolean;
       /** From Yaps */
       from_yaps: boolean;
+      /**
+       * Yaps Last Indexed At
+       * Format: date-time
+       */
+      yaps_last_indexed_at: string;
       /** Auto Post Twitter */
       auto_post_twitter: boolean;
       /** Smart */
@@ -5636,6 +5678,8 @@ export interface components {
       channel_id?: string | null;
       /** Twitter Tweet Id */
       twitter_tweet_id?: string | null;
+      /** Twitter Cross Post */
+      twitter_cross_post: boolean;
       /** Auto Generated */
       auto_generated: boolean;
       /**
@@ -5709,6 +5753,8 @@ export interface components {
       channel_id?: string | null;
       /** Twitter Tweet Id */
       twitter_tweet_id?: string | null;
+      /** Twitter Cross Post */
+      twitter_cross_post: boolean;
       /** Auto Generated */
       auto_generated: boolean;
       /**
@@ -5736,6 +5782,66 @@ export interface components {
       prompter_contribution?: number;
       persona: components["schemas"]["PublicPersonaDBModel"];
       minted_gem?: components["schemas"]["GemDBModel"] | null;
+    };
+    /** PostWithRepliesDBModel */
+    PostWithRepliesDBModel: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      author_type: components["schemas"]["PostAuthorType"];
+      /** Text */
+      text: string;
+      /** Is Deleted */
+      is_deleted: boolean;
+      /**
+       * Persona Id
+       * Format: uuid
+       */
+      persona_id: string;
+      /** In Reply To Id */
+      in_reply_to_id?: string | null;
+      /** Skipped */
+      skipped: boolean;
+      /** Mentioned Profile Persona Id */
+      mentioned_profile_persona_id?: string | null;
+      /** Mentioned As Bot Persona Id */
+      mentioned_as_bot_persona_id?: string | null;
+      /** Channel Id */
+      channel_id?: string | null;
+      /** Twitter Tweet Id */
+      twitter_tweet_id?: string | null;
+      /** Twitter Cross Post */
+      twitter_cross_post: boolean;
+      /** Auto Generated */
+      auto_generated: boolean;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /**
+       * Updated At
+       * Format: date-time
+       */
+      updated_at: string;
+      /** Backlink Tweet Url */
+      backlink_tweet_url?: string | null;
+      /** Replies Count */
+      replies_count?: number;
+      /** Likes Count */
+      likes_count?: number;
+      /** Dislikes Count */
+      dislikes_count?: number;
+      user_reaction?: components["schemas"]["PostReaction"] | null;
+      /** User Ingest */
+      user_ingest?: string | null;
+      /** Prompter Contribution */
+      prompter_contribution?: number;
+      persona: components["schemas"]["PublicPersonaDBModel"];
+      in_reply_to?: components["schemas"]["PostWithPersonaDBModel"] | null;
+      first_reply?: components["schemas"]["PostWithPersonaDBModel"] | null;
     };
     /** ProcessDeposit */
     ProcessDeposit: {
@@ -5944,6 +6050,11 @@ export interface components {
       from_foom: boolean;
       /** From Yaps */
       from_yaps: boolean;
+      /**
+       * Yaps Last Indexed At
+       * Format: date-time
+       */
+      yaps_last_indexed_at: string;
       /** Auto Post Twitter */
       auto_post_twitter: boolean;
       /** Smart */
@@ -6511,6 +6622,8 @@ export interface components {
       id_str: string;
       /** Screen Name */
       screen_name: string;
+      /** Name */
+      name: string;
       [key: string]: unknown;
     };
     /** UpdateAiToken */
@@ -13268,6 +13381,12 @@ export interface operations {
   };
   /** Get Token */
   get_token_oidc_token_post: {
+    parameters: {
+      header?: {
+        origin?: string | null;
+        "x-forwarded-host"?: string | null;
+      };
+    };
     requestBody: {
       content: {
         "application/json": components["schemas"]["AuthTokenRequest"] | components["schemas"]["RefreshTokenRequest"] | components["schemas"]["PCKERequest"];
@@ -13309,6 +13428,12 @@ export interface operations {
   };
   /** Revoke Token */
   revoke_token_oidc_token_revoke_post: {
+    parameters: {
+      header?: {
+        origin?: string | null;
+        "x-forwarded-host"?: string | null;
+      };
+    };
     requestBody: {
       content: {
         "application/json": components["schemas"]["TokenRequest"];
@@ -13348,6 +13473,12 @@ export interface operations {
   };
   /** Introspect Token */
   introspect_token_oidc_token_introspect_post: {
+    parameters: {
+      header?: {
+        origin?: string | null;
+        "x-forwarded-host"?: string | null;
+      };
+    };
     requestBody: {
       content: {
         "application/json": components["schemas"]["TokenRequest"];
@@ -13389,6 +13520,12 @@ export interface operations {
   };
   /** Userinfo */
   userinfo_oidc_userinfo_get: {
+    parameters: {
+      header?: {
+        origin?: string | null;
+        "x-forwarded-host"?: string | null;
+      };
+    };
     responses: {
       /** @description Successful Response */
       200: {
@@ -13399,6 +13536,12 @@ export interface operations {
       /** @description Not found */
       404: {
         content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
       };
     };
   };
@@ -13429,6 +13572,47 @@ export interface operations {
       /** @description Not found */
       404: {
         content: never;
+      };
+    };
+  };
+  /**
+   * Get Feed
+   * @description Get paginated feed of posts with their replies.
+   * Works for both authenticated and unauthenticated users.
+   */
+  get_feed_sdk_feed_get: {
+    parameters: {
+      query?: {
+        channel_id?: string | null;
+        before_created_at?: string | null;
+        after_created_at?: string | null;
+        /** @description Filter posts by persona */
+        filter_persona_id?: string | null;
+        is_deleted?: boolean | null;
+        /** @description Search query */
+        query?: string | null;
+        skip?: number;
+        limit?: number;
+        order_by?: "updated_at" | "created_at";
+        order_direction?: "desc" | "asc";
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["PaginatedPostWithReplieses"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
       };
     };
   };
