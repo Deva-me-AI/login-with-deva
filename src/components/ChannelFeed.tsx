@@ -34,6 +34,7 @@ interface UsePostsParams {
 
 const usePosts = ({ handle, env, limit = 20 }: UsePostsParams) => {
   const url = envToUrl(env);
+  const { accessToken } = useDeva();
   const [cursor, setCursor] = useState(0);
   const [allPosts, setAllPosts] = useState<PagintedPostWithReply["items"]>([]);
   const [isCreating, setIsCreating] = useState(false);
@@ -73,6 +74,7 @@ const usePosts = ({ handle, env, limit = 20 }: UsePostsParams) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
         },
         body: JSON.stringify(input),
       });
