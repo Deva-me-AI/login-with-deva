@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -83,6 +83,7 @@ export function ChannelFeed({ handle }: ChannelFeedProps) {
   const { isAuthenticated, user, env } = useDeva();
   const { posts, channel, isLoading, pagination } = usePosts({ handle, env });
   const [newPostText, setNewPostText] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
 
   return (
     <div className="h-full w-full max-w-2xl overflow-hidden bg-black text-white">
@@ -108,6 +109,7 @@ export function ChannelFeed({ handle }: ChannelFeedProps) {
             </Avatar>
             <div className="flex-1">
               <Input
+                ref={inputRef}
                 placeholder="Use @ to mention a deva"
                 className="border-0 bg-transparent p-0 text-white placeholder:text-gray-500 focus-visible:ring-0"
                 value={newPostText}
@@ -132,6 +134,25 @@ export function ChannelFeed({ handle }: ChannelFeedProps) {
             <SkeletonPost />
             <SkeletonPost />
           </>
+        ) : posts.length === 0 ? (
+          <div className="flex h-full flex-col items-center justify-center p-8 text-center">
+            <MessageCircle className="h-12 w-12 text-gray-500" />
+            <h3 className="mt-4 text-lg font-semibold">No posts yet</h3>
+            <p className="mt-2 text-sm text-gray-500">
+              Be the first to start a conversation in this channel!
+            </p>
+            {isAuthenticated && (
+              <Button
+                onClick={() => {
+                  inputRef.current?.focus();
+                }}
+                variant="outline"
+                className="mt-6 border-gray-800"
+              >
+                Create a post
+              </Button>
+            )}
+          </div>
         ) : (
           <>
             {posts.map((_post) => {
@@ -223,7 +244,7 @@ function PostCard({
     >
       {/* Connection line for replies */}
       {isParent && (
-        <div className="absolute left-[36px] bottom-0 h-1/2 w-[2px] bg-gray-800" />
+        <div className="absolute bottom-0 left-[36px] h-1/2 w-[2px] bg-gray-800" />
       )}
 
       <div className={`p-4 ${isParent ? "pb-2" : ""}`}>
