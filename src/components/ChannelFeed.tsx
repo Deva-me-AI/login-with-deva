@@ -13,9 +13,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useDeva } from "@/use-deva";
-import type { Post, Channel, PagintedPostWithReply } from "@/server";
+import type {
+  Post,
+  Channel,
+  PagintedPostWithReply,
+  CreatePostInput,
+  PostWithReply,
+  FullDbPost,
+} from "@/server";
 import { Skeleton } from "./ui/skeleton";
-import { useSWRFetcher } from "@/lib/fetcher";
+import { fetcher, useSWRFetcher } from "@/lib/fetcher";
 import { type Envs, envToUrl } from "@/config";
 
 interface UsePostsParams {
@@ -29,6 +36,7 @@ const usePosts = ({ handle, env, limit = 20 }: UsePostsParams) => {
   const url = envToUrl(env);
   const [cursor, setCursor] = useState(0);
   const [allPosts, setAllPosts] = useState<PagintedPostWithReply["items"]>([]);
+  const [isCreating, setIsCreating] = useState(false);
   const { data: channel, isLoading: isChannelLoading } = useSWRFetcher<
     Channel,
     Error
@@ -58,10 +66,42 @@ const usePosts = ({ handle, env, limit = 20 }: UsePostsParams) => {
     }
   }, [posts?.items, cursor]);
 
+  const createPost = async (input: CreatePostInput) => {
+    try {
+      setIsCreating(true);
+      const fullPost = await fetcher<FullDbPost>(`${url}/api/sdk/feed/post`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(input),
+      });
+
+      // Convert FullDbPost to PostWithReply
+      const postWithReply: PostWithReply = {
+        ...fullPost,
+        first_reply: null,
+        in_reply_to: null,
+      };
+
+      // Reset cursor to 0 to refresh the feed from the beginning
+      setCursor(0);
+
+      return postWithReply;
+    } catch (error) {
+      console.error("Error creating post:", error);
+      throw error;
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
   return {
     channel,
     posts: allPosts,
     isLoading: isChannelLoading || isLoading,
+    isCreating,
+    createPost,
     pagination: {
       hasNext: total > cursor + limit,
       next: () => {
@@ -81,9 +121,26 @@ interface ChannelFeedProps {
 
 export function ChannelFeed({ handle }: ChannelFeedProps) {
   const { isAuthenticated, user, env } = useDeva();
-  const { posts, channel, isLoading, pagination } = usePosts({ handle, env });
+  const { posts, channel, isLoading, isCreating, createPost, pagination } =
+    usePosts({ handle, env });
   const [newPostText, setNewPostText] = useState("");
+  const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleCreatePost = async () => {
+    if (!newPostText.trim() || !channel) return;
+
+    try {
+      setError(null);
+      await createPost({
+        text: newPostText.trim(),
+        channel_id: channel.id,
+      });
+      setNewPostText(""); // Clear input on success
+    } catch {
+      setError("Failed to create post. Please try again.");
+    }
+  };
 
   return (
     <div className="h-full w-full max-w-2xl overflow-hidden bg-black text-white">
@@ -114,15 +171,25 @@ export function ChannelFeed({ handle }: ChannelFeedProps) {
                 className="border-0 bg-transparent p-0 text-white placeholder:text-gray-500 focus-visible:ring-0"
                 value={newPostText}
                 onChange={(e) => setNewPostText(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    void handleCreatePost();
+                  }
+                }}
               />
             </div>
             <Button
               variant="ghost"
               className="text-gray-500 hover:bg-transparent hover:text-white"
-              disabled={!newPostText.trim()}
+              disabled={!newPostText.trim() || isCreating}
+              onClick={handleCreatePost}
             >
-              Post
+              {isCreating ? "Posting..." : "Post"}
             </Button>
+            {error && (
+              <p className="mt-2 w-full text-sm text-red-500">{error}</p>
+            )}
           </div>
         </div>
       )}
