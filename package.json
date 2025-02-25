@@ -5,7 +5,7 @@
   "scripts": {
     "build": "vite build",
     "dev": "vite build --watch",
-    "preview": "vite preview",
+    "example": "cd example && pnpm run dev",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",
     "format:write": "prettier --write \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",
     "start": "next start",

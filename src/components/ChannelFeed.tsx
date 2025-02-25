@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useDeva } from "@/use-deva";
 import type { Post, Channel, PagintedPostWithReply } from "@/server";
-import useSWR from "swr";
 import { Skeleton } from "./ui/skeleton";
 import { useSWRFetcher } from "@/lib/fetcher";
 import { type Envs, envToUrl } from "@/config";
@@ -27,28 +26,17 @@ interface UsePostsParams {
 }
 
 const usePosts = ({ handle, env, limit = 20 }: UsePostsParams) => {
+  const url = envToUrl(env);
   const [cursor, setCursor] = useState(0);
   const [allPosts, setAllPosts] = useState<PagintedPostWithReply["items"]>([]);
-  const url = envToUrl(env);
-  const { data: channel, isLoading: isChannelLoading } = useSWR<Channel, Error>(
-    handle ? "/api/channel" : null,
-    async (_url: string) => {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      return {
-        name: "Eliza",
-        handle: "eliza",
-        description: "A friendly AI assistant",
-        persona_id: "1",
-        id: "1",
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      };
-    },
+  const { data: channel, isLoading: isChannelLoading } = useSWRFetcher<Channel, Error>(
+    handle ? `${url}/api/sdk/channel/handle/${handle}` : null,
   );
 
   const queryParams = new URLSearchParams({
     limit: limit.toString(),
     cursor: cursor.toString(),
+    channel_id: channel?.id ?? "",
   }).toString();
 
   const { data: posts, isLoading } = useSWRFetcher<
