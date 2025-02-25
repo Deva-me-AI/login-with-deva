@@ -13,6 +13,9 @@ export default defineConfig({
     },
     rollupOptions: {
       external: ["react", "react-dom", "react/jsx-runtime", "tailwindcss"],
+      input: {
+        index: path.resolve(__dirname, 'src/index.ts')
+      },
       output: {
         globals: {
           react: "React",
@@ -21,9 +24,18 @@ export default defineConfig({
           tailwindcss: "tailwindcss",
         },
       },
+      watch: {
+        exclude: ['example/**/*'],
+      }
     },
   },
-  plugins: [react(), dts({ rollupTypes: true })],
+  plugins: [
+    react(),
+    dts({
+      rollupTypes: true,
+      exclude: ['example/**/*'],
+    }),
+  ],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
