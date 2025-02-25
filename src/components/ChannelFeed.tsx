@@ -29,9 +29,10 @@ const usePosts = ({ handle, env, limit = 20 }: UsePostsParams) => {
   const url = envToUrl(env);
   const [cursor, setCursor] = useState(0);
   const [allPosts, setAllPosts] = useState<PagintedPostWithReply["items"]>([]);
-  const { data: channel, isLoading: isChannelLoading } = useSWRFetcher<Channel, Error>(
-    handle ? `${url}/api/sdk/channel/handle/${handle}` : null,
-  );
+  const { data: channel, isLoading: isChannelLoading } = useSWRFetcher<
+    Channel,
+    Error
+  >(handle ? `${url}/api/sdk/channel/handle/${handle}` : null);
 
   const queryParams = new URLSearchParams({
     limit: limit.toString(),
@@ -134,17 +135,13 @@ export function ChannelFeed({ handle }: ChannelFeedProps) {
         ) : (
           <>
             {posts.map((_post) => {
-              const isParent = !_post.in_reply_to;
+              const isParent = !!(_post.in_reply_to ?? _post.first_reply);
               const post = _post.in_reply_to ?? _post;
               const reply = _post.in_reply_to ? _post : _post.first_reply;
               return (
                 <div key={post.in_reply_to_id ?? post.id}>
-                  <PostCard
-                    post={post}
-                    isParent={isParent}
-                    hasReply={!!reply}
-                  />
-                  {reply && <PostCard post={reply} hasReply={false} />}
+                  <PostCard post={post} isParent={isParent} />
+                  {reply && <PostCard post={reply} isReply={true} />}
                 </div>
               );
             })}
@@ -214,21 +211,20 @@ function SkeletonPost() {
 function PostCard({
   post,
   isParent,
-  hasReply,
+  isReply,
 }: {
   post: Post;
   isParent?: boolean;
-  hasReply?: boolean;
+  isReply?: boolean;
 }) {
-  const connector = (
-    <div className="absolute left-[36px] top-0 h-full w-[2px] bg-gray-800" />
-  );
   return (
     <div
       className={`relative ${isParent ? "pb-0" : "border-b border-gray-800"} transition-colors hover:bg-gray-900/50`}
     >
       {/* Connection line for replies */}
-      {isParent && connector}
+      {isParent && (
+        <div className="absolute left-[36px] bottom-0 h-1/2 w-[2px] bg-gray-800" />
+      )}
 
       <div className={`p-4 ${isParent ? "pb-2" : ""}`}>
         <div className="flex gap-3">
@@ -308,7 +304,9 @@ function PostCard({
         </div>
       </div>
 
-      {hasReply && connector}
+      {isReply && (
+        <div className="absolute left-[36px] top-0 h-1/4 w-[2px] bg-gray-800" />
+      )}
     </div>
   );
 }
