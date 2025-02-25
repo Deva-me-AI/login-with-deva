@@ -2,7 +2,7 @@ import "deva-sdk/style.css";
 import "./index.css";
 import "./App.css";
 import { DevaProvider, useLogin, useDeva, ChannelFeed } from "deva-sdk";
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 
 export function Card({
   children,
@@ -14,9 +14,17 @@ export function Card({
   return <div className={`card ${className}`}>{children}</div>;
 }
 
+type Channel = "empty" | "eliza";
+
 function Content() {
   const { login } = useLogin();
   const { user, logout } = useDeva();
+  const [selectedChannel, setSelectedChannel] = useState<Channel>("empty");
+
+  const handleChannelChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedChannel(event.target.value as Channel);
+  };
+
   return (
     <div
       style={{
@@ -60,7 +68,17 @@ function Content() {
         )}
       </Card>
       <Card>
-        <ChannelFeed handle="eliza" />
+        <div className="channel-select-container">
+          <select
+            value={selectedChannel}
+            onChange={handleChannelChange}
+            className="channel-select"
+          >
+            <option value="empty">Empty Channel</option>
+            <option value="eliza">Eliza</option>
+          </select>
+        </div>
+        <ChannelFeed handle={selectedChannel} />
       </Card>
     </div>
   );
