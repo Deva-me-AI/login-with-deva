@@ -21,7 +21,7 @@
       "import": "./dist/index.es.js"
     },
     "./package.json": "./package.json",
-    "./style.css": "./dist/deva-sdk.css"
+    "./style.css": "./dist/assets/deva-sdk.css"
   },
   "files": [
     "dist/**/*"

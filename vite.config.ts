@@ -11,10 +11,11 @@ export default defineConfig({
       fileName: (format) => `index.${format}.js`,
       formats: ["es"],
     },
+    assetsInlineLimit: 4096, // Assets smaller than 4kb will be inlined as base64
     rollupOptions: {
       external: ["react", "react-dom", "react/jsx-runtime", "tailwindcss"],
       input: {
-        index: path.resolve(__dirname, 'src/index.ts')
+        index: path.resolve(__dirname, "src/index.ts"),
       },
       output: {
         globals: {
@@ -23,22 +24,27 @@ export default defineConfig({
           "react/jsx-runtime": "react/jsx-runtime",
           tailwindcss: "tailwindcss",
         },
+        assetFileNames: "assets/[name].[ext]",
       },
       watch: {
-        exclude: ['example/**/*'],
-      }
+        exclude: ["example/**/*"],
+      },
     },
   },
   plugins: [
     react(),
     dts({
       rollupTypes: true,
-      exclude: ['example/**/*'],
+      exclude: ["example/**/*"],
     }),
   ],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
+  },
+  // Add type declaration for image imports
+  optimizeDeps: {
+    exclude: ["example/**/*"],
   },
 });

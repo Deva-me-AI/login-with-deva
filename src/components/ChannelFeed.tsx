@@ -24,6 +24,8 @@ import type {
 import { Skeleton } from "./ui/skeleton";
 import { fetcher, useSWRFetcher } from "@/lib/fetcher";
 import { type Envs, envToUrl } from "@/config";
+import { Card, CardContent } from "./ui/card";
+import monk from "@/images/space_monk.png";
 
 interface UsePostsParams {
   handle?: string;
@@ -219,16 +221,7 @@ export function ChannelFeed({ handle }: ChannelFeedProps) {
 
       <ScrollArea className="h-[calc(100vh-120px)] sm:h-[600px]">
         {channelError ? (
-          <div className="flex h-full flex-col items-center justify-center p-8 text-center">
-            <MessageCircle className="h-12 w-12 text-gray-500" />
-            <h3 className="mt-4 text-lg font-semibold text-red-500">
-              {channelError}
-            </h3>
-            <p className="mt-2 text-sm text-gray-500">
-              The channel you&apos;re looking for doesn&apos;t exist or has been
-              removed.
-            </p>
-          </div>
+          <ChannelNotFound  />
         ) : isLoading && posts.length === 0 ? (
           <>
             <SkeletonPost />
@@ -300,6 +293,28 @@ export function ChannelFeed({ handle }: ChannelFeedProps) {
           </>
         )}
       </ScrollArea>
+    </div>
+  );
+}
+
+function ChannelNotFound() {
+  return (
+    <div className="flex h-full items-center justify-center p-4">
+      <div className="max-w-md w-full rounded-lg border bg-secondary p-6 text-center rounded-lg">
+        <div className="mb-6">
+          <img
+            src={monk}
+            alt="Astronaut monkey illustration"
+            className="mx-auto h-[200px]"
+          />
+        </div>
+        <h1 className="text-2xl font-semibold text-white mb-3">
+          This Channel doesn&apos;t exist
+        </h1>
+        <p className="text-zinc-400 text-sm leading-relaxed">
+          It might&apos;ve been removed, or perhaps it was never here. The digital world is full of surprises.
+        </p>
+      </div>
     </div>
   );
 }
