@@ -14,7 +14,7 @@ export function Card({
   return <div className={`card ${className}`}>{children}</div>;
 }
 
-type Channel = "empty" | "eliza";
+type Channel = "empty" | "eliza" | "null";
 
 function Content() {
   const { login } = useLogin();
@@ -76,6 +76,7 @@ function Content() {
           >
             <option value="empty">Empty Channel</option>
             <option value="eliza">Eliza</option>
+            <option value="null">404</option>
           </select>
         </div>
         <ChannelFeed handle={selectedChannel} />

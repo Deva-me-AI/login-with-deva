@@ -38,10 +38,22 @@ const usePosts = ({ handle, env, limit = 20 }: UsePostsParams) => {
   const [cursor, setCursor] = useState(0);
   const [allPosts, setAllPosts] = useState<PagintedPostWithReply["items"]>([]);
   const [isCreating, setIsCreating] = useState(false);
-  const { data: channel, isLoading: isChannelLoading } = useSWRFetcher<
-    Channel,
-    Error
-  >(handle ? `${url}/api/sdk/channel/handle/${handle}` : null);
+  const [channelError, setChannelError] = useState<string | null>(null);
+  const {
+    data: channel,
+    isLoading: isChannelLoading,
+    error: channelFetchError,
+  } = useSWRFetcher<Channel, Error>(
+    handle ? `${url}/api/sdk/channel/handle/${handle}` : null,
+  );
+
+  useEffect(() => {
+    if (channelFetchError) {
+      setChannelError("Channel not found");
+    } else {
+      setChannelError(null);
+    }
+  }, [channelFetchError]);
 
   const queryParams = new URLSearchParams({
     limit: limit.toString(),
@@ -52,11 +64,12 @@ const usePosts = ({ handle, env, limit = 20 }: UsePostsParams) => {
   const { data: posts, isLoading } = useSWRFetcher<
     PagintedPostWithReply,
     Error
-  >(channel ? `${url}/api/sdk/feed?${queryParams}` : null);
+  >(channel?.id ? `${url}/api/sdk/feed?${queryParams}` : null);
 
   const total = posts?.total ?? 0;
 
   // Update allPosts when new posts are loaded
+  // TODO: fix duplicate posts when loading more
   useEffect(() => {
     if (posts?.items) {
       if (cursor === 0) {
@@ -104,6 +117,7 @@ const usePosts = ({ handle, env, limit = 20 }: UsePostsParams) => {
     isLoading: isChannelLoading || isLoading,
     isCreating,
     createPost,
+    channelError,
     pagination: {
       hasNext: total > cursor + limit,
       next: () => {
@@ -123,8 +137,15 @@ interface ChannelFeedProps {
 
 export function ChannelFeed({ handle }: ChannelFeedProps) {
   const { isAuthenticated, user, env } = useDeva();
-  const { posts, channel, isLoading, isCreating, createPost, pagination } =
-    usePosts({ handle, env });
+  const {
+    posts,
+    channel,
+    isLoading,
+    isCreating,
+    createPost,
+    pagination,
+    channelError,
+  } = usePosts({ handle, env });
   const [newPostText, setNewPostText] = useState("");
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -197,7 +218,18 @@ export function ChannelFeed({ handle }: ChannelFeedProps) {
       )}
 
       <ScrollArea className="h-[calc(100vh-120px)] sm:h-[600px]">
-        {isLoading && posts.length === 0 ? (
+        {channelError ? (
+          <div className="flex h-full flex-col items-center justify-center p-8 text-center">
+            <MessageCircle className="h-12 w-12 text-gray-500" />
+            <h3 className="mt-4 text-lg font-semibold text-red-500">
+              {channelError}
+            </h3>
+            <p className="mt-2 text-sm text-gray-500">
+              The channel you&apos;re looking for doesn&apos;t exist or has been
+              removed.
+            </p>
+          </div>
+        ) : isLoading && posts.length === 0 ? (
           <>
             <SkeletonPost />
             <SkeletonPost />
