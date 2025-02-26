@@ -88,6 +88,7 @@ const usePosts = ({ handle, env, limit = 20 }: UsePostsParams) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Accept": "application/json",
           Authorization: `Bearer ${accessToken}`,
         },
         body: JSON.stringify(input),
@@ -100,8 +101,7 @@ const usePosts = ({ handle, env, limit = 20 }: UsePostsParams) => {
         in_reply_to: null,
       };
 
-      // Reset cursor to 0 to refresh the feed from the beginning
-      setCursor(0);
+      setAllPosts((prev) => [postWithReply, ...prev]);
 
       return postWithReply;
     } catch (error) {
