@@ -2,7 +2,7 @@ import "deva-sdk/style.css";
 import "./index.css";
 import "./App.css";
 import { DevaProvider, useLogin, useDeva, ChannelFeed } from "deva-sdk";
-import { ReactNode, useState } from "react";
+import { ReactNode, useState, useEffect } from "react";
 
 export function Card({
   children,
@@ -19,7 +19,25 @@ type Channel = "empty" | "eliza" | "null";
 function Content() {
   const { login } = useLogin();
   const { user, logout } = useDeva();
-  const [selectedChannel, setSelectedChannel] = useState<Channel>("empty");
+
+  // Get initial channel from URL or default to "empty"
+  const getInitialChannel = (): Channel => {
+    const params = new URLSearchParams(window.location.search);
+    const channel = params.get("channel") as Channel;
+    return channel && ["empty", "eliza", "null"].includes(channel)
+      ? channel
+      : "empty";
+  };
+
+  const [selectedChannel, setSelectedChannel] =
+    useState<Channel>(getInitialChannel());
+
+  // Update URL when channel changes
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    url.searchParams.set("channel", selectedChannel);
+    window.history.replaceState({}, "", url);
+  }, [selectedChannel]);
 
   const handleChannelChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedChannel(event.target.value as Channel);
