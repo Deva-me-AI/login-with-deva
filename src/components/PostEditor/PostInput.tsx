@@ -17,12 +17,31 @@ import {
   useCurrentSelection,
   useActive,
   useAttrs,
+  Remirror,
+  EditorComponent,
+  FloatingWrapper,
 } from "@remirror/react";
+import { ExtensionPriority } from "remirror";
 import {
+  BoldExtension,
   MentionAtomExtension,
-  type MentionAtomNodeAttributes,
   PlaceholderExtension,
+  ItalicExtension,
+  LinkExtension,
+  HeadingExtension,
+  UnderlineExtension,
+  HardBreakExtension,
+  HorizontalRuleExtension,
+  BlockquoteExtension,
+  BulletListExtension,
+  OrderedListExtension,
+  ListItemExtension,
+  CodeBlockExtension,
+  CodeExtension,
+  MarkdownExtension,
+  TaskListExtension,
 } from "remirror/extensions";
+import { mentionMatchers } from "./MentionSuggestor";
 
 interface MentionInputProps {
   className?: string;
@@ -73,21 +92,6 @@ const SUGGESTIONS: Suggestion[] = [
   },
 ];
 
-const MentionComponent: ComponentItem<MentionAtomNodeAttributes> = ({
-  node,
-}) => {
-  const { type, handle } = node.attrs;
-
-  return (
-    <span className="inline-flex items-center gap-1 rounded bg-primary/10 px-1 text-primary">
-      {type === "user" && <AtSign className="h-3 w-3" />}
-      {type === "tag" && <Hash className="h-3 w-3" />}
-      {type === "alert" && <AlertCircle className="h-3 w-3" />}
-      <span>{handle}</span>
-    </span>
-  );
-};
-
 const getSuggestionItems = (query: string) => {
   return SUGGESTIONS.filter(
     (item) =>
@@ -95,6 +99,34 @@ const getSuggestionItems = (query: string) => {
       item.handle.toLowerCase().includes(query.toLowerCase()),
   );
 };
+
+const useExtensions =
+  ({ placeholder }: { placeholder?: string } = {}) =>
+  () => [
+    new MentionAtomExtension({
+      matchers: mentionMatchers,
+      appendText: " ",
+    }),
+    new BoldExtension({}),
+    new ItalicExtension({}),
+    new LinkExtension({ autoLink: true }),
+    new HeadingExtension({}),
+    new UnderlineExtension({}),
+    new HardBreakExtension({}),
+    new HorizontalRuleExtension({}),
+    new BlockquoteExtension({}),
+    new BulletListExtension({ enableSpine: true }),
+    new OrderedListExtension({}),
+    new ListItemExtension({
+      priority: ExtensionPriority.High,
+      enableCollapsible: true,
+    }),
+    new CodeBlockExtension({}),
+    new CodeExtension({}),
+    new MarkdownExtension({}),
+    new TaskListExtension({}),
+    new PlaceholderExtension({ placeholder: placeholder }),
+  ];
 
 export function MentionInput({ className }: MentionInputProps) {
   const [popupPosition, setPopupPosition] = React.useState({ top: 0, left: 0 });
@@ -108,7 +140,7 @@ export function MentionInput({ className }: MentionInputProps) {
       new MentionAtomExtension({
         matchers: [
           {
-            name: "user",
+            name: "deva",
             char: "@",
             matchOffset: 0,
           },
@@ -118,7 +150,7 @@ export function MentionInput({ className }: MentionInputProps) {
             matchOffset: 0,
           },
           {
-            name: "alert",
+            name: "user",
             char: "!",
             matchOffset: 0,
           },
@@ -140,21 +172,21 @@ export function MentionInput({ className }: MentionInputProps) {
   );
 
   const { manager } = useRemirror({
-    extensions: [mentionExtension, placeholderExtension],
+    extensions: () => [mentionExtension, placeholderExtension],
     content: "",
     selection: "end",
     stringHandler: "html",
   });
 
   return (
-    <RemirrorProvider manager={manager}>
+    <Remirror manager={manager}>
+      <EditorComponent />
       <MentionPopupWrapper
         className={className}
         setPopupPosition={setPopupPosition}
         setShowPopup={setShowPopup}
         setSuggestions={setSuggestions}
         setSearchTerm={setSearchTerm}
-        chain={chain}
       >
         {showPopup && (
           <div
@@ -198,7 +230,7 @@ export function MentionInput({ className }: MentionInputProps) {
           </div>
         )}
       </MentionPopupWrapper>
-    </RemirrorProvider>
+    </Remirror>
   );
 }
 
@@ -255,10 +287,19 @@ const MentionPopupWrapper: React.FC<MentionPopupWrapperProps> = ({
   ]);
 
   return (
-    <div className={cn("prose prose-sm relative w-full max-w-none", className)}>
-      <div className="min-h-[100px] rounded-md border p-4 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
-        {children}
+    <FloatingWrapper
+      positioner="cursor"
+      enabled={true}
+      placement="bottom-start"
+      containerClass="z-50"
+    >
+      <div
+        className={cn("prose prose-sm relative w-full max-w-none", className)}
+      >
+        <div className="min-h-[100px] rounded-md border p-4 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
+          {children}
+        </div>
       </div>
-    </div>
+    </FloatingWrapper>
   );
 };
