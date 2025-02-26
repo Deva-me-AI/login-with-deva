@@ -24,7 +24,6 @@ import type {
 import { Skeleton } from "./ui/skeleton";
 import { fetcher, useSWRFetcher } from "@/lib/fetcher";
 import { type Envs, envToUrl } from "@/config";
-import { Card, CardContent } from "./ui/card";
 import monk from "@/images/space_monk.png";
 
 interface UsePostsParams {
@@ -173,7 +172,7 @@ export function ChannelFeed({ handle }: ChannelFeedProps) {
         {isLoading ? (
           <Skeleton className="h-7 w-32" />
         ) : (
-          <h1 className="text-lg font-bold">{channel?.name ?? "Channel"}</h1>
+          <h1 className="text-lg font-bold">{channel?.name ?? channelError ??  "Channel"}</h1>
         )}
       </div>
 
