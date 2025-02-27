@@ -1,12 +1,6 @@
 import { cn } from "@/lib/utils";
 import { AtSign, Hash, AlertCircle } from "lucide-react";
-import {
-  useChainedCommands,
-  useCurrentSelection,
-  useActive,
-  useAttrs,
-  FloatingWrapper,
-} from "@remirror/react";
+import { FloatingWrapper } from "@remirror/react";
 import type { MentionAtomExtensionMatcher } from "remirror/extensions";
 import {
   Command,
@@ -18,20 +12,25 @@ import {
 } from "@/components/ui/command";
 import { useEffect, useState } from "react";
 
-interface Suggestion {
+type Suggestion = {
   id: string;
-  name: string;
-  handle: string;
-  type: "user" | "tag" | "alert";
-  icon?: React.ReactNode;
+  // used by remirror as the text inside the mention and eventually bubbles up
+  // to our notes editor in getMentions
   label: string;
-}
+  // used to display the suggestion in the dropdown
+  // we use this to add context to the menu, although label is used internally
+  // by remirror
+  content: string;
+  // used by remirror to determine how much of the text to replace with the suggestion
+  // use partial to split the mention at the cursor and preserve the text after the cursor
+  // replacing the content before the cursor by label
+  replacementType?: "full" | "partial";
+};
 
 // Example data - in real app, this would be filtered based on trigger char
 const SUGGESTIONS: Suggestion[] = [
   {
     id: "1",
-    name: "John Doe",
     handle: "johndoe",
     type: "user",
     icon: <AtSign className="h-4 w-4" />,
@@ -109,7 +108,6 @@ export const MentionSuggestor = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const chain = useChainedCommands();
   return (
     <MentionPopupWrapper
       setPopupPosition={setPopupPosition}
@@ -135,15 +133,6 @@ export const MentionSuggestor = () => {
                     key={suggestion.id}
                     value={suggestion.handle}
                     onSelect={() => {
-                      chain
-                        ?.insertMention({
-                          id: suggestion.id,
-                          label: suggestion.label,
-                          type: suggestion.type,
-                          handle: suggestion.handle,
-                        })
-                        .focus()
-                        .run();
                       setShowPopup(false);
                     }}
                   >
@@ -171,49 +160,14 @@ interface MentionPopupWrapperProps {
   setSearchTerm: (term: string) => void;
 }
 
-const MentionPopupWrapper: React.FC<MentionPopupWrapperProps> = ({
+const MentionPopupWrapper = ({
   children,
   className,
   setPopupPosition,
   setShowPopup,
   setSuggestions,
   setSearchTerm,
-}) => {
-  const { selection } = useCurrentSelection();
-  const active = useActive();
-  const attrs = useAttrs();
-
-  useEffect(() => {
-    if (!selection) return;
-
-    const suggestionActive = active.suggestion();
-    if (!suggestionActive) {
-      setShowPopup(false);
-      return;
-    }
-
-    const suggestionAttrs = attrs.suggestion();
-    if (!suggestionAttrs) return;
-
-    const { query, text, coordinates } = suggestionAttrs;
-
-    if (coordinates) {
-      setPopupPosition(coordinates);
-    }
-
-    setSearchTerm(query ?? "");
-    setSuggestions(getSuggestionItems(query ?? ""));
-    setShowPopup(true);
-  }, [
-    selection,
-    active,
-    attrs,
-    setPopupPosition,
-    setShowPopup,
-    setSuggestions,
-    setSearchTerm,
-  ]);
-
+}: MentionPopupWrapperProps) => {
   return (
     <FloatingWrapper
       positioner="cursor"
