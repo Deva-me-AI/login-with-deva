@@ -25,6 +25,7 @@ import { Skeleton } from "./ui/skeleton";
 import { fetcher, useSWRFetcher } from "@/lib/fetcher";
 import { type Envs, envToUrl } from "@/config";
 import monk from "@/images/space_monk.png";
+import { PostInput } from "./PostEditor/PostInput";
 
 interface UsePostsParams {
   handle?: string;
@@ -88,7 +89,7 @@ const usePosts = ({ handle, env, limit = 20 }: UsePostsParams) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Accept": "application/json",
+          Accept: "application/json",
           Authorization: `Bearer ${accessToken}`,
         },
         body: JSON.stringify(input),
@@ -172,7 +173,9 @@ export function ChannelFeed({ handle }: ChannelFeedProps) {
         {isLoading ? (
           <Skeleton className="h-7 w-32" />
         ) : (
-          <h1 className="text-lg font-bold">{channel?.name ?? channelError ??  "Channel"}</h1>
+          <h1 className="text-lg font-bold">
+            {channel?.name ?? channelError ?? "Channel"}
+          </h1>
         )}
       </div>
 
@@ -189,6 +192,11 @@ export function ChannelFeed({ handle }: ChannelFeedProps) {
               </AvatarFallback>
             </Avatar>
             <div className="flex-1">
+              <PostInput 
+                id="new-post"
+                value={newPostText}
+              />
+              {/*}
               <Input
                 ref={inputRef}
                 placeholder="Use @ to mention a deva"
@@ -202,6 +210,7 @@ export function ChannelFeed({ handle }: ChannelFeedProps) {
                   }
                 }}
               />
+              {*/}
             </div>
             <Button
               variant="ghost"
@@ -220,7 +229,7 @@ export function ChannelFeed({ handle }: ChannelFeedProps) {
 
       <ScrollArea className="h-[calc(100vh-120px)] sm:h-[600px]">
         {channelError ? (
-          <ChannelNotFound  />
+          <ChannelNotFound />
         ) : isLoading && posts.length === 0 ? (
           <>
             <SkeletonPost />
@@ -299,7 +308,7 @@ export function ChannelFeed({ handle }: ChannelFeedProps) {
 function ChannelNotFound() {
   return (
     <div className="flex h-full items-center justify-center p-4">
-      <div className="max-w-md w-full rounded-lg border bg-secondary p-6 text-center rounded-lg">
+      <div className="w-full max-w-md rounded-lg border bg-secondary p-6 text-center">
         <div className="mb-6">
           <img
             src={monk}
@@ -307,11 +316,12 @@ function ChannelNotFound() {
             className="mx-auto h-[200px]"
           />
         </div>
-        <h1 className="text-2xl font-semibold text-white mb-3">
+        <h1 className="mb-3 text-2xl font-semibold text-white">
           This Channel doesn&apos;t exist
         </h1>
-        <p className="text-zinc-400 text-sm leading-relaxed">
-          It might&apos;ve been removed, or perhaps it was never here. The digital world is full of surprises.
+        <p className="text-sm leading-relaxed text-zinc-400">
+          It might&apos;ve been removed, or perhaps it was never here. The
+          digital world is full of surprises.
         </p>
       </div>
     </div>

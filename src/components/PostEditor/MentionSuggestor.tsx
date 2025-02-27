@@ -10,7 +10,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 type Suggestion = {
   id: string;
@@ -31,42 +31,35 @@ type Suggestion = {
 const SUGGESTIONS: Suggestion[] = [
   {
     id: "1",
-    handle: "johndoe",
-    type: "user",
-    icon: <AtSign className="h-4 w-4" />,
-    label: "@johndoe",
+    label: "johndoe",
+    content: "John Doe (@johndoe)",
+    replacementType: "partial",
   },
   {
     id: "2",
-    name: "Jane Smith",
-    handle: "janesmith",
-    type: "user",
-    icon: <AtSign className="h-4 w-4" />,
-    label: "@janesmith",
+    label: "janesmith",
+    content: "Jane Smith (@janesmith)",
+    replacementType: "partial",
   },
   {
     id: "3",
-    name: "Important",
-    handle: "important",
-    type: "alert",
-    icon: <AlertCircle className="h-4 w-4" />,
-    label: "!important",
+    label: "important",
+    content: "Important Alert",
+    replacementType: "full",
   },
   {
     id: "4",
-    name: "Announcement",
-    handle: "announcement",
-    type: "tag",
-    icon: <Hash className="h-4 w-4" />,
     label: "#announcement",
+    content: "Announcement Tag",
+    replacementType: "full",
   },
 ];
 
 const getSuggestionItems = (query: string) => {
   return SUGGESTIONS.filter(
     (item) =>
-      item.name.toLowerCase().includes(query.toLowerCase()) ||
-      item.handle.toLowerCase().includes(query.toLowerCase()),
+      item.content.toLowerCase().includes(query.toLowerCase()) ||
+      item.label.toLowerCase().includes(query.toLowerCase()),
   );
 };
 
@@ -131,14 +124,22 @@ export const MentionSuggestor = () => {
                 {suggestions.map((suggestion) => (
                   <CommandItem
                     key={suggestion.id}
-                    value={suggestion.handle}
+                    value={suggestion.label}
                     onSelect={() => {
                       setShowPopup(false);
                     }}
                   >
                     <div className="flex items-center gap-2">
-                      {suggestion.icon}
-                      <span>{suggestion.name}</span>
+                      {suggestion.label.startsWith("@") && (
+                        <AtSign className="h-4 w-4" />
+                      )}
+                      {suggestion.label.startsWith("!") && (
+                        <AlertCircle className="h-4 w-4" />
+                      )}
+                      {suggestion.label.startsWith("#") && (
+                        <Hash className="h-4 w-4" />
+                      )}
+                      <span>{suggestion.content}</span>
                     </div>
                   </CommandItem>
                 ))}
@@ -163,10 +164,6 @@ interface MentionPopupWrapperProps {
 const MentionPopupWrapper = ({
   children,
   className,
-  setPopupPosition,
-  setShowPopup,
-  setSuggestions,
-  setSearchTerm,
 }: MentionPopupWrapperProps) => {
   return (
     <FloatingWrapper

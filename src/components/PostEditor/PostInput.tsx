@@ -1,6 +1,5 @@
 "use client";
-
-import * as React from "react";
+import "remirror/styles/all.css";
 import {
   useRemirror,
   Remirror,
@@ -28,9 +27,10 @@ import {
   TaskListExtension,
 } from "remirror/extensions";
 import { mentionMatchers, MentionSuggestor } from "./MentionSuggestor";
+import { useEffect, useMemo } from "react";
 
 const useExtensions = ({ placeholder }: { placeholder?: string } = {}) => {
-  return React.useMemo(
+  return useMemo(
     () => () => [
       new MentionAtomExtension({
         matchers: mentionMatchers,
@@ -60,17 +60,34 @@ const useExtensions = ({ placeholder }: { placeholder?: string } = {}) => {
   );
 };
 
-export function PostInput() {
-  const { manager } = useRemirror({
-    extensions: useExtensions({ placeholder: "Type '@' to mention someone" }),
-    content: "",
+export function PostInput({ id, value }: { value: string; id: string }) {
+  const extensions = useExtensions({
+    placeholder: "use '@' to mention a deva",
+  });
+
+  const { manager, state, onChange } = useRemirror({
+    extensions,
+    content: value,
     selection: "end",
     stringHandler: "html",
   });
 
+  // Only update content if the id changes (meaning it's a different post)
+  useEffect(() => {
+    if (!manager || !id) return;
+
+    manager.view.updateState(
+      manager.createState({
+        content: value,
+        selection: "start",
+        stringHandler: "html",
+      }),
+    );
+  }, [id, manager]); // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
     <ThemeProvider>
-      <Remirror manager={manager}>
+      <Remirror manager={manager} state={state} onChange={onChange}>
         <EditorComponent />
         <MentionSuggestor />
       </Remirror>
