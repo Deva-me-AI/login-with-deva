@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useRef, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -214,8 +212,9 @@ export function ChannelFeed({ handle }: ChannelFeedProps) {
             </div>
           </div>
           <div className="mb-2 flex flex-wrap justify-between">
-            <div className="text-sm flex items-end">
-              Use <span className="text-accent-500">@</span> to mention a deva
+            <div className="flex items-end text-sm">
+              Use&nbsp;<span className="text-accent-500">@</span>&nbsp;to
+              mention a deva
             </div>
             <Button
               variant="ghost"
