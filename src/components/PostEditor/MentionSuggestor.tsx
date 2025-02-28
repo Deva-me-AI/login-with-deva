@@ -1,16 +1,8 @@
 import { cn } from "@/lib/utils";
 import { AtSign, Hash, AlertCircle } from "lucide-react";
-import { FloatingWrapper } from "@remirror/react";
+import { FloatingWrapper, useMentionAtom } from "@remirror/react";
 import type { MentionAtomExtensionMatcher } from "remirror/extensions";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type Suggestion = {
   id: string;
@@ -65,18 +57,6 @@ const getSuggestionItems = (query: string) => {
 
 export const mentionMatchers = [
   {
-    name: "personalBacklink" as const,
-    char: /(;|\[\[)/g, // This is a regex that matches either a semicolon or double brackets
-    matchOffset: 0,
-    supportedCharacters: /[^;\n\r]+/, // don't allow semicolons or newlines
-  },
-  {
-    name: "othersBacklink" as const,
-    char: "!->",
-    matchOffset: 0,
-    supportedCharacters: /[^;]+/,
-  },
-  {
     name: "mention" as const, // Humans
     char: "!",
     matchOffset: 0,
@@ -88,96 +68,70 @@ export const mentionMatchers = [
     matchOffset: 0,
     supportedCharacters: /[^@]+/,
   },
-  {
-    name: "noteLink" as const,
-    char: "[[",
-    matchOffset: 0,
-    supportedCharacters: /[^\]]+/,
-  },
 ] satisfies MentionAtomExtensionMatcher[];
 
-export const MentionSuggestor = () => {
-  const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
-  const [showPopup, setShowPopup] = useState(false);
+const useSuggestion = (query: string) => {
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  return (
-    <MentionPopupWrapper
-      setPopupPosition={setPopupPosition}
-      setShowPopup={setShowPopup}
-      setSuggestions={setSuggestions}
-      setSearchTerm={setSearchTerm}
-    >
-      {showPopup && (
-        <div
-          className="absolute z-50"
-          style={{
-            top: popupPosition.top + 24,
-            left: popupPosition.left,
-          }}
-        >
-          <Command className="w-[200px] border shadow-md">
-            <CommandInput placeholder="Search..." value={searchTerm} />
-            <CommandList>
-              <CommandEmpty>No results found</CommandEmpty>
-              <CommandGroup>
-                {suggestions.map((suggestion) => (
-                  <CommandItem
-                    key={suggestion.id}
-                    value={suggestion.label}
-                    onSelect={() => {
-                      setShowPopup(false);
-                    }}
-                  >
-                    <div className="flex items-center gap-2">
-                      {suggestion.label.startsWith("@") && (
-                        <AtSign className="h-4 w-4" />
-                      )}
-                      {suggestion.label.startsWith("!") && (
-                        <AlertCircle className="h-4 w-4" />
-                      )}
-                      {suggestion.label.startsWith("#") && (
-                        <Hash className="h-4 w-4" />
-                      )}
-                      <span>{suggestion.content}</span>
-                    </div>
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            </CommandList>
-          </Command>
-        </div>
-      )}
-    </MentionPopupWrapper>
-  );
+
+  useEffect(() => {
+    setSuggestions(getSuggestionItems(query));
+  }, [query]);
+
+  return { suggestions };
 };
 
-interface MentionPopupWrapperProps {
-  children: React.ReactNode;
-  className?: string;
-  setPopupPosition: (position: { top: number; left: number }) => void;
-  setShowPopup: (show: boolean) => void;
-  setSuggestions: (suggestions: Suggestion[]) => void;
-  setSearchTerm: (term: string) => void;
-}
+export const MentionSuggestor = () => {
+  const { suggestions } = useSuggestion("");
 
-const MentionPopupWrapper = ({
-  children,
-  className,
-}: MentionPopupWrapperProps) => {
+  const { state, getMenuProps, getItemProps, indexIsHovered, indexIsSelected } =
+    useMentionAtom({ items: suggestions, replacementType: "full" });
+
+  if (!state) {
+    return null;
+  }
+
   return (
     <FloatingWrapper
       positioner="cursor"
       enabled={true}
       placement="bottom-start"
       containerClass="z-50"
+      renderOutsideEditor={true}
     >
       <div
-        className={cn("prose prose-sm relative w-full max-w-none", className)}
+        {...getMenuProps()}
+        className="min-w-[180px] rounded-md border bg-white shadow-md border-zinc-800 bg-zinc-950"
       >
-        <div className="min-h-[100px] rounded-md border p-4 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
-          {children}
-        </div>
+        {suggestions.length === 0 ? (
+          <div className="px-2 py-1.5 text-sm text-zinc-500 dark:text-zinc-400">
+            No results found
+          </div>
+        ) : (
+          <div className="py-1">
+            {suggestions.map((item, index) => (
+              <div
+                key={item.id}
+                {...getItemProps({ item, index })}
+                className={cn(
+                  "flex items-center gap-2 px-2 py-1.5 text-sm",
+                  (indexIsHovered(index) || indexIsSelected(index)) &&
+                    "cursor-pointer bg-zinc-800",
+                )}
+              >
+                {item.label.startsWith("@") && (
+                  <AtSign className="h-4 w-4 text-zinc-500" />
+                )}
+                {item.label.startsWith("!") && (
+                  <AlertCircle className="h-4 w-4 text-zinc-500" />
+                )}
+                {item.label.startsWith("#") && (
+                  <Hash className="h-4 w-4 text-zinc-500" />
+                )}
+                <span>{item.content}</span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </FloatingWrapper>
   );
