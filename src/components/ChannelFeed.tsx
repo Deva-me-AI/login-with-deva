@@ -176,7 +176,7 @@ export function ChannelFeed({ handle }: ChannelFeedProps) {
         )}
       </div>
 
-      {isAuthenticated && user && (
+      {isAuthenticated && user && !channelError && (
         <div className="border-b border-gray-800 p-4">
           <div className="mb-2 flex flex-wrap gap-3">
             <Avatar className="h-10 w-10">
