@@ -193,6 +193,7 @@ export function ChannelFeed({ handle }: ChannelFeedProps) {
                 id="new-post"
                 value={newPostText}
                 placeholder="use '@' to mention a deva"
+                onChange={setNewPostText}
               />
               {/*}
               <Input

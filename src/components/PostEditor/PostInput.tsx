@@ -1,11 +1,14 @@
-"use client";
 import {
   useRemirror,
   Remirror,
   EditorComponent,
   ThemeProvider,
 } from "@remirror/react";
-import { ExtensionPriority } from "remirror";
+import {
+  ExtensionPriority,
+  prosemirrorNodeToHtml,
+  type RemirrorEventListener,
+} from "remirror";
 import {
   BoldExtension,
   MentionAtomExtension,
@@ -26,7 +29,7 @@ import {
   TaskListExtension,
 } from "remirror/extensions";
 import { mentionMatchers, MentionSuggestor } from "./MentionSuggestor";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useCallback } from "react";
 
 const useExtensions = ({ placeholder }: { placeholder?: string } = {}) => {
   return useMemo(
@@ -63,21 +66,37 @@ export function PostInput({
   id,
   value,
   placeholder,
+  onChange: externalOnChange,
 }: {
   value: string;
   id: string;
   placeholder: string;
+  onChange: (text: string) => void;
 }) {
   const extensions = useExtensions({
     placeholder,
   });
 
-  const { manager, state, onChange } = useRemirror({
+  const {
+    manager,
+    state,
+    onChange: remirrorOnChange,
+  } = useRemirror({
     extensions,
     content: value,
     selection: "end",
     stringHandler: "html",
   });
+
+  // Handle both internal and external onChange events
+  const handleChange: RemirrorEventListener<Remirror.Extensions> = useCallback(
+    (state) => {
+      remirrorOnChange(state);
+      // Get the HTML content from the editor state
+      externalOnChange(prosemirrorNodeToHtml(state.state.doc));
+    },
+    [externalOnChange, remirrorOnChange],
+  );
 
   // Only update content if the id changes (meaning it's a different post)
   useEffect(() => {
@@ -97,7 +116,7 @@ export function PostInput({
       <Remirror
         manager={manager}
         state={state}
-        onChange={onChange}
+        onChange={handleChange}
         classNames={["!p-1"]}
       >
         <EditorComponent />
