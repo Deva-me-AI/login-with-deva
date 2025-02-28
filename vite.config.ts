@@ -3,8 +3,12 @@ import react from "@vitejs/plugin-react";
 import dts from "vite-plugin-dts";
 import path from "path";
 
+const isDev = process.env.NODE_ENV !== "production";
+
 export default defineConfig({
   build: {
+    minify: !isDev,
+    sourcemap: isDev,
     lib: {
       entry: "src/index.ts",
       name: "deva-sdk",
