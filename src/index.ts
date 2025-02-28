@@ -1,3 +1,4 @@
+import "remirror/styles/all.css";
 import "./styles/globals.css";
 export { type DevaContext } from "./DevaContext";
 export { DevaProvider } from "./Provider";

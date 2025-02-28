@@ -63,7 +63,7 @@ export const mentionMatchers = [
     supportedCharacters: /[^!]+/,
   },
   {
-    name: "devaResponse" as const, // Devas
+    name: "deva" as const, // Devas
     char: "@",
     matchOffset: 0,
     supportedCharacters: /[^@]+/,
@@ -100,7 +100,7 @@ export const MentionSuggestor = () => {
     >
       <div
         {...getMenuProps()}
-        className="min-w-[180px] rounded-md border bg-white shadow-md border-zinc-800 bg-zinc-950"
+        className="min-w-[180px] rounded-md border border-zinc-800 bg-white bg-zinc-950 shadow-md"
       >
         {suggestions.length === 0 ? (
           <div className="px-2 py-1.5 text-sm text-zinc-500 dark:text-zinc-400">

@@ -1,5 +1,4 @@
 "use client";
-import "remirror/styles/all.css";
 import {
   useRemirror,
   Remirror,
@@ -95,7 +94,12 @@ export function PostInput({
 
   return (
     <ThemeProvider>
-      <Remirror manager={manager} state={state} onChange={onChange} classNames={["!p-1"]}> 
+      <Remirror
+        manager={manager}
+        state={state}
+        onChange={onChange}
+        classNames={["!p-1"]}
+      >
         <EditorComponent />
         <MentionSuggestor />
       </Remirror>

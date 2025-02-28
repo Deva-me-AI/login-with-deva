@@ -69,3 +69,7 @@
 .remirror-editor-wrapper {
   padding: 0px !important;
 }
+
+.remirror-suggest-atom {
+  color: #caf033;
+}
