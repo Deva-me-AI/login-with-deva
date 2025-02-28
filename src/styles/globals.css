@@ -73,3 +73,12 @@
 .remirror-suggest-atom {
   color: #caf033;
 }
+
+.remirror-mention-atom {
+  background: none;
+  padding: 0;
+  color: #caf033;
+  cursor: pointer;
+  font-size: inherit;
+  font-weight: 500;
+}
