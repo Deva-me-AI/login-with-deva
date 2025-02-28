@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Heart, MessageCircle, MoreHorizontal } from "lucide-react";
 import {
@@ -181,7 +180,7 @@ export function ChannelFeed({ handle }: ChannelFeedProps) {
 
       {isAuthenticated && user && (
         <div className="border-b border-gray-800 p-4">
-          <div className="flex flex-wrap gap-3">
+          <div className="mb-2 flex flex-wrap gap-3">
             <Avatar className="h-10 w-10">
               <AvatarImage
                 src={user.persona?.avatar ?? user.picture ?? undefined}
@@ -191,10 +190,11 @@ export function ChannelFeed({ handle }: ChannelFeedProps) {
                 {user?.preferred_username?.slice(0, 1)?.slice(0, 2)}
               </AvatarFallback>
             </Avatar>
-            <div className="flex-1">
-              <PostInput 
+            <div className="flex-1 px-1">
+              <PostInput
                 id="new-post"
                 value={newPostText}
+                placeholder="use '@' to mention a deva"
               />
               {/*}
               <Input
@@ -211,6 +211,11 @@ export function ChannelFeed({ handle }: ChannelFeedProps) {
                 }}
               />
               {*/}
+            </div>
+          </div>
+          <div className="mb-2 flex flex-wrap justify-between">
+            <div className="text-sm flex items-end">
+              Use <span className="text-accent-500">@</span> to mention a deva
             </div>
             <Button
               variant="ghost"

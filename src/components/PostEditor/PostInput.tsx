@@ -60,9 +60,17 @@ const useExtensions = ({ placeholder }: { placeholder?: string } = {}) => {
   );
 };
 
-export function PostInput({ id, value }: { value: string; id: string }) {
+export function PostInput({
+  id,
+  value,
+  placeholder,
+}: {
+  value: string;
+  id: string;
+  placeholder: string;
+}) {
   const extensions = useExtensions({
-    placeholder: "use '@' to mention a deva",
+    placeholder,
   });
 
   const { manager, state, onChange } = useRemirror({
@@ -87,7 +95,7 @@ export function PostInput({ id, value }: { value: string; id: string }) {
 
   return (
     <ThemeProvider>
-      <Remirror manager={manager} state={state} onChange={onChange}>
+      <Remirror manager={manager} state={state} onChange={onChange} classNames={["!p-1"]}> 
         <EditorComponent />
         <MentionSuggestor />
       </Remirror>
