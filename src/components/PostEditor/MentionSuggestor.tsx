@@ -23,27 +23,41 @@ type Suggestion = {
   replacementType?: "full" | "partial";
 };
 
+type MentionTypes = "mention" | "devaResponse";
+
 export const mentionMatchers = [
   {
-    name: "mention" as const, // Humans
+    name: "mention" as MentionTypes, // Humans
     char: "!",
     matchOffset: 0,
     supportedCharacters: /[^!]+/,
   },
   {
-    name: "devaResponse" as const, // Devas
+    name: "devaResponse" as MentionTypes, // Devas
     char: "@",
     matchOffset: 0,
     supportedCharacters: /[^@]+/,
   },
 ] satisfies MentionAtomExtensionMatcher[];
 
-const useSuggestion = (env: Envs, query: string) => {
+interface SuggestionOptions {
+  query?: string;
+  type?: "mention" | "devaResponse";
+}
+
+const useSuggestion = (env: Envs, options: SuggestionOptions = {}) => {
+  const { query = "", type = "ALL" } = options;
   const url = envToUrl(env);
-  const params = new URLSearchParams({ limit: "20", type: "ALL" });
+
+  const params = new URLSearchParams({
+    limit: "20",
+    type: type === "mention" ? "USER" : "ALL",
+  });
+
   if (query) {
     params.set("query", query);
   }
+
   const {
     data: personasData,
     isLoading: isSuggestionLoading,
@@ -60,14 +74,14 @@ const useSuggestion = (env: Envs, query: string) => {
       content: persona.display_name ?? persona.username,
     }),
   );
-
   return { suggestions, isSuggestionLoading, suggestionsError };
 };
 
 export const MentionSuggestor = () => {
   const [query, setQuery] = useState("");
+  const [type, setType] = useState<"mention" | "devaResponse">("mention");
   const { env } = useDeva();
-  const { suggestions } = useSuggestion(env, query);
+  const { suggestions } = useSuggestion(env, { query, type });
 
   const { state, getMenuProps, getItemProps, indexIsHovered, indexIsSelected } =
     useMentionAtom({ items: suggestions, replacementType: "full" });
@@ -77,6 +91,7 @@ export const MentionSuggestor = () => {
       return;
     }
     setQuery(state.query.full);
+    setType(state.text.full.startsWith("@") ? "devaResponse" : "mention");
   }, [state]);
 
   if (!state) {
