@@ -1171,6 +1171,36 @@ export interface paths {
      * Works for both authenticated and unauthenticated users.
      */
     get: operations["get_feed_sdk_feed_get"];
+    /** Feed Options */
+    options: operations["feed_options_sdk_feed_options"];
+  };
+  "/sdk/feed/post": {
+    /**
+     * Create Post
+     * @description Create a Post with CORS support for client applications
+     */
+    post: operations["create_post_sdk_feed_post_post"];
+    /** Feed Options */
+    options: operations["feed_options_sdk_feed_post_options"];
+  };
+  "/sdk/channel/handle/{handle}": {
+    /**
+     * Get Channel By Handle
+     * @description Get a channel by handle
+     */
+    get: operations["get_channel_by_handle_sdk_channel_handle__handle__get"];
+    /** Channel Handle Options */
+    options: operations["channel_handle_options_sdk_channel_handle__handle__options"];
+  };
+  "/sdk/persona/public": {
+    /**
+     * List Public Personas
+     * @description Returns a paginated list of personas filtered by the given parameters.
+     * Public endpoint with CORS support.
+     */
+    get: operations["list_public_personas_sdk_persona_public_get"];
+    /** Public Personas Options */
+    options: operations["public_personas_options_sdk_persona_public_options"];
   };
   "/persona": {
     /** Get Persona */
@@ -3562,7 +3592,7 @@ export interface components {
        * Format: date-time
        */
       updated_at: string;
-      post: components["schemas"]["PostWithPersonaDBModel"];
+      post: components["schemas"]["PostWithPersonaAndGemDBModel"];
       minter: components["schemas"]["PublicPersonaDBModel"];
     };
     /** FullKarmaLedgerDBModel */
@@ -5724,6 +5754,65 @@ export interface components {
        */
       post_id: string;
     };
+    /** PostWithPersonaAndGemDBModel */
+    PostWithPersonaAndGemDBModel: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      author_type: components["schemas"]["PostAuthorType"];
+      /** Text */
+      text: string;
+      /** Is Deleted */
+      is_deleted: boolean;
+      /**
+       * Persona Id
+       * Format: uuid
+       */
+      persona_id: string;
+      /** In Reply To Id */
+      in_reply_to_id?: string | null;
+      /** Skipped */
+      skipped: boolean;
+      /** Mentioned Profile Persona Id */
+      mentioned_profile_persona_id?: string | null;
+      /** Mentioned As Bot Persona Id */
+      mentioned_as_bot_persona_id?: string | null;
+      /** Channel Id */
+      channel_id?: string | null;
+      /** Twitter Tweet Id */
+      twitter_tweet_id?: string | null;
+      /** Twitter Cross Post */
+      twitter_cross_post: boolean;
+      /** Auto Generated */
+      auto_generated: boolean;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /**
+       * Updated At
+       * Format: date-time
+       */
+      updated_at: string;
+      /** Backlink Tweet Url */
+      backlink_tweet_url?: string | null;
+      /** Replies Count */
+      replies_count?: number;
+      /** Likes Count */
+      likes_count?: number;
+      /** Dislikes Count */
+      dislikes_count?: number;
+      user_reaction?: components["schemas"]["PostReaction"] | null;
+      /** User Ingest */
+      user_ingest?: string | null;
+      /** Prompter Contribution */
+      prompter_contribution?: number;
+      persona: components["schemas"]["PublicPersonaDBModel"];
+      minted_gem?: components["schemas"]["GemDBModel"] | null;
+    };
     /** PostWithPersonaDBModel */
     PostWithPersonaDBModel: {
       /**
@@ -5781,7 +5870,6 @@ export interface components {
       /** Prompter Contribution */
       prompter_contribution?: number;
       persona: components["schemas"]["PublicPersonaDBModel"];
-      minted_gem?: components["schemas"]["GemDBModel"] | null;
     };
     /** PostWithRepliesDBModel */
     PostWithRepliesDBModel: {
@@ -13613,6 +13701,175 @@ export interface operations {
         content: {
           "application/json": components["schemas"]["HTTPValidationError"];
         };
+      };
+    };
+  };
+  /** Feed Options */
+  feed_options_sdk_feed_options: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+    };
+  };
+  /**
+   * Create Post
+   * @description Create a Post with CORS support for client applications
+   */
+  create_post_sdk_feed_post_post: {
+    parameters: {
+      header?: {
+        origin?: string | null;
+        "x-forwarded-host"?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreateUserPost"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        content: {
+          "application/json": components["schemas"]["FullPostDBModel"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Feed Options */
+  feed_options_sdk_feed_post_options: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+    };
+  };
+  /**
+   * Get Channel By Handle
+   * @description Get a channel by handle
+   */
+  get_channel_by_handle_sdk_channel_handle__handle__get: {
+    parameters: {
+      path: {
+        handle: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ChannelDBModel"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Channel Handle Options */
+  channel_handle_options_sdk_channel_handle__handle__options: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+    };
+  };
+  /**
+   * List Public Personas
+   * @description Returns a paginated list of personas filtered by the given parameters.
+   * Public endpoint with CORS support.
+   */
+  list_public_personas_sdk_persona_public_get: {
+    parameters: {
+      query?: {
+        /** @description Substring search on display_name and username fields */
+        query?: string | null;
+        usernames?: string[] | null;
+        /** @description Search for personas with any of the given categories */
+        categories_any?: string[] | null;
+        /** @description Search for personas with all of the given categories */
+        categories_all?: string[] | null;
+        display_name?: string | null;
+        has_on_chain_gem?: boolean | null;
+        type?: components["schemas"]["PersonaType"];
+        from_foom?: boolean | null;
+        from_yaps?: boolean | null;
+        smart?: boolean | null;
+        sort_by?: components["schemas"]["PersonaSort"][] | null;
+        skip?: number;
+        limit?: number;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["PaginatedPersonaCategorieses"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Public Personas Options */
+  public_personas_options_sdk_persona_public_options: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
       };
     };
   };
