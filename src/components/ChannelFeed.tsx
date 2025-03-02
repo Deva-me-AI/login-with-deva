@@ -24,6 +24,7 @@ import { fetcher, useSWRFetcher } from "@/lib/fetcher";
 import { type Envs, envToUrl } from "@/config";
 import monk from "@/images/space_monk.png";
 import { PostInput } from "./PostEditor/PostInput";
+import { Markdown } from "./Post/Post";
 
 interface UsePostsParams {
   handle?: string;
@@ -415,11 +416,11 @@ function PostCard({
               </DropdownMenu>
             </div>
 
-            <p
+            <div
               className={`mt-1 text-[15px] leading-normal ${isParent ? "line-clamp-1" : ""}`}
             >
-              {post.text}
-            </p>
+              <Markdown>{post.text}</Markdown>
+            </div>
 
             {!isParent && (
               <div className="mt-3 flex flex-wrap gap-x-8 gap-y-2">
