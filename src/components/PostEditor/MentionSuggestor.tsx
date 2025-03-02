@@ -1,12 +1,12 @@
 import { cn } from "@/lib/utils";
-import { AtSign, Hash, AlertCircle } from "lucide-react";
 import { FloatingWrapper, useMentionAtom } from "@remirror/react";
 import type { MentionAtomExtensionMatcher } from "remirror/extensions";
 import { useSWRFetcher } from "@/lib/fetcher";
-import type { PagintedPersonas } from "@/server";
+import type { PagintedPersonas, PublicPersona } from "@/server";
 import { type Envs, envToUrl } from "@/config";
 import { useDeva } from "@/use-deva";
 import { useEffect, useState } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 type Suggestion = {
   id: string;
@@ -21,6 +21,7 @@ type Suggestion = {
   // use partial to split the mention at the cursor and preserve the text after the cursor
   // replacing the content before the cursor by label
   replacementType?: "full" | "partial";
+  persona: PublicPersona;
 };
 
 type MentionTypes = "mention" | "devaResponse";
@@ -72,6 +73,7 @@ const useSuggestion = (env: Envs, options: SuggestionOptions = {}) => {
       id: persona.id,
       label: persona.username,
       content: persona.display_name ?? persona.username,
+      persona: persona,
     }),
   );
   return { suggestions, isSuggestionLoading, suggestionsError };
@@ -108,7 +110,7 @@ export const MentionSuggestor = () => {
     >
       <div
         {...getMenuProps()}
-        className="min-w-[180px] rounded-md border border-zinc-800 bg-white bg-zinc-950 shadow-md"
+        className="min-w-[180px] rounded-md border border-zinc-800 bg-zinc-950 shadow-md"
       >
         {suggestions.length === 0 ? (
           <div className="px-2 py-1.5 text-sm text-zinc-500 dark:text-zinc-400">
@@ -121,21 +123,28 @@ export const MentionSuggestor = () => {
                 key={item.id}
                 {...getItemProps({ item, index })}
                 className={cn(
-                  "flex items-center gap-2 px-2 py-1.5 text-sm",
+                  "flex items-center gap-2 p-2 text-sm",
                   (indexIsHovered(index) || indexIsSelected(index)) &&
                     "cursor-pointer bg-zinc-800",
                 )}
               >
-                {item.label.startsWith("@") && (
-                  <AtSign className="h-4 w-4 text-zinc-500" />
-                )}
-                {item.label.startsWith("!") && (
-                  <AlertCircle className="h-4 w-4 text-zinc-500" />
-                )}
-                {item.label.startsWith("#") && (
-                  <Hash className="h-4 w-4 text-zinc-500" />
-                )}
-                <span>{item.content}</span>
+                <div className="">
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage src={item.persona?.avatar ?? ""} alt="" />
+                    <AvatarFallback className="text-black">
+                      {item.label.slice(0, 1)?.slice(0, 2)}
+                    </AvatarFallback>
+                  </Avatar>
+                </div>
+                <div className="flex flex-col">
+                  <div>
+                    {item.persona.display_name ?? item.persona.username}
+                  </div>
+                  <div>
+                    {type === "mention" ? "!" : "@"}
+                    {item.persona.username}
+                  </div>
+                </div>
               </div>
             ))}
           </div>
