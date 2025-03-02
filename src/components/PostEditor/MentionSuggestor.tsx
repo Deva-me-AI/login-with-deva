@@ -2,7 +2,10 @@ import { cn } from "@/lib/utils";
 import { AtSign, Hash, AlertCircle } from "lucide-react";
 import { FloatingWrapper, useMentionAtom } from "@remirror/react";
 import type { MentionAtomExtensionMatcher } from "remirror/extensions";
-import { useEffect, useState } from "react";
+import { useSWRFetcher } from "@/lib/fetcher";
+import type { PagintedPersonas } from "@/server";
+import { type Envs, envToUrl } from "@/config";
+import { useDeva } from "@/use-deva";
 
 type Suggestion = {
   id: string;
@@ -19,42 +22,6 @@ type Suggestion = {
   replacementType?: "full" | "partial";
 };
 
-// Example data - in real app, this would be filtered based on trigger char
-const SUGGESTIONS: Suggestion[] = [
-  {
-    id: "1",
-    label: "johndoe",
-    content: "John Doe (@johndoe)",
-    replacementType: "partial",
-  },
-  {
-    id: "2",
-    label: "janesmith",
-    content: "Jane Smith (@janesmith)",
-    replacementType: "partial",
-  },
-  {
-    id: "3",
-    label: "important",
-    content: "Important Alert",
-    replacementType: "full",
-  },
-  {
-    id: "4",
-    label: "#announcement",
-    content: "Announcement Tag",
-    replacementType: "full",
-  },
-];
-
-const getSuggestionItems = (query: string) => {
-  return SUGGESTIONS.filter(
-    (item) =>
-      item.content.toLowerCase().includes(query.toLowerCase()) ||
-      item.label.toLowerCase().includes(query.toLowerCase()),
-  );
-};
-
 export const mentionMatchers = [
   {
     name: "mention" as const, // Humans
@@ -63,25 +30,45 @@ export const mentionMatchers = [
     supportedCharacters: /[^!]+/,
   },
   {
-    name: "deva" as const, // Devas
+    name: "devaResponse" as const, // Devas
     char: "@",
     matchOffset: 0,
     supportedCharacters: /[^@]+/,
   },
 ] satisfies MentionAtomExtensionMatcher[];
 
-const useSuggestion = (query: string) => {
-  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+const useSuggestion = (env: Envs, query: string) => {
+  const url = envToUrl(env);
+  const params = new URLSearchParams({ limit: "20", type: "ALL" });
+  if (query) {
+    params.set("query", query);
+  }
+  const {
+    data: personasData,
+    isLoading: isSuggestionLoading,
+    error: suggestionsError,
+  } = useSWRFetcher<PagintedPersonas, Error>(
+    `${url}/api/sdk/persona/public?${params}`,
+  );
 
-  useEffect(() => {
-    setSuggestions(getSuggestionItems(query));
-  }, [query]);
+  // Transform PublicPersona items into Suggestion format
+  const suggestions: Suggestion[] = (personasData?.items ?? []).map(
+    (persona) => ({
+      id: persona.id,
+      label: persona.username,
+      content: persona.display_name ?? persona.username,
+    }),
+  );
 
-  return { suggestions };
+  return { suggestions, isSuggestionLoading, suggestionsError };
 };
 
 export const MentionSuggestor = () => {
-  const { suggestions } = useSuggestion("");
+  const { env } = useDeva();
+  const { suggestions, isSuggestionLoading, suggestionsError } = useSuggestion(
+    env,
+    "",
+  );
 
   const { state, getMenuProps, getItemProps, indexIsHovered, indexIsSelected } =
     useMentionAtom({ items: suggestions, replacementType: "full" });
