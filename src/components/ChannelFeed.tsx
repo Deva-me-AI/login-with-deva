@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -147,6 +148,7 @@ export function ChannelFeed({ handle }: ChannelFeedProps) {
   } = usePosts({ handle, env });
   const [newPostText, setNewPostText] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [postId, setPostId] = useState(uuidv4());
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleCreatePost = async () => {
@@ -159,6 +161,7 @@ export function ChannelFeed({ handle }: ChannelFeedProps) {
         channel_id: channel.id,
       });
       setNewPostText(""); // Clear input on success
+      setPostId(uuidv4()); // Generate a new UUID after successful post
     } catch {
       setError("Failed to create post. Please try again.");
     }
@@ -191,6 +194,7 @@ export function ChannelFeed({ handle }: ChannelFeedProps) {
             <div className="flex-1 px-1">
               <PostInput
                 id="new-post"
+                postId={postId}
                 value={newPostText}
                 placeholder="use '@' to mention a deva"
                 onChange={setNewPostText}

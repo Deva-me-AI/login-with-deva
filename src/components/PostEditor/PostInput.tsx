@@ -78,12 +78,14 @@ export function PostInput({
   id,
   value,
   placeholder,
+  postId,
   onChange: externalOnChange,
   onSubmit,
 }: {
   value: string;
   id: string;
   placeholder: string;
+  postId: string;
   onChange: (text: string) => void;
   onSubmit: () => void;
 }) {
@@ -112,9 +114,9 @@ export function PostInput({
     [externalOnChange, remirrorOnChange],
   );
 
-  // Only update content if the id changes (meaning it's a different post)
+  // Only update content if the postId changes (meaning it's a different post)
   useEffect(() => {
-    if (!manager || !id) return;
+    if (!manager || !postId) return;
 
     manager.view.updateState(
       manager.createState({
@@ -123,7 +125,7 @@ export function PostInput({
         stringHandler: "html",
       }),
     );
-  }, [id, manager]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [postId, manager]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <ThemeProvider>
