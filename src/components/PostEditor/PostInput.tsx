@@ -3,6 +3,7 @@ import {
   Remirror,
   EditorComponent,
   ThemeProvider,
+  useKeymap,
 } from "@remirror/react";
 import {
   ExtensionPriority,
@@ -30,6 +31,17 @@ import {
 } from "remirror/extensions";
 import { mentionMatchers, MentionSuggestor } from "./MentionSuggestor";
 import { useEffect, useMemo, useCallback } from "react";
+
+// Custom editor component with keyboard shortcuts
+const CustomEditor = ({ onSubmit }: { onSubmit: () => void }) => {
+  // Handle Enter key to submit
+  useKeymap("Enter", () => {
+    onSubmit();
+    return false;
+  });
+
+  return <EditorComponent />;
+};
 
 const useExtensions = ({ placeholder }: { placeholder?: string } = {}) => {
   return useMemo(
@@ -67,11 +79,13 @@ export function PostInput({
   value,
   placeholder,
   onChange: externalOnChange,
+  onSubmit,
 }: {
   value: string;
   id: string;
   placeholder: string;
   onChange: (text: string) => void;
+  onSubmit: () => void;
 }) {
   const extensions = useExtensions({
     placeholder,
@@ -119,7 +133,7 @@ export function PostInput({
         onChange={handleChange}
         classNames={["!p-1"]}
       >
-        <EditorComponent />
+        <CustomEditor onSubmit={onSubmit} />
         <MentionSuggestor />
       </Remirror>
     </ThemeProvider>

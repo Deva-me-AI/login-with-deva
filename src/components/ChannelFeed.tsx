@@ -194,22 +194,8 @@ export function ChannelFeed({ handle }: ChannelFeedProps) {
                 value={newPostText}
                 placeholder="use '@' to mention a deva"
                 onChange={setNewPostText}
+                onSubmit={handleCreatePost}
               />
-              {/*}
-              <Input
-                ref={inputRef}
-                placeholder="Use @ to mention a deva"
-                className="border-0 bg-transparent p-0 text-white placeholder:text-gray-500 focus-visible:ring-0"
-                value={newPostText}
-                onChange={(e) => setNewPostText(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    void handleCreatePost();
-                  }
-                }}
-              />
-              {*/}
             </div>
           </div>
           <div className="mb-2 flex flex-wrap justify-between">
