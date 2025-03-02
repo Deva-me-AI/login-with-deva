@@ -6,6 +6,7 @@ import { useSWRFetcher } from "@/lib/fetcher";
 import type { PagintedPersonas } from "@/server";
 import { type Envs, envToUrl } from "@/config";
 import { useDeva } from "@/use-deva";
+import { useEffect, useState } from "react";
 
 type Suggestion = {
   id: string;
@@ -64,14 +65,19 @@ const useSuggestion = (env: Envs, query: string) => {
 };
 
 export const MentionSuggestor = () => {
+  const [query, setQuery] = useState("");
   const { env } = useDeva();
-  const { suggestions, isSuggestionLoading, suggestionsError } = useSuggestion(
-    env,
-    "",
-  );
+  const { suggestions } = useSuggestion(env, query);
 
   const { state, getMenuProps, getItemProps, indexIsHovered, indexIsSelected } =
     useMentionAtom({ items: suggestions, replacementType: "full" });
+
+  useEffect(() => {
+    if (!state) {
+      return;
+    }
+    setQuery(state.query.full);
+  }, [state]);
 
   if (!state) {
     return null;
