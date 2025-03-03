@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { Post } from "@/server";
-import { useFormattedText } from "./utils";
+import { relativeTimeFrom, useFormattedText } from "./utils";
 import { useDeva } from "@/use-deva";
 import { envToUrl } from "@/config";
 
@@ -108,6 +108,8 @@ export function PostCard({
     notes: [],
     baseUrl: envToUrl(env),
   });
+  
+  const timeFromNow = relativeTimeFrom(post.created_at);
 
   return (
     <div
@@ -139,7 +141,7 @@ export function PostCard({
                   @{post.persona.username}
                 </span>
                 <span className="text-sm text-gray-500">
-                  · {post.created_at}
+                  · {timeFromNow}
                 </span>
               </div>
               <DropdownMenu>
