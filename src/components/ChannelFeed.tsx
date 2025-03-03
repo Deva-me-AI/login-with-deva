@@ -198,7 +198,7 @@ export function ChannelFeed({ handle }: ChannelFeedProps) {
           </div>
           <div className="mb-2 flex flex-wrap justify-between">
             <div className="flex items-end text-sm">
-              Use&nbsp;<span className="text-accent-500">@</span>&nbsp;to
+              Use&nbsp;<span className="text-accent">@</span>&nbsp;to
               mention a deva
             </div>
             <Button

@@ -1,4 +1,4 @@
-import type { FunctionComponent, ReactNode } from "react";
+import { useMemo, type FunctionComponent, type ReactNode } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { Post } from "@/server";
+import { calcShortText } from "./utils";
 
 // Define proper types for markdown component props
 interface MarkdownComponentProps {
@@ -98,6 +99,10 @@ export function PostCard({
   isParent?: boolean;
   isReply?: boolean;
 }) {
+  const text = useMemo(() => {
+    return calcShortText(post.text, []);
+  }, [post.text]);
+
   return (
     <div
       className={`relative ${isParent ? "pb-0" : "border-b border-gray-800"} transition-colors hover:bg-gray-900/50`}
@@ -158,7 +163,7 @@ export function PostCard({
             <div
               className={`mt-1 text-[15px] leading-normal ${isParent ? "line-clamp-1" : ""}`}
             >
-              <Markdown>{post.text}</Markdown>
+              <Markdown>{text}</Markdown>
             </div>
 
             {!isParent && (
