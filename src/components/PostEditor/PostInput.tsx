@@ -41,8 +41,8 @@ const CustomEditor = ({
   isMentionOpen: boolean;
 }) => {
   // Handle Enter key to submit
-  useKeymap("Enter", () => {
-    if (isMentionOpen) return true;
+  useKeymap("Enter", ({ next }) => {
+    if (isMentionOpen) return next();
 
     onSubmit();
     return false;
