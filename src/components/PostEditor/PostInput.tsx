@@ -5,11 +5,7 @@ import {
   ThemeProvider,
   useKeymap,
 } from "@remirror/react";
-import {
-  ExtensionPriority,
-  prosemirrorNodeToHtml,
-  type RemirrorEventListener,
-} from "remirror";
+import { ExtensionPriority, type RemirrorEventListener } from "remirror";
 import {
   BoldExtension,
   MentionAtomExtension,
@@ -31,6 +27,7 @@ import {
 } from "remirror/extensions";
 import { mentionMatchers, MentionSuggestor } from "./MentionSuggestor";
 import { useEffect, useMemo, useCallback, useState } from "react";
+import { editorStateToText } from "./utils";
 
 // Custom editor component with keyboard shortcuts
 const CustomEditor = ({
@@ -57,6 +54,7 @@ const useExtensions = ({ placeholder }: { placeholder?: string } = {}) => {
       new MentionAtomExtension({
         matchers: mentionMatchers,
         appendText: " ",
+        mentionTag: "a",
       }),
       new BoldExtension({}),
       new ItalicExtension({}),
@@ -117,7 +115,7 @@ export function PostInput({
     (state) => {
       remirrorOnChange(state);
       // Get the HTML content from the editor state
-      externalOnChange(prosemirrorNodeToHtml(state.state.doc));
+      externalOnChange(editorStateToText(state.state));
     },
     [externalOnChange, remirrorOnChange],
   );
