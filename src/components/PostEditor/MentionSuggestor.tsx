@@ -71,7 +71,7 @@ const useSuggestion = (env: Envs, options: SuggestionOptions = {}) => {
   const suggestions: Suggestion[] = (personasData?.items ?? []).map(
     (persona) => ({
       id: persona.id,
-      label: persona.username,
+      label: type === "mention" ? "!" : "@" + persona.username,
       content: persona.display_name ?? persona.username,
       persona: persona,
     }),
