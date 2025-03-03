@@ -79,7 +79,11 @@ const useSuggestion = (env: Envs, options: SuggestionOptions = {}) => {
   return { suggestions, isSuggestionLoading, suggestionsError };
 };
 
-export const MentionSuggestor = () => {
+export const MentionSuggestor = ({
+  onMentionOpen,
+}: {
+  onMentionOpen: (state: boolean) => void;
+}) => {
   const [query, setQuery] = useState("");
   const [type, setType] = useState<"mention" | "devaResponse">("mention");
   const { env } = useDeva();
@@ -89,12 +93,15 @@ export const MentionSuggestor = () => {
     useMentionAtom({ items: suggestions, replacementType: "full" });
 
   useEffect(() => {
+    onMentionOpen(!!state);
+
     if (!state) {
       return;
     }
+
     setQuery(state.query.full);
     setType(state.text.full.startsWith("@") ? "devaResponse" : "mention");
-  }, [state]);
+  }, [state, onMentionOpen]);
 
   if (!state) {
     return null;

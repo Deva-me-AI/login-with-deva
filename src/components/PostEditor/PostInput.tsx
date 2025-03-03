@@ -30,12 +30,20 @@ import {
   TaskListExtension,
 } from "remirror/extensions";
 import { mentionMatchers, MentionSuggestor } from "./MentionSuggestor";
-import { useEffect, useMemo, useCallback } from "react";
+import { useEffect, useMemo, useCallback, useState } from "react";
 
 // Custom editor component with keyboard shortcuts
-const CustomEditor = ({ onSubmit }: { onSubmit: () => void }) => {
+const CustomEditor = ({
+  onSubmit,
+  isMentionOpen,
+}: {
+  onSubmit: () => void;
+  isMentionOpen: boolean;
+}) => {
   // Handle Enter key to submit
   useKeymap("Enter", () => {
+    if (isMentionOpen) return true;
+
     onSubmit();
     return false;
   });
@@ -75,7 +83,6 @@ const useExtensions = ({ placeholder }: { placeholder?: string } = {}) => {
 };
 
 export function PostInput({
-  id,
   value,
   placeholder,
   postId,
@@ -89,6 +96,7 @@ export function PostInput({
   onChange: (text: string) => void;
   onSubmit: () => void;
 }) {
+  const [isMentionOpen, setMentionOpen] = useState(false);
   const extensions = useExtensions({
     placeholder,
   });
@@ -135,8 +143,8 @@ export function PostInput({
         onChange={handleChange}
         classNames={["!p-1"]}
       >
-        <CustomEditor onSubmit={onSubmit} />
-        <MentionSuggestor />
+        <CustomEditor isMentionOpen={isMentionOpen} onSubmit={onSubmit} />
+        <MentionSuggestor onMentionOpen={setMentionOpen} />
       </Remirror>
     </ThemeProvider>
   );
