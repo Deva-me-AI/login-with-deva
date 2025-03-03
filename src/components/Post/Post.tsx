@@ -1,4 +1,4 @@
-import { useMemo, type FunctionComponent, type ReactNode } from "react";
+import { type FunctionComponent, type ReactNode } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
@@ -12,7 +12,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { Post } from "@/server";
-import { calcShortText } from "./utils";
+import { useFormattedText } from "./utils";
+import { useDeva } from "@/use-deva";
+import { envToUrl } from "@/config";
 
 // Define proper types for markdown component props
 interface MarkdownComponentProps {
@@ -99,9 +101,13 @@ export function PostCard({
   isParent?: boolean;
   isReply?: boolean;
 }) {
-  const text = useMemo(() => {
-    return calcShortText(post.text, []);
-  }, [post.text]);
+  const { env } = useDeva();
+
+  const text = useFormattedText({
+    text: post.text,
+    notes: [],
+    baseUrl: envToUrl(env),
+  });
 
   return (
     <div
