@@ -31,7 +31,11 @@ const usePosts = ({ handle, env, limit = 20 }: UsePostsParams) => {
   const url = envToUrl(env);
   const { accessToken } = useDeva();
   const [cursor, setCursor] = useState(0);
-  const [allPosts, setAllPosts] = useState<PagintedPostWithReply["items"]>([]);
+
+  // Use a map to store posts by ID and an array to maintain order
+  const [postsMap, setPostsMap] = useState<Record<string, PostWithReply>>({});
+  const [postsOrder, setPostsOrder] = useState<string[]>([]);
+
   const [isCreating, setIsCreating] = useState(false);
   const [channelError, setChannelError] = useState<string | null>(null);
   const {
@@ -63,14 +67,42 @@ const usePosts = ({ handle, env, limit = 20 }: UsePostsParams) => {
 
   const total = posts?.total ?? 0;
 
-  // Update allPosts when new posts are loaded
-  // TODO: fix duplicate posts when loading more
+  // Update posts storage when new posts are loaded
   useEffect(() => {
     if (posts?.items) {
       if (cursor === 0) {
-        setAllPosts(posts.items);
+        // Reset for first page
+        const newMap: Record<string, PostWithReply> = {};
+        const newOrder: string[] = [];
+
+        posts.items.forEach((post) => {
+          const postId = post.in_reply_to_id ?? post.id;
+          newMap[postId] = post;
+          newOrder.push(postId);
+        });
+
+        setPostsMap(newMap);
+        setPostsOrder(newOrder);
       } else {
-        setAllPosts((prev) => [...prev, ...posts.items]);
+        // Append for pagination
+        setPostsMap((prevMap) => {
+          const newMap = { ...prevMap };
+
+          posts.items.forEach((post) => {
+            const postId = post.in_reply_to_id ?? post.id;
+            newMap[postId] = post;
+          });
+
+          return newMap;
+        });
+
+        setPostsOrder((prevOrder) => {
+          const newIds = posts.items
+            .map((post) => post.in_reply_to_id ?? post.id)
+            .filter((id) => !prevOrder.includes(id));
+
+          return [...prevOrder, ...newIds];
+        });
       }
     }
   }, [posts?.items, cursor]);
@@ -95,7 +127,15 @@ const usePosts = ({ handle, env, limit = 20 }: UsePostsParams) => {
         in_reply_to: null,
       };
 
-      setAllPosts((prev) => [postWithReply, ...prev]);
+      // Add new post to the map and order
+      const postId = postWithReply.id;
+
+      setPostsMap((prevMap) => ({
+        [postId]: postWithReply,
+        ...prevMap, // Spread after to ensure new post doesn't get overwritten
+      }));
+
+      setPostsOrder((prevOrder) => [postId, ...prevOrder]);
 
       return postWithReply;
     } catch (error) {
@@ -105,6 +145,11 @@ const usePosts = ({ handle, env, limit = 20 }: UsePostsParams) => {
       setIsCreating(false);
     }
   };
+
+  // Convert map and order to array for components that expect an array
+  const allPosts = postsOrder
+    .map((id) => postsMap[id])
+    .filter((p): p is PostWithReply => !!p);
 
   return {
     channel,
@@ -251,8 +296,10 @@ export function ChannelFeed({ handle }: ChannelFeedProps) {
               const isParent = !!(_post.in_reply_to ?? _post.first_reply);
               const post = _post.in_reply_to ?? _post;
               const reply = _post.in_reply_to ? _post : _post.first_reply;
+              const postId = post.in_reply_to_id ?? post.id;
+
               return (
-                <div key={post.in_reply_to_id ?? post.id}>
+                <div key={postId}>
                   <PostCard post={post} isParent={isParent} />
                   {reply && <PostCard post={reply} isReply={true} />}
                 </div>
