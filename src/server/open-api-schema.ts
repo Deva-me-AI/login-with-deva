@@ -1183,6 +1183,15 @@ export interface paths {
     /** Feed Options */
     options: operations["feed_options_sdk_feed_post_options"];
   };
+  "/sdk/feed/post/{_id}/react": {
+    /**
+     * React To Post
+     * @description React to a post with CORS support for client applications
+     */
+    put: operations["react_to_post_sdk_feed_post___id__react_put"];
+    /** Post React Options */
+    options: operations["post_react_options_sdk_feed_post___id__react_options"];
+  };
   "/sdk/channel/handle/{handle}": {
     /**
      * Get Channel By Handle
@@ -13756,6 +13765,59 @@ export interface operations {
   };
   /** Feed Options */
   feed_options_sdk_feed_post_options: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+    };
+  };
+  /**
+   * React To Post
+   * @description React to a post with CORS support for client applications
+   */
+  react_to_post_sdk_feed_post___id__react_put: {
+    parameters: {
+      header?: {
+        origin?: string | null;
+        "x-forwarded-host"?: string | null;
+      };
+      path: {
+        _id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ReactPost"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["FullPostDBModel"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Post React Options */
+  post_react_options_sdk_feed_post___id__react_options: {
     responses: {
       /** @description Successful Response */
       200: {
