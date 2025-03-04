@@ -15,3 +15,4 @@ export type FullDbPost = components["schemas"]["FullPostDBModel"];
 export type PublicPersona = components["schemas"]["PublicPersonaDBModel"];
 export type PagintedPersonas =
   components["schemas"]["PaginatedPersonaCategorieses"];
+export type ReactPostInput = components["schemas"]["ReactPost"];

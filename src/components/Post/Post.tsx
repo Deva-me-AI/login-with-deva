@@ -1,4 +1,10 @@
-import { type FunctionComponent, type ReactNode } from "react";
+import {
+  useCallback,
+  useState,
+  type FunctionComponent,
+  type ReactNode,
+} from "react";
+import { fetcher } from "@/lib/fetcher";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
@@ -11,10 +17,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type { Post } from "@/server";
+import type { FullDbPost, Post, ReactPostInput } from "@/server";
 import { relativeTimeFrom, useFormattedText } from "./utils";
 import { useDeva } from "@/use-deva";
-import { envToUrl } from "@/config";
+import { type Envs, envToUrl } from "@/config";
 
 // Define proper types for markdown component props
 interface MarkdownComponentProps {
@@ -92,24 +98,86 @@ export const Markdown = ({ children }: { children: string }) => {
   );
 };
 
+const useFavorite = ({
+  env,
+  isFavorited,
+  postId,
+}: {
+  env: Envs;
+  isFavorited: boolean;
+  postId: string;
+  onUpdated?: (post: FullDbPost) => void;
+}) => {
+  const url = envToUrl(env);
+  const { accessToken } = useDeva();
+
+  const [isFavoriteLoading, setIsFavoriteLoading] = useState(false);
+
+  const toggleFavorite = useCallback(async () => {
+    if (!accessToken) {
+      throw new Error("Authentication required");
+    }
+
+    try {
+      const endpoint = `${url}/api/sdk/feed/post/${postId}/react`;
+      const input: ReactPostInput = {
+        reaction: isFavorited ? "DISLIKE" : "LIKE",
+      };
+
+      const res = await fetcher<FullDbPost>(endpoint, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify(input),
+      });
+
+      return res;
+    } catch (error) {
+      console.error(
+        `Error ${isFavorited ? "adding" : "removing"} reaction:`,
+        error,
+      );
+      throw error;
+    } finally {
+      setIsFavoriteLoading(false);
+    }
+  }, [accessToken, isFavorited, postId, url]);
+
+  return {
+    isFavoriteLoading,
+    toggleFavorite,
+  };
+};
+
 export function PostCard({
   post,
   isParent,
   isReply,
+  onUpdated,
 }: {
   post: Post;
   isParent?: boolean;
   isReply?: boolean;
+  onUpdated?: (post: FullDbPost) => void;
 }) {
-  const { env } = useDeva();
+  const { env, isAuthenticated } = useDeva();
 
   const text = useFormattedText({
     text: post.text,
     notes: [],
     baseUrl: envToUrl(env),
   });
-  
+
   const timeFromNow = relativeTimeFrom(post.created_at);
+  const { toggleFavorite } = useFavorite({
+    env,
+    isFavorited: false,
+    postId: post.id,
+    onUpdated,
+  });
 
   return (
     <div
@@ -140,9 +208,7 @@ export function PostCard({
                 <span className="text-sm text-gray-500">
                   @{post.persona.username}
                 </span>
-                <span className="text-sm text-gray-500">
-                  · {timeFromNow}
-                </span>
+                <span className="text-sm text-gray-500">· {timeFromNow}</span>
               </div>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -180,14 +246,17 @@ export function PostCard({
                   variant="ghost"
                   size="sm"
                   className="h-auto p-0 text-gray-500 hover:bg-transparent hover:text-white"
+                  disabled={!isAuthenticated}
+                  onClick={toggleFavorite}
                 >
                   <Heart className="mr-1.5 h-4 w-4" />
-                  <span className="text-sm">{post.likes_count}</span>
+                  <span className="text-sm">{post.likes_count ?? 0}</span>
                 </Button>
                 <Button
                   variant="ghost"
                   size="sm"
                   className="h-auto p-0 text-gray-500 hover:bg-transparent hover:text-white"
+                  disabled={!isAuthenticated}
                 >
                   <MessageCircle className="mr-1.5 h-4 w-4" />
                   <span className="text-sm">{post.replies_count}</span>

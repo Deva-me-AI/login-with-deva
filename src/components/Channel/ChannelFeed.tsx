@@ -38,6 +38,19 @@ const usePosts = ({ handle, env, limit = 20 }: UsePostsParams) => {
 
   const [isCreating, setIsCreating] = useState(false);
   const [channelError, setChannelError] = useState<string | null>(null);
+
+  const updatePost = (post: FullDbPost) => {
+    setPostsMap((prevMap) => {
+      const postId = post.id;
+      if (!prevMap[postId]) return prevMap;
+
+      return {
+        ...prevMap,
+        [postId]: post,
+      };
+    });
+  };
+
   const {
     data: channel,
     isLoading: isChannelLoading,
@@ -157,6 +170,7 @@ const usePosts = ({ handle, env, limit = 20 }: UsePostsParams) => {
     isLoading: isChannelLoading || isLoading,
     isCreating,
     createPost,
+    updatePost,
     channelError,
     pagination: {
       hasNext: total > cursor + limit,
@@ -170,7 +184,6 @@ const usePosts = ({ handle, env, limit = 20 }: UsePostsParams) => {
     },
   };
 };
-
 interface ChannelFeedProps {
   handle?: string;
 }
@@ -183,6 +196,7 @@ export function ChannelFeed({ handle }: ChannelFeedProps) {
     isLoading,
     isCreating,
     createPost,
+    updatePost,
     pagination,
     channelError,
   } = usePosts({ handle, env });
@@ -300,8 +314,18 @@ export function ChannelFeed({ handle }: ChannelFeedProps) {
 
               return (
                 <div key={postId}>
-                  <PostCard post={post} isParent={isParent} />
-                  {reply && <PostCard post={reply} isReply={true} />}
+                  <PostCard
+                    post={post}
+                    isParent={isParent}
+                    onUpdated={updatePost}
+                  />
+                  {reply && (
+                    <PostCard
+                      post={reply}
+                      isReply={true}
+                      onUpdated={updatePost}
+                    />
+                  )}
                 </div>
               );
             })}
