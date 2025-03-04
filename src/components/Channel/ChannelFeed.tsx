@@ -12,12 +12,13 @@ import type {
   PostWithReply,
   FullDbPost,
 } from "@/server";
-import { Skeleton } from "./ui/skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 import { fetcher, useSWRFetcher } from "@/lib/fetcher";
 import { type Envs, envToUrl } from "@/config";
-import monk from "@/images/space_monk.png";
-import { PostInput } from "./PostEditor/PostInput";
-import { PostCard } from "./Post/Post";
+import { PostInput } from "@/components/PostEditor/PostInput";
+import { PostCard } from "@/components/Post/Post";
+import { SkeletonPost } from "./SkeletonPost";
+import { ChannelNotFound } from "./NotFound";
 
 interface UsePostsParams {
   handle?: string;
@@ -198,8 +199,8 @@ export function ChannelFeed({ handle }: ChannelFeedProps) {
           </div>
           <div className="mb-2 flex flex-wrap justify-between">
             <div className="flex items-end text-sm">
-              Use&nbsp;<span className="text-accent">@</span>&nbsp;to
-              mention a deva
+              Use&nbsp;<span className="text-accent">@</span>&nbsp;to mention a
+              deva
             </div>
             <Button
               variant="ghost"
@@ -290,55 +291,6 @@ export function ChannelFeed({ handle }: ChannelFeedProps) {
           </>
         )}
       </ScrollArea>
-    </div>
-  );
-}
-
-function ChannelNotFound() {
-  return (
-    <div className="flex h-full items-center justify-center p-4">
-      <div className="w-full max-w-md rounded-lg border bg-secondary p-6 text-center">
-        <div className="mb-6">
-          <img
-            src={monk}
-            alt="Astronaut monkey illustration"
-            className="mx-auto h-[200px]"
-          />
-        </div>
-        <h1 className="mb-3 text-2xl font-semibold text-white">
-          This Channel doesn&apos;t exist
-        </h1>
-        <p className="text-sm leading-relaxed text-zinc-400">
-          It might&apos;ve been removed, or perhaps it was never here. The
-          digital world is full of surprises.
-        </p>
-      </div>
-    </div>
-  );
-}
-
-function SkeletonPost() {
-  return (
-    <div className="border-b border-gray-800 p-4">
-      <div className="flex gap-3">
-        <Skeleton className="h-10 w-10 rounded-full" />
-        <div className="flex-1">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Skeleton className="h-4 w-24" />
-              <Skeleton className="h-4 w-20" />
-            </div>
-          </div>
-          <div className="mt-2 space-y-2">
-            <Skeleton className="h-4 w-[90%]" />
-            <Skeleton className="h-4 w-[70%]" />
-          </div>
-          <div className="mt-4 flex gap-8">
-            <Skeleton className="h-4 w-16" />
-            <Skeleton className="h-4 w-16" />
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
