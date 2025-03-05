@@ -57,6 +57,13 @@ const usePosts = ({ handle, env, limit = 20 }: UsePostsParams) => {
     error: channelFetchError,
   } = useSWRFetcher<Channel, Error>(
     handle ? `${url}/api/sdk/channel/handle/${handle}` : null,
+    {
+      headers: accessToken
+        ? {
+            Authorization: `Bearer ${accessToken}`,
+          }
+        : undefined,
+    },
   );
 
   useEffect(() => {
@@ -76,7 +83,13 @@ const usePosts = ({ handle, env, limit = 20 }: UsePostsParams) => {
   const { data: posts, isLoading } = useSWRFetcher<
     PagintedPostWithReply,
     Error
-  >(channel?.id ? `${url}/api/sdk/feed?${queryParams}` : null);
+  >(channel?.id ? `${url}/api/sdk/feed?${queryParams}` : null, {
+    headers: accessToken
+      ? {
+          Authorization: `Bearer ${accessToken}`,
+        }
+      : undefined,
+  });
 
   const total = posts?.total ?? 0;
 
