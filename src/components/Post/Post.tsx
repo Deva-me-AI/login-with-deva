@@ -21,6 +21,7 @@ import type { FullDbPost, Post, ReactPostInput } from "@/server";
 import { relativeTimeFrom, useFormattedText } from "./utils";
 import { useDeva } from "@/use-deva";
 import { type Envs, envToUrl } from "@/config";
+import { cn } from "@/lib/utils";
 
 // Define proper types for markdown component props
 interface MarkdownComponentProps {
@@ -164,6 +165,7 @@ export function PostCard({
   onUpdated?: (post: FullDbPost) => void;
 }) {
   const { env, isAuthenticated } = useDeva();
+  const isFavorited = post.user_reaction === "LIKE";
 
   const text = useFormattedText({
     text: post.text,
@@ -174,7 +176,7 @@ export function PostCard({
   const timeFromNow = relativeTimeFrom(post.created_at);
   const { toggleFavorite } = useFavorite({
     env,
-    isFavorited: false,
+    isFavorited,
     postId: post.id,
     onUpdated,
   });
@@ -245,11 +247,16 @@ export function PostCard({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-auto p-0 text-gray-500 hover:bg-transparent hover:text-white"
+                  className={cn("h-auto p-0 hover:bg-transparent", {
+                    "text-red-500 hover:text-red-400": isFavorited,
+                    "text-gray-500 hover:text-white": !isFavorited,
+                  })}
                   disabled={!isAuthenticated}
                   onClick={toggleFavorite}
                 >
-                  <Heart className="mr-1.5 h-4 w-4" />
+                  <Heart
+                    className={`mr-1.5 h-4 w-4 ${isFavorited ? "fill-current" : ""}`}
+                  />
                   <span className="text-sm">{post.likes_count ?? 0}</span>
                 </Button>
                 <Button
