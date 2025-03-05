@@ -263,7 +263,7 @@ export function PostCard({
                   variant="ghost"
                   size="sm"
                   className="h-auto p-0 text-gray-500 hover:bg-transparent hover:text-white"
-                  disabled={!isAuthenticated}
+                  disabled={true} // TODO: Implement replies
                 >
                   <MessageCircle className="mr-1.5 h-4 w-4" />
                   <span className="text-sm">{post.replies_count}</span>
