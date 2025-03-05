@@ -235,8 +235,8 @@ export function ChannelFeed({ handle }: ChannelFeedProps) {
   };
 
   return (
-    <div className="h-full w-full max-w-2xl overflow-hidden bg-black text-white">
-      <div className="flex items-center justify-between border-b border-gray-800 p-4">
+    <div className="flex h-full w-full max-w-2xl flex-col bg-black text-white">
+      <div className="flex flex-shrink-0 items-center justify-between border-b border-gray-800 p-4">
         {isLoading ? (
           <Skeleton className="h-7 w-32" />
         ) : (
@@ -247,7 +247,7 @@ export function ChannelFeed({ handle }: ChannelFeedProps) {
       </div>
 
       {isAuthenticated && user && !channelError && (
-        <div className="border-b border-gray-800 p-4">
+        <div className="flex-shrink-0 border-b border-gray-800 p-4">
           <div className="mb-2 flex flex-wrap gap-3">
             <Avatar className="h-10 w-10">
               <AvatarImage
@@ -289,7 +289,7 @@ export function ChannelFeed({ handle }: ChannelFeedProps) {
         </div>
       )}
 
-      <ScrollArea className="h-[calc(100vh-120px)] sm:h-[600px]">
+      <ScrollArea className="flex-grow">
         {channelError ? (
           <ChannelNotFound />
         ) : isLoading && posts.length === 0 ? (
