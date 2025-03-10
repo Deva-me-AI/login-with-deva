@@ -10,7 +10,8 @@ To install the dependencies use `pnpm run dev:install`. This will install the pa
 Then you can start the dev process with: 
 
 ```
-pnpm run dev # runs the library builder on watch
+pnpm run example:link # links the example app to the sdk in the root dir
+pnpm run dev # runs the library builder on watch (required)
 pnpm run dev:example # runs the dev server for the example app
 ```
 
