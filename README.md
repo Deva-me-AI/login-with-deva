@@ -2,6 +2,8 @@
 
 ## Development
 
+The sdk functions on Client apps. You'll need to create a client app on deva.me. Make sure you fill in the redirect and origin uris. 
+
 ### Example app
 
 There is a basic example app in example/. This is a plain react app that loads the sdk using pnpm links
