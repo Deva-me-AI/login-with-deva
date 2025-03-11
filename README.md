@@ -4,7 +4,16 @@
 
 ### Example app
 
-There is a basic example app in /example. This is a plain react app that loads the sdk using pnpm links
+There is a basic example app in example/. This is a plain react app that loads the sdk using pnpm links
+
+You'll need to first create a example/.env file. Then add a client id for the app to it
+
+```
+VITE_DEVA_CLIENT_ID="f9dbe5bc-…"
+```
+
+You can create client's on deva.me settings.
+
 
 To install the dependencies use `pnpm run dev:install`. This will install the packages for both sdk and the example app.
 Then you can start the dev process with: 
