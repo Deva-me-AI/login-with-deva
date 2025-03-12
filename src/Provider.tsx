@@ -376,6 +376,7 @@ export function DevaProvider({
         refreshToken,
 
         user: userInfo ?? null,
+        isAuthenticated: !!accessToken,
       }}
     >
       {children}

@@ -96,7 +96,9 @@ function Content() {
             <option value="null">404</option>
           </select>
         </div>
-        <ChannelFeed handle={selectedChannel} />
+        <div className="content-container">
+          <ChannelFeed handle={selectedChannel} />
+        </div>
       </Card>
     </div>
   );
