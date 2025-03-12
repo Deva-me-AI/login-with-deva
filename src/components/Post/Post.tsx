@@ -22,6 +22,7 @@ import { relativeTimeFrom, useFormattedText } from "./utils";
 import { useDeva } from "@/use-deva";
 import { type Envs, envToUrl } from "@/config";
 import { cn } from "@/lib/utils";
+import { useDevaContext } from "@/DevaContext";
 
 // Define proper types for markdown component props
 interface MarkdownComponentProps {
@@ -164,7 +165,7 @@ export function PostCard({
   isReply?: boolean;
   onUpdated?: (post: FullDbPost) => void;
 }) {
-  const { env, isAuthenticated } = useDeva();
+  const { env, isAuthenticated } = useDevaContext();
   const isFavorited = post.user_reaction === "LIKE";
 
   const text = useFormattedText({

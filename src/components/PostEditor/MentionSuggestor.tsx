@@ -4,9 +4,9 @@ import type { MentionAtomExtensionMatcher } from "remirror/extensions";
 import { useSWRFetcher } from "@/lib/fetcher";
 import type { PagintedPersonas, PublicPersona } from "@/server";
 import { type Envs, envToUrl } from "@/config";
-import { useDeva } from "@/use-deva";
 import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useDevaContext } from "@/DevaContext";
 
 type Suggestion = {
   id: string;
@@ -86,7 +86,7 @@ export const MentionSuggestor = ({
 }) => {
   const [query, setQuery] = useState("");
   const [type, setType] = useState<"mention" | "devaResponse">("mention");
-  const { env } = useDeva();
+  const { env } = useDevaContext();
   const { suggestions } = useSuggestion(env, { query, type });
 
   const { state, getMenuProps, getItemProps, indexIsHovered, indexIsSelected } =

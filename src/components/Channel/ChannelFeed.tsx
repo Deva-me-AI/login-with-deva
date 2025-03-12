@@ -19,6 +19,7 @@ import { PostInput } from "@/components/PostEditor/PostInput";
 import { PostCard } from "@/components/Post/Post";
 import { SkeletonPost } from "./SkeletonPost";
 import { ChannelNotFound } from "./NotFound";
+import { useDevaContext } from "@/DevaContext";
 
 interface UsePostsParams {
   handle?: string;
@@ -202,7 +203,8 @@ interface ChannelFeedProps {
 }
 
 export function ChannelFeed({ handle }: ChannelFeedProps) {
-  const { isAuthenticated, user, env } = useDeva();
+  const { user, env } = useDevaContext();
+  const isAuthenticated = user !== null;
   const {
     posts,
     channel,

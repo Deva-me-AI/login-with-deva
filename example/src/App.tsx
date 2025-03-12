@@ -1,7 +1,7 @@
 import "deva-sdk/style.css";
 import "./index.css";
 import "./App.css";
-import { DevaProvider, useLogin, useDeva, ChannelFeed } from "deva-sdk";
+import { DevaProvider, useDeva, ChannelFeed } from "deva-sdk";
 import { ReactNode, useState, useEffect } from "react";
 
 export function Card({
@@ -17,8 +17,7 @@ export function Card({
 type Channel = "empty" | "eliza" | "null";
 
 function Content() {
-  const { login } = useLogin();
-  const { user, logout } = useDeva();
+  const { user, login, logout } = useDeva();
 
   // Get initial channel from URL or default to "empty"
   const getInitialChannel = (): Channel => {

@@ -1,4 +1,4 @@
-import { createContext } from "react";
+import { createContext, useContext } from "react";
 import type { UserInfo } from "./server";
 import type { Envs } from "./config";
 
@@ -20,6 +20,33 @@ export type DevaContext = {
   refreshToken: string | null;
 
   user: UserInfo | null;
+
+  isAuthenticated: boolean;
+};
+
+const defaultDevaContext: DevaContext = {
+  clientId: "",
+  redirectUri: "",
+  scopes: [],
+
+  env: "development",
+
+  authInProgress: false,
+  authError: null,
+
+  login: () => Promise.resolve(),
+  logout: () => Promise.resolve(),
+
+  idToken: null,
+  accessToken: null,
+  refreshToken: null,
+
+  user: null,
+
+  isAuthenticated: false,
 };
 
 export const DevaContext = createContext<DevaContext | null>(null);
+
+export const useDevaContext = () =>
+  useContext(DevaContext) ?? defaultDevaContext;

@@ -10,11 +10,10 @@ export const useDeva = () => {
 
   return {
     accessToken: devaContext.accessToken,
-    user: devaContext.user,
-    logout: devaContext.logout,
-    
-    env: devaContext.env,
-
     isAuthenticated: devaContext.accessToken !== null,
+
+    user: devaContext.user,
+    login: devaContext.login,
+    logout: devaContext.logout,
   };
 };
