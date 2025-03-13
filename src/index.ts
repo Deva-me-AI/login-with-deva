@@ -1,5 +1,6 @@
-import "tailwindcss/tailwind.css";
+import "remirror/styles/all.css";
+import "./styles/globals.css";
 export { type DevaContext } from "./DevaContext";
 export { DevaProvider } from "./Provider";
-export { useLogin } from "./use-login";
 export { useDeva } from "./use-deva";
+export { ChannelFeed } from "./components/Channel";

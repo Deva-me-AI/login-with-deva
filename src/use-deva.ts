@@ -9,7 +9,10 @@ export const useDeva = () => {
   }
 
   return {
+    isAuthenticated: devaContext.accessToken !== null,
+
     user: devaContext.user,
-    LogOut: devaContext.logout,
+    login: devaContext.login,
+    logout: devaContext.logout,
   };
 };

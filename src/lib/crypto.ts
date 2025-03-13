@@ -22,3 +22,6 @@ export const generateCodeChallenge = async (
 
 export const epochAtSecondsFromNow = (secondsFromNow: number | string) =>
   Math.round(Date.now() / 1000 + Number(secondsFromNow))
+
+export const epochTimeIsPast = (timestamp: number): boolean =>
+  (Math.round(Date.now()) / 1000) + 30 >= timestamp;

@@ -91,12 +91,6 @@ export interface paths {
   "/ai-token": {
     /** Get Ai Tokens */
     get: operations["get_ai_tokens_ai_token_get"];
-    /** Create Ai Token */
-    post: operations["create_ai_token_ai_token_post"];
-  };
-  "/ai-token/{_id}": {
-    /** Delete Ai Token */
-    delete: operations["delete_ai_token_ai_token___id__delete"];
   };
   "/audit": {
     /** Get Audit Logs */
@@ -486,10 +480,10 @@ export interface paths {
   };
   "/ingest/{_id}/re-ingest": {
     /**
-     * Un Ingest
+     * Re Ingest
      * @description Un ingest by id
      */
-    put: operations["un_ingest_ingest___id__re_ingest_put"];
+    put: operations["re_ingest_ingest___id__re_ingest_put"];
   };
   "/internal/airdrop": {
     /**
@@ -528,6 +522,18 @@ export interface paths {
      * @description Creates a airdrop point.
      */
     post: operations["bulk_create_airdrop_point_link_internal_airdrop_point_bulk_post"];
+  };
+  "/internal/ai-token": {
+    /** Get Ai Tokens */
+    get: operations["get_ai_tokens_internal_ai_token_get"];
+    /** Create Ai Token */
+    post: operations["create_ai_token_internal_ai_token_post"];
+  };
+  "/internal/ai-token/{_id}": {
+    /** Update Ai Token */
+    put: operations["update_ai_token_internal_ai_token___id__put"];
+    /** Delete Ai Token */
+    delete: operations["delete_ai_token_internal_ai_token___id__delete"];
   };
   "/internal/artifact/{_id}": {
     /** Delete Artifact */
@@ -690,12 +696,33 @@ export interface paths {
      */
     put: operations["update_persona_from_foom_internal_persona___id__from_foom_put"];
   };
+  "/internal/persona/yaps": {
+    /**
+     * Create Yaps Persona
+     * @description Creates a Yaps persona object.
+     */
+    post: operations["create_yaps_persona_internal_persona_yaps_post"];
+  };
+  "/internal/persona/{_id}/from-yaps": {
+    /**
+     * Update Persona From Yaps
+     * @description Update persona is user from Yaps
+     */
+    put: operations["update_persona_from_yaps_internal_persona___id__from_yaps_put"];
+  };
   "/internal/persona/get_personas/to_post_twitter": {
     /**
      * Get Personas To Post Twitter
      * @description Get personas to post twitter
      */
     get: operations["get_personas_to_post_twitter_internal_persona_get_personas_to_post_twitter_get"];
+  };
+  "/internal/persona/{_id}/smart": {
+    /**
+     * Update Persona Is Smart
+     * @description Update persona is smart if persona is from KOL intelligence list
+     */
+    put: operations["update_persona_is_smart_internal_persona___id__smart_put"];
   };
   "/internal/post": {
     /**
@@ -999,6 +1026,13 @@ export interface paths {
      */
     post: operations["create_note_note_post"];
   };
+  "/note/public": {
+    /**
+     * Get Notes
+     * @description Get all notes
+     */
+    get: operations["get_notes_note_public_get"];
+  };
   "/note/{_id}": {
     /**
      * Get Note
@@ -1013,10 +1047,10 @@ export interface paths {
   };
   "/note/{_id}/public": {
     /**
-     * Get Note
+     * Get Public Note
      * @description Get a published note by ID
      */
-    get: operations["get_note_note___id__public_get"];
+    get: operations["get_public_note_note___id__public_get"];
   };
   "/note/{note_id}": {
     /**
@@ -1077,8 +1111,8 @@ export interface paths {
     post: operations["authorize_oidc_client_authorize_post"];
   };
   "/oidc/client/authorize/{_id}": {
-    /** Authorize */
-    get: operations["authorize_oidc_client_authorize___id__get"];
+    /** Get Authorization Code */
+    get: operations["get_authorization_code_oidc_client_authorize___id__get"];
   };
   "/oidc/client": {
     /** Create Client */
@@ -1099,26 +1133,83 @@ export interface paths {
   "/oidc/jwks": {
     /** Jwks */
     get: operations["jwks_oidc_jwks_get"];
+    /** Jwks Options */
+    options: operations["jwks_options_oidc_jwks_options"];
   };
   "/oidc/token": {
     /** Get Token */
     post: operations["get_token_oidc_token_post"];
+    /** Token Options */
+    options: operations["token_options_oidc_token_options"];
   };
   "/oidc/token/revoke": {
     /** Revoke Token */
     post: operations["revoke_token_oidc_token_revoke_post"];
+    /** Revoke Options */
+    options: operations["revoke_options_oidc_token_revoke_options"];
   };
   "/oidc/token/introspect": {
     /** Introspect Token */
     post: operations["introspect_token_oidc_token_introspect_post"];
+    /** Introspect Options */
+    options: operations["introspect_options_oidc_token_introspect_options"];
   };
   "/oidc/userinfo": {
     /** Userinfo */
     get: operations["userinfo_oidc_userinfo_get"];
+    /** Userinfo Options */
+    options: operations["userinfo_options_oidc_userinfo_options"];
   };
   "/oidc/scope": {
     /** Scope Info */
     get: operations["scope_info_oidc_scope_get"];
+  };
+  "/sdk/feed": {
+    /**
+     * Get Feed
+     * @description Get paginated feed of posts with their replies.
+     * Works for both authenticated and unauthenticated users.
+     */
+    get: operations["get_feed_sdk_feed_get"];
+    /** Feed Options */
+    options: operations["feed_options_sdk_feed_options"];
+  };
+  "/sdk/feed/post": {
+    /**
+     * Create Post
+     * @description Create a Post with CORS support for client applications
+     */
+    post: operations["create_post_sdk_feed_post_post"];
+    /** Feed Options */
+    options: operations["feed_options_sdk_feed_post_options"];
+  };
+  "/sdk/feed/post/{_id}/react": {
+    /**
+     * React To Post
+     * @description React to a post with CORS support for client applications
+     */
+    put: operations["react_to_post_sdk_feed_post___id__react_put"];
+    /** Post React Options */
+    options: operations["post_react_options_sdk_feed_post___id__react_options"];
+  };
+  "/sdk/channel/handle/{handle}": {
+    /**
+     * Get Channel By Handle
+     * @description Get a channel by handle
+     */
+    get: operations["get_channel_by_handle_sdk_channel_handle__handle__get"];
+    /** Channel Handle Options */
+    options: operations["channel_handle_options_sdk_channel_handle__handle__options"];
+  };
+  "/sdk/persona/public": {
+    /**
+     * List Public Personas
+     * @description Returns a paginated list of personas filtered by the given parameters.
+     * Public endpoint with CORS support.
+     */
+    get: operations["list_public_personas_sdk_persona_public_get"];
+    /** Public Personas Options */
+    options: operations["public_personas_options_sdk_persona_public_options"];
   };
   "/persona": {
     /** Get Persona */
@@ -1395,6 +1486,13 @@ export interface paths {
      */
     post: operations["generate_and_post_tweet_secure_post_generate_and_post_tweet_post"];
   };
+  "/secure/persona/{_id}/unlink-user": {
+    /**
+     * Unlink Persona From User
+     * @description Unlink persona from user
+     */
+    delete: operations["unlink_persona_from_user_secure_persona___id__unlink_user_delete"];
+  };
   "/tweet/persona/{_id}": {
     /**
      * Get Persona Tweets
@@ -1658,10 +1756,10 @@ export interface paths {
      */
     get: operations["get_passkey_wallet_passkey_get"];
     /**
-     * Link Wallet
+     * Link Passkey Wallet
      * @description Link a wallet to a user.
      */
-    post: operations["link_wallet_wallet_passkey_post"];
+    post: operations["link_passkey_wallet_wallet_passkey_post"];
   };
   "/web3/userop/submit": {
     /**
@@ -1744,21 +1842,21 @@ export interface components {
       /** Provider Account Id */
       provider_account_id: string;
       /** Refresh Token */
-      refresh_token?: string;
+      refresh_token?: string | null;
       /** Access Token */
-      access_token?: string;
+      access_token?: string | null;
       /** Oauth Token */
-      oauth_token?: string;
+      oauth_token?: string | null;
       /** Oauth Token Secret */
-      oauth_token_secret?: string;
+      oauth_token_secret?: string | null;
       /** Token Type */
-      token_type?: string;
+      token_type?: string | null;
       /** Scope */
-      scope?: string;
+      scope?: string | null;
       /** Id Token */
-      id_token?: string;
+      id_token?: string | null;
       /** Session State */
-      session_state?: string;
+      session_state?: string | null;
       /**
        * Id
        * Format: uuid
@@ -1777,8 +1875,7 @@ export interface components {
     };
     /**
      * AccountType
-     * @description An enumeration.
-     * @enum {unknown}
+     * @enum {string}
      */
     AccountType: "oauth" | "email" | "credentials";
     /** AirdropPointDBModel */
@@ -1787,23 +1884,14 @@ export interface components {
       code: string;
       /** Points */
       points: number;
-      /**
-       * Claimer Persona Id
-       * Format: uuid
-       */
-      claimer_persona_id?: string;
-      /**
-       * Grantor Persona Id
-       * Format: uuid
-       */
-      grantor_persona_id?: string;
+      /** Claimer Persona Id */
+      claimer_persona_id?: string | null;
+      /** Grantor Persona Id */
+      grantor_persona_id?: string | null;
       /** Reserved For */
-      reserved_for?: string;
-      /**
-       * Expires At
-       * Format: date-time
-       */
-      expires_at?: string;
+      reserved_for?: string | null;
+      /** Expires At */
+      expires_at?: string | null;
       /** First Time Users Only */
       first_time_users_only: boolean;
       /** Cooldown Period */
@@ -1827,34 +1915,34 @@ export interface components {
     /** AirdropRequest */
     AirdropRequest: {
       /** Tokens Count */
-      tokens_count: number;
+      tokens_count: number | string;
     };
     /** AirdropResponse */
     AirdropResponse: {
       /** Airdrop Round */
       airdrop_round: string;
       /** Tokens Count */
-      tokens_count: number;
+      tokens_count: string;
       /** Total Web2 Points */
-      total_web2_points: number;
+      total_web2_points: string;
       /** Multiplier */
-      multiplier: number;
+      multiplier: string;
       /** Count */
       count: number;
     };
     /** AissStats */
     AissStats: {
       /** Claimable Amount */
-      claimable_amount: number;
+      claimable_amount: string;
       /** Claimed Amount */
-      claimed_amount: number;
+      claimed_amount: string;
     };
     /** ApiKeyDBModel */
     ApiKeyDBModel: {
       /** Name */
       name: string;
       /** Description */
-      description?: string;
+      description?: string | null;
       /** Key */
       key: string;
       /**
@@ -1890,13 +1978,13 @@ export interface components {
       source_type: components["schemas"]["ArtifactSourceType"];
       state: components["schemas"]["ArtifactState"];
       /** Error */
-      error?: Record<string, never>;
+      error?: Record<string, never> | null;
       /** Disabled */
       disabled: boolean;
       /** Etl Meta Data */
-      etl_meta_data?: Record<string, never>;
+      etl_meta_data?: Record<string, never> | null;
       /** Etl Arn */
-      etl_arn?: string;
+      etl_arn?: string | null;
       /** Estimated Cost */
       estimated_cost: number;
       /** Is Public */
@@ -1925,14 +2013,12 @@ export interface components {
     };
     /**
      * ArtifactSourceType
-     * @description An enumeration.
      * @enum {string}
      */
     ArtifactSourceType: "YOUTUBE" | "YOUTUBE_CAPTIONS" | "YOUTUBE_TRANSCRIPT" | "TWITTER" | "WIKIPEDIA" | "CUSTOM_JSON" | "PDF" | "PODCAST" | "MEDIUM" | "SUBSTACK" | "VEDA" | "AUDIO" | "AUDIO_TRANSCRIPT" | "IMAGE" | "WEBPAGE" | "WORD" | "POWERPOINT" | "TEXT" | "NOTION";
     /**
      * ArtifactState
-     * @description An enumeration.
-     * @enum {unknown}
+     * @enum {string}
      */
     ArtifactState: "PENDING" | "IN_PROGRESS" | "EXTRACTING" | "TRANSFORMING" | "VECTORIZING" | "LOADING_DB" | "ETL_COMPLETED" | "LOADING_VECTOR_DB" | "COMPLETED" | "FAILED" | "NO_DATA" | "DUPLICATE" | "INACTIVE" | "PROPOSED" | "SKIPPED";
     /** AssociatePersonaRequest */
@@ -1981,7 +2067,7 @@ export interface components {
         [key: string]: string;
       };
       /** Pathname */
-      pathname?: string;
+      pathname?: string | null;
     };
     /** AuthTokenRequest */
     AuthTokenRequest: {
@@ -1990,18 +2076,40 @@ export interface components {
        * Format: uuid4
        */
       client_id: string;
-      /** Client Secret */
-      client_secret: string;
       /** Expires In */
-      expires_in?: number;
+      expires_in?: number | null;
       /**
        * Authorization Code
        * Format: uuid4
        */
       authorization_code: string;
+      /** Client Secret */
+      client_secret: string;
     };
-    /** AuthorizeRequest */
-    AuthorizeRequest: {
+    /** AuthorizeRequestPKCE */
+    AuthorizeRequestPKCE: {
+      /**
+       * Client Id
+       * Format: uuid4
+       */
+      client_id: string;
+      /**
+       * User Id
+       * Format: uuid4
+       */
+      user_id: string;
+      /**
+       * Scope
+       * @default OPENID
+       */
+      scope?: string;
+      /** Code Challenge */
+      code_challenge: string;
+      /** Code Challenge Method */
+      code_challenge_method: string;
+    };
+    /** AuthorizeRequestToken */
+    AuthorizeRequestToken: {
       /**
        * Client Id
        * Format: uuid4
@@ -2018,11 +2126,7 @@ export interface components {
        */
       scope?: string;
       /** Nonce */
-      nonce?: string;
-      /** Code Challenge */
-      code_challenge?: string;
-      /** Code Challenge Method */
-      code_challenge_method?: string;
+      nonce?: string | null;
     };
     /** Body_create_voice_note_voice_note_post */
     Body_create_voice_note_voice_note_post: {
@@ -2037,21 +2141,18 @@ export interface components {
     /** BulkCreateAirdropPoints */
     BulkCreateAirdropPoints: {
       /** Reserved For */
-      reserved_for?: string;
+      reserved_for?: string | null;
       /**
        * First Time Users Only
        * @default true
        */
       first_time_users_only?: boolean;
       /** Expires In Minutes */
-      expires_in_minutes?: number;
+      expires_in_minutes?: number | null;
       /** Cooldown Period */
-      cooldown_period?: number;
-      /**
-       * Grantor Persona Id
-       * Format: uuid4
-       */
-      grantor_persona_id?: string;
+      cooldown_period?: number | null;
+      /** Grantor Persona Id */
+      grantor_persona_id?: string | null;
       /** Min Points */
       min_points: number;
       /** Max Points */
@@ -2086,7 +2187,6 @@ export interface components {
     };
     /**
      * CURRENCY_TYPE
-     * @description An enumeration.
      * @enum {string}
      */
     CURRENCY_TYPE: "KARMA" | "USD";
@@ -2095,7 +2195,7 @@ export interface components {
       /** Category */
       category: string;
       /** Icon */
-      icon?: string;
+      icon?: string | null;
       /**
        * Created At
        * Format: date-time
@@ -2116,17 +2216,14 @@ export interface components {
       /** Description */
       description: string;
       /** Avatar */
-      avatar?: string;
+      avatar?: string | null;
       /**
        * Persona Id
        * Format: uuid
        */
       persona_id: string;
-      /**
-       * Persona Topic Id
-       * Format: uuid
-       */
-      persona_topic_id?: string;
+      /** Persona Topic Id */
+      persona_topic_id?: string | null;
       /**
        * Id
        * Format: uuid
@@ -2145,8 +2242,7 @@ export interface components {
     };
     /**
      * CharacterCreatedBy
-     * @description An enumeration.
-     * @enum {unknown}
+     * @enum {string}
      */
     CharacterCreatedBy: "BOT" | "USER";
     /** CharacterDBModel */
@@ -2162,25 +2258,25 @@ export interface components {
        */
       persona_id: string;
       /** Bio */
-      bio?: unknown[];
+      bio?: unknown[] | null;
       /** Lore */
-      lore?: unknown[];
+      lore?: unknown[] | null;
       /** Knowledge */
-      knowledge?: unknown[];
+      knowledge?: unknown[] | null;
       /** Adjectives */
-      adjectives?: unknown[];
+      adjectives?: unknown[] | null;
       /** Topics */
-      topics?: unknown[];
+      topics?: unknown[] | null;
       /** Message Examples */
-      message_examples?: unknown[];
+      message_examples?: unknown[] | null;
       /** Post Examples */
-      post_examples?: unknown[];
+      post_examples?: unknown[] | null;
       /** Style */
-      style?: Record<string, never>;
+      style?: Record<string, never> | null;
       /** Post Config */
-      post_config?: Record<string, never>;
+      post_config?: Record<string, never> | null;
       /** Post Custom Prompt */
-      post_custom_prompt?: string;
+      post_custom_prompt?: string | null;
       created_by: components["schemas"]["CharacterCreatedBy"];
       /**
        * Created At
@@ -2211,15 +2307,12 @@ export interface components {
       id: string;
       author_type: components["schemas"]["MessageAuthorType"];
       /** Vote */
-      vote?: number;
+      vote?: number | null;
       /** Text */
       text: string;
-      /**
-       * Expires At
-       * Format: date-time
-       */
-      expires_at?: string;
-      system_message_type?: components["schemas"]["SystemMessageType"];
+      /** Expires At */
+      expires_at?: string | null;
+      system_message_type?: components["schemas"]["SystemMessageType"] | null;
       /**
        * Persona Id
        * Format: uuid
@@ -2230,11 +2323,8 @@ export interface components {
        * Format: uuid
        */
       thread_id: string;
-      /**
-       * In Reply To Id
-       * Format: uuid
-       */
-      in_reply_to_id?: string;
+      /** In Reply To Id */
+      in_reply_to_id?: string | null;
       /** Skipped */
       skipped: boolean;
       /**
@@ -2267,11 +2357,8 @@ export interface components {
        * Format: uuid
        */
       thread_id: string;
-      /**
-       * Read At
-       * Format: date-time
-       */
-      read_at?: string;
+      /** Read At */
+      read_at?: string | null;
     };
     /** ChatMessagePersona */
     ChatMessagePersona: {
@@ -2282,15 +2369,12 @@ export interface components {
       id: string;
       author_type: components["schemas"]["MessageAuthorType"];
       /** Vote */
-      vote?: number;
+      vote?: number | null;
       /** Text */
       text: string;
-      /**
-       * Expires At
-       * Format: date-time
-       */
-      expires_at?: string;
-      system_message_type?: components["schemas"]["SystemMessageType"];
+      /** Expires At */
+      expires_at?: string | null;
+      system_message_type?: components["schemas"]["SystemMessageType"] | null;
       /**
        * Persona Id
        * Format: uuid
@@ -2301,11 +2385,8 @@ export interface components {
        * Format: uuid
        */
       thread_id: string;
-      /**
-       * In Reply To Id
-       * Format: uuid
-       */
-      in_reply_to_id?: string;
+      /** In Reply To Id */
+      in_reply_to_id?: string | null;
       /** Skipped */
       skipped: boolean;
       /**
@@ -2321,62 +2402,6 @@ export interface components {
       /** Prompter Contribution */
       prompter_contribution?: number;
       persona: components["schemas"]["PublicPersonaDBModel"];
-    };
-    /** ChatMessagePersonaReplyRetrievalsVariants */
-    ChatMessagePersonaReplyRetrievalsVariants: {
-      /**
-       * Id
-       * Format: uuid
-       */
-      id: string;
-      author_type: components["schemas"]["MessageAuthorType"];
-      /** Vote */
-      vote?: number;
-      /** Text */
-      text: string;
-      /**
-       * Expires At
-       * Format: date-time
-       */
-      expires_at?: string;
-      system_message_type?: components["schemas"]["SystemMessageType"];
-      /**
-       * Persona Id
-       * Format: uuid
-       */
-      persona_id: string;
-      /**
-       * Thread Id
-       * Format: uuid
-       */
-      thread_id: string;
-      /**
-       * In Reply To Id
-       * Format: uuid
-       */
-      in_reply_to_id?: string;
-      /** Skipped */
-      skipped: boolean;
-      /**
-       * Created At
-       * Format: date-time
-       */
-      created_at: string;
-      /**
-       * Updated At
-       * Format: date-time
-       */
-      updated_at: string;
-      /** Prompter Contribution */
-      prompter_contribution?: number;
-      persona: components["schemas"]["PublicPersonaDBModel"];
-      in_reply_to?: components["schemas"]["ChatMessagePersona"];
-      /** Retrievals */
-      retrievals?: components["schemas"]["RetrievalDBModel"][];
-      /** Variants */
-      variants?: components["schemas"]["VariantPersonaDBModel"][];
-      /** Metadatas */
-      metadatas?: components["schemas"]["ChatMessageMetadataDBModel"][];
     };
     /** ChatThreadDBModel */
     ChatThreadDBModel: {
@@ -2385,11 +2410,11 @@ export interface components {
       /** Is Direct Message */
       is_direct_message: boolean;
       /** Disappearing Messages Seconds */
-      disappearing_messages_seconds?: number;
+      disappearing_messages_seconds?: number | null;
       /** Image Url */
-      image_url?: string;
+      image_url?: string | null;
       /** Deva Verse */
-      deva_verse?: boolean;
+      deva_verse?: boolean | null;
       /**
        * Latest Updated At
        * Format: date-time
@@ -2425,11 +2450,11 @@ export interface components {
       /** Is Direct Message */
       is_direct_message: boolean;
       /** Disappearing Messages Seconds */
-      disappearing_messages_seconds?: number;
+      disappearing_messages_seconds?: number | null;
       /** Image Url */
-      image_url?: string;
+      image_url?: string | null;
       /** Deva Verse */
-      deva_verse?: boolean;
+      deva_verse?: boolean | null;
       /**
        * Latest Updated At
        * Format: date-time
@@ -2477,11 +2502,8 @@ export interface components {
       persona_id: string;
       /** Unread Count */
       unread_count: number;
-      /**
-       * Last Read Message Id
-       * Format: uuid4
-       */
-      last_read_message_id?: string;
+      /** Last Read Message Id */
+      last_read_message_id?: string | null;
       /** Mentions Count */
       mentions_count: number;
     };
@@ -2499,9 +2521,9 @@ export interface components {
       persona_id: string;
       /**
        * Creator Inference Cost Multiplier
-       * @default 0.3
+       * @default 0.299999999999999988897769753748434595763683319091796875
        */
-      creator_inference_cost_multiplier?: number;
+      creator_inference_cost_multiplier?: number | string;
     };
     /** ComputeAITensorList */
     ComputeAITensorList: {
@@ -2541,8 +2563,7 @@ export interface components {
     };
     /**
      * ConversationHistoryRole
-     * @description An enumeration.
-     * @enum {unknown}
+     * @enum {string}
      */
     ConversationHistoryRole: "SYSTEM" | "BOT" | "USER";
     /** CreateAPIKey */
@@ -2550,7 +2571,7 @@ export interface components {
       /** Name */
       name: string;
       /** Description */
-      description?: string;
+      description?: string | null;
     };
     /** CreateAccount */
     CreateAccount: {
@@ -2566,47 +2587,46 @@ export interface components {
       /** Provider */
       provider: string;
       /** Refresh Token */
-      refresh_token?: string;
+      refresh_token?: string | null;
       /** Access Token */
-      access_token?: string;
+      access_token?: string | null;
       /** Oauth Token */
-      oauth_token?: string;
+      oauth_token?: string | null;
       /** Oauth Token Secret */
-      oauth_token_secret?: string;
+      oauth_token_secret?: string | null;
       /** Scope */
-      scope?: string;
+      scope?: string | null;
       /** Id Token */
-      id_token?: string;
+      id_token?: string | null;
       /** Session State */
-      session_state?: string;
+      session_state?: string | null;
     };
     /** CreateAiToken */
     CreateAiToken: {
-      /** Token Id */
-      token_id: string;
-      /** Pool Id */
-      pool_id: string;
-      /** Transaction Id */
-      transaction_id: string;
+      /** Token Address */
+      token_address: string;
+      /** Bonding Curve Pool Address */
+      bonding_curve_pool_address?: string | null;
+      /** Meteora Pool Address */
+      meteora_pool_address?: string | null;
+      /** @default BONDING_CURVE_POOL */
+      pool_status?: components["schemas"]["PoolStatus"];
     };
     /** CreateAirdropPoint */
     CreateAirdropPoint: {
       /** Reserved For */
-      reserved_for?: string;
+      reserved_for?: string | null;
       /**
        * First Time Users Only
        * @default true
        */
       first_time_users_only?: boolean;
       /** Expires In Minutes */
-      expires_in_minutes?: number;
+      expires_in_minutes?: number | null;
       /** Cooldown Period */
-      cooldown_period?: number;
-      /**
-       * Grantor Persona Id
-       * Format: uuid4
-       */
-      grantor_persona_id?: string;
+      cooldown_period?: number | null;
+      /** Grantor Persona Id */
+      grantor_persona_id?: string | null;
       /** Code */
       code?: string;
       /** Points */
@@ -2615,16 +2635,16 @@ export interface components {
     /** CreateAirdropPointUser */
     CreateAirdropPointUser: {
       /** Reserved For */
-      reserved_for?: string;
+      reserved_for?: string | null;
       /**
        * First Time Users Only
        * @default true
        */
       first_time_users_only?: boolean;
       /** Expires In Minutes */
-      expires_in_minutes?: number;
+      expires_in_minutes?: number | null;
       /** Cooldown Period */
-      cooldown_period?: number;
+      cooldown_period?: number | null;
     };
     /** CreateAuditLog */
     CreateAuditLog: {
@@ -2640,7 +2660,7 @@ export interface components {
       /**
        * Author Type
        * @default BOT
-       * @enum {string}
+       * @constant
        */
       author_type?: "BOT";
       /**
@@ -2665,22 +2685,16 @@ export interface components {
     CreateBotPost: {
       /** Text */
       text: string;
-      /**
-       * In Reply To Id
-       * Format: uuid4
-       */
-      in_reply_to_id?: string;
+      /** In Reply To Id */
+      in_reply_to_id?: string | null;
       /**
        * Author Type
        * @default BOT
-       * @enum {string}
+       * @constant
        */
       author_type?: "BOT";
-      /**
-       * Channel Id
-       * Format: uuid4
-       */
-      channel_id?: string;
+      /** Channel Id */
+      channel_id?: string | null;
       /**
        * Auto Generated
        * @default false
@@ -2697,26 +2711,20 @@ export interface components {
       /** Category */
       category: string;
       /** Icon */
-      icon?: string;
+      icon?: string | null;
     };
     /** CreateChannel */
     CreateChannel: {
       /** Name */
-      name?: string;
+      name?: string | null;
       /** Handle */
-      handle?: string;
+      handle?: string | null;
       /** Description */
-      description?: string;
-      /**
-       * Avatar
-       * Format: uri
-       */
-      avatar?: string;
-      /**
-       * Persona Topic Id
-       * Format: uuid4
-       */
-      persona_topic_id?: string;
+      description?: string | null;
+      /** Avatar */
+      avatar?: string | null;
+      /** Persona Topic Id */
+      persona_topic_id?: string | null;
     };
     /** CreateCharacter */
     CreateCharacter: {
@@ -2735,9 +2743,8 @@ export interface components {
       /** Post Examples */
       post_examples?: string[];
       /** Post Custom Prompt */
-      post_custom_prompt?: string;
+      post_custom_prompt?: string | null;
       /**
-       * Style
        * @default {
        *   "all": [],
        *   "chat": [],
@@ -2746,7 +2753,6 @@ export interface components {
        */
       style?: components["schemas"]["CharacterStyle"];
       /**
-       * Post Config
        * @default {
        *   "post_interval_min": 1440,
        *   "post_interval_max": 1440,
@@ -2764,9 +2770,9 @@ export interface components {
       /** Members */
       members?: string[];
       /** Disappearing Messages Seconds */
-      disappearing_messages_seconds?: number;
+      disappearing_messages_seconds?: number | null;
       /** Image Url */
-      image_url?: string;
+      image_url?: string | null;
       /**
        * Is Direct Message
        * @default false
@@ -2779,21 +2785,12 @@ export interface components {
       redirect_uris: string[];
       /** Client Name */
       client_name: string;
-      /**
-       * Avatar
-       * Format: uri
-       */
-      avatar?: string;
-      /**
-       * Terms Url
-       * Format: uri
-       */
-      terms_url?: string;
-      /**
-       * Policy Url
-       * Format: uri
-       */
-      policy_url?: string;
+      /** Avatar */
+      avatar?: string | null;
+      /** Terms Url */
+      terms_url?: string | null;
+      /** Policy Url */
+      policy_url?: string | null;
       /**
        * Scopes
        * @default [
@@ -2802,12 +2799,14 @@ export interface components {
        */
       scopes?: string[];
       /**
-       * Persona Id
-       * Format: uuid4
+       * Origin Urls
+       * @default []
        */
-      persona_id?: string;
+      origin_urls?: string[];
+      /** Persona Id */
+      persona_id?: string | null;
       /** Client Description */
-      client_description?: string;
+      client_description?: string | null;
     };
     /** CreateGem */
     CreateGem: {
@@ -2826,7 +2825,7 @@ export interface components {
        * Format: uuid4
        */
       persona_id: string;
-      source_type?: components["schemas"]["IngestSourceType"];
+      source_type?: components["schemas"]["IngestSourceType"] | null;
       /**
        * State
        * @default PENDING
@@ -2841,16 +2840,10 @@ export interface components {
        * @default false
        */
       interactive_mode?: boolean;
-      /**
-       * Note Id
-       * Format: uuid4
-       */
-      note_id?: string;
-      /**
-       * Voice Note Id
-       * Format: uuid4
-       */
-      voice_note_id?: string;
+      /** Note Id */
+      note_id?: string | null;
+      /** Voice Note Id */
+      voice_note_id?: string | null;
       /**
        * Is Public
        * @default true
@@ -2862,16 +2855,13 @@ export interface components {
       /** Content */
       content: string;
       /** Handle */
-      handle?: string;
-      /**
-       * Source Url
-       * Format: uri
-       */
-      source_url?: string;
+      handle?: string | null;
+      /** Source Url */
+      source_url?: string | null;
       /** Type */
       type: string;
       /** Type Custom Data */
-      type_custom_data?: Record<string, never>;
+      type_custom_data?: Record<string, never> | null;
       /**
        * Chat Message Id
        * Format: uuid4
@@ -2880,16 +2870,10 @@ export interface components {
     };
     /** CreateNote */
     CreateNote: {
-      /**
-       * Id
-       * Format: uuid4
-       */
-      id?: string;
-      /**
-       * Created At
-       * Format: date-time
-       */
-      created_at?: string;
+      /** Id */
+      id?: string | null;
+      /** Created At */
+      created_at?: string | null;
       /**
        * Daily Note
        * @default false
@@ -2909,11 +2893,8 @@ export interface components {
     CreateNoteComment: {
       /** Text */
       text: string;
-      /**
-       * In Reply To Id
-       * Format: uuid4
-       */
-      in_reply_to_id?: string;
+      /** In Reply To Id */
+      in_reply_to_id?: string | null;
       /**
        * Note Id
        * Format: uuid4
@@ -2925,57 +2906,48 @@ export interface components {
       /** Username */
       username: string;
       /** Display Name */
-      display_name?: string;
+      display_name?: string | null;
       /** Description */
-      description?: string;
-      /**
-       * Avatar
-       * Format: uri
-       */
-      avatar?: string;
-      /**
-       * Cover Image
-       * Format: uri
-       */
-      cover_image?: string;
+      description?: string | null;
+      /** Avatar */
+      avatar?: string | null;
+      /** Cover Image */
+      cover_image?: string | null;
       /** Id Token */
-      id_token?: string;
+      id_token?: string | null;
       /** Miscellaneous Data */
-      miscellaneous_data?: Record<string, never>;
+      miscellaneous_data?: Record<string, never> | null;
       /** Verified */
-      verified?: boolean;
+      verified?: boolean | null;
       /** Interactive Mode */
-      interactive_mode?: boolean;
+      interactive_mode?: boolean | null;
       /** Categories */
-      categories?: string[];
+      categories?: string[] | null;
       /** @default PUBLIC */
       visibility?: components["schemas"]["PersonaVisibility"];
       /** Authentication Credentials */
-      authentication_credentials?: Record<string, never>;
-      twitter_profile?: components["schemas"]["TwitterProfile"];
+      authentication_credentials?: Record<string, never> | null;
+      twitter_profile?: components["schemas"]["TwitterProfile"] | null;
       /**
        * Creator Inference Cost Multiplier
        * @default 0
        */
-      creator_inference_cost_multiplier?: number;
+      creator_inference_cost_multiplier?: number | string;
       /** Tags */
-      tags?: string[];
+      tags?: string[] | null;
     };
     /** CreatePostRetrieval */
     CreatePostRetrieval: {
       /** Content */
       content: string;
       /** Handle */
-      handle?: string;
-      /**
-       * Source Url
-       * Format: uri
-       */
-      source_url?: string;
+      handle?: string | null;
+      /** Source Url */
+      source_url?: string | null;
       /** Type */
       type: string;
       /** Type Custom Data */
-      type_custom_data?: Record<string, never>;
+      type_custom_data?: Record<string, never> | null;
       /**
        * Post Id
        * Format: uuid4
@@ -3005,23 +2977,20 @@ export interface components {
       /** Username */
       username: string;
       /** Miscellaneous Data */
-      miscellaneous_data?: Record<string, never>;
+      miscellaneous_data?: Record<string, never> | null;
     };
     /** CreateRetrievalBase */
     CreateRetrievalBase: {
       /** Content */
       content: string;
       /** Handle */
-      handle?: string;
-      /**
-       * Source Url
-       * Format: uri
-       */
-      source_url?: string;
+      handle?: string | null;
+      /** Source Url */
+      source_url?: string | null;
       /** Type */
       type: string;
       /** Type Custom Data */
-      type_custom_data?: Record<string, never>;
+      type_custom_data?: Record<string, never> | null;
     };
     /** CreateSession */
     CreateSession: {
@@ -3051,7 +3020,7 @@ export interface components {
       /**
        * Author Type
        * @default SYSTEM
-       * @enum {string}
+       * @constant
        */
       author_type?: "SYSTEM";
       /**
@@ -3089,11 +3058,8 @@ export interface components {
        * Format: email
        */
       email: string;
-      /**
-       * Email Verified
-       * Format: date-time
-       */
-      email_verified?: string;
+      /** Email Verified */
+      email_verified?: string | null;
     };
     /** CreateUserChatMessage */
     CreateUserChatMessage: {
@@ -3105,7 +3071,7 @@ export interface components {
       /**
        * Author Type
        * @default USER
-       * @enum {string}
+       * @constant
        */
       author_type?: "USER";
       /**
@@ -3125,22 +3091,16 @@ export interface components {
     CreateUserPost: {
       /** Text */
       text: string;
-      /**
-       * In Reply To Id
-       * Format: uuid4
-       */
-      in_reply_to_id?: string;
+      /** In Reply To Id */
+      in_reply_to_id?: string | null;
       /**
        * Author Type
        * @default USER
        * @enum {string}
        */
       author_type?: "USER" | "BOT";
-      /**
-       * Channel Id
-       * Format: uuid4
-       */
-      channel_id?: string;
+      /** Channel Id */
+      channel_id?: string | null;
       /**
        * Auto Generated
        * @default false
@@ -3206,6 +3166,46 @@ export interface components {
        */
       expires_at: string;
     };
+    /** CreateYapsPersona */
+    CreateYapsPersona: {
+      /** Username */
+      username: string;
+      /** Display Name */
+      display_name?: string | null;
+      /** Description */
+      description?: string | null;
+      /** Avatar */
+      avatar?: string | null;
+      /** Cover Image */
+      cover_image?: string | null;
+      /** Id Token */
+      id_token?: string | null;
+      /** Miscellaneous Data */
+      miscellaneous_data?: Record<string, never> | null;
+      /** Verified */
+      verified?: boolean | null;
+      /** Interactive Mode */
+      interactive_mode?: boolean | null;
+      /** Categories */
+      categories?: string[] | null;
+      /** @default PUBLIC */
+      visibility?: components["schemas"]["PersonaVisibility"];
+      /** Authentication Credentials */
+      authentication_credentials?: Record<string, never> | null;
+      twitter_profile?: components["schemas"]["TwitterProfile"] | null;
+      /**
+       * Creator Inference Cost Multiplier
+       * @default 0
+       */
+      creator_inference_cost_multiplier?: number | string;
+      /** Tags */
+      tags?: string[] | null;
+      /**
+       * From Yaps
+       * @default true
+       */
+      from_yaps?: boolean;
+    };
     /** CreatorLBItem */
     CreatorLBItem: {
       /**
@@ -3215,15 +3215,12 @@ export interface components {
       id: string;
       /** Username */
       username: string;
-      /**
-       * User Id
-       * Format: uuid4
-       */
-      user_id?: string;
+      /** User Id */
+      user_id?: string | null;
       /** Display Name */
-      display_name?: string;
+      display_name?: string | null;
       /** Avatar */
-      avatar?: string;
+      avatar?: string | null;
       /** Level */
       level: number;
       /** Rank */
@@ -3304,15 +3301,12 @@ export interface components {
       id: string;
       /** Username */
       username: string;
-      /**
-       * User Id
-       * Format: uuid4
-       */
-      user_id?: string;
+      /** User Id */
+      user_id?: string | null;
       /** Display Name */
-      display_name?: string;
+      display_name?: string | null;
       /** Avatar */
-      avatar?: string;
+      avatar?: string | null;
       /** Level */
       level: number;
       /** Rank */
@@ -3331,7 +3325,7 @@ export interface components {
       /** Avatar Url */
       avatar_url: string;
       /** Display Name */
-      display_name?: string;
+      display_name?: string | null;
       /** Username */
       username: string;
       /** Deva Id */
@@ -3357,7 +3351,7 @@ export interface components {
       /** Text */
       text: string;
       /** Etl Meta Data */
-      etl_meta_data?: Record<string, never>;
+      etl_meta_data?: Record<string, never> | null;
       /** Active */
       active: boolean;
       /**
@@ -3431,14 +3425,13 @@ export interface components {
        * Format: uuid
        */
       persona_id: string;
-      /** Transaction Id */
-      transaction_id: string;
-      /** Pool Id */
-      pool_id: string;
-      /** Token Id */
-      token_id: string;
-      /** Primary */
-      primary: boolean;
+      /** Bonding Curve Pool Address */
+      bonding_curve_pool_address: string;
+      /** Meteora Pool Address */
+      meteora_pool_address?: string | null;
+      /** Token Address */
+      token_address: string;
+      pool_status: components["schemas"]["PoolStatus"];
       /**
        * Id
        * Format: uuid
@@ -3460,29 +3453,51 @@ export interface components {
       /** Learned */
       learned: boolean;
     };
+    /** FullAITokenDBModel */
+    FullAITokenDBModel: {
+      /**
+       * Persona Id
+       * Format: uuid
+       */
+      persona_id: string;
+      /** Bonding Curve Pool Address */
+      bonding_curve_pool_address: string;
+      /** Meteora Pool Address */
+      meteora_pool_address?: string | null;
+      /** Token Address */
+      token_address: string;
+      pool_status: components["schemas"]["PoolStatus"];
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /**
+       * Updated At
+       * Format: date-time
+       */
+      updated_at: string;
+      persona: components["schemas"]["PublicPersonaDBModel"];
+    };
     /** FullAirdropPointDBModel */
     FullAirdropPointDBModel: {
       /** Code */
       code: string;
       /** Points */
       points: number;
-      /**
-       * Claimer Persona Id
-       * Format: uuid
-       */
-      claimer_persona_id?: string;
-      /**
-       * Grantor Persona Id
-       * Format: uuid
-       */
-      grantor_persona_id?: string;
+      /** Claimer Persona Id */
+      claimer_persona_id?: string | null;
+      /** Grantor Persona Id */
+      grantor_persona_id?: string | null;
       /** Reserved For */
-      reserved_for?: string;
-      /**
-       * Expires At
-       * Format: date-time
-       */
-      expires_at?: string;
+      reserved_for?: string | null;
+      /** Expires At */
+      expires_at?: string | null;
       /** First Time Users Only */
       first_time_users_only: boolean;
       /** Cooldown Period */
@@ -3502,7 +3517,7 @@ export interface components {
        * Format: date-time
        */
       updated_at: string;
-      claimer_persona?: components["schemas"]["PublicPersonaDBModel"];
+      claimer_persona?: components["schemas"]["PublicPersonaDBModel"] | null;
     };
     /** FullChatMessageDBModel */
     FullChatMessageDBModel: {
@@ -3513,15 +3528,12 @@ export interface components {
       id: string;
       author_type: components["schemas"]["MessageAuthorType"];
       /** Vote */
-      vote?: number;
+      vote?: number | null;
       /** Text */
       text: string;
-      /**
-       * Expires At
-       * Format: date-time
-       */
-      expires_at?: string;
-      system_message_type?: components["schemas"]["SystemMessageType"];
+      /** Expires At */
+      expires_at?: string | null;
+      system_message_type?: components["schemas"]["SystemMessageType"] | null;
       /**
        * Persona Id
        * Format: uuid
@@ -3532,11 +3544,8 @@ export interface components {
        * Format: uuid
        */
       thread_id: string;
-      /**
-       * In Reply To Id
-       * Format: uuid
-       */
-      in_reply_to_id?: string;
+      /** In Reply To Id */
+      in_reply_to_id?: string | null;
       /** Skipped */
       skipped: boolean;
       /**
@@ -3552,14 +3561,14 @@ export interface components {
       /** Prompter Contribution */
       prompter_contribution?: number;
       persona: components["schemas"]["PublicPersonaDBModel"];
-      in_reply_to?: components["schemas"]["ChatMessagePersona"];
+      in_reply_to?: components["schemas"]["ChatMessagePersona"] | null;
+      thread?: components["schemas"]["ChatThreadDBModel"] | null;
       /** Retrievals */
       retrievals?: components["schemas"]["RetrievalDBModel"][];
       /** Variants */
       variants?: components["schemas"]["VariantPersonaDBModel"][];
       /** Metadatas */
       metadatas?: components["schemas"]["ChatMessageMetadataDBModel"][];
-      thread: components["schemas"]["ChatThreadDBModel"];
     };
     /** FullGemDBModel */
     FullGemDBModel: {
@@ -3592,15 +3601,15 @@ export interface components {
        * Format: date-time
        */
       updated_at: string;
-      post: components["schemas"]["PostWithPersonaDBModel"];
+      post: components["schemas"]["PostWithPersonaAndGemDBModel"];
       minter: components["schemas"]["PublicPersonaDBModel"];
     };
     /** FullKarmaLedgerDBModel */
     FullKarmaLedgerDBModel: {
       /** Amount */
-      amount: number;
+      amount: string;
       /** Net Amount */
-      net_amount: number;
+      net_amount: string;
       karma_type: components["schemas"]["KarmaType"];
       transaction_type: components["schemas"]["TransactionType"];
       /**
@@ -3613,11 +3622,8 @@ export interface components {
        * Format: uuid
        */
       to_id: string;
-      /**
-       * Reference Id
-       * Format: uuid
-       */
-      reference_id?: string;
+      /** Reference Id */
+      reference_id?: string | null;
       /** Meta */
       meta: Record<string, never>;
       /**
@@ -3635,11 +3641,6 @@ export interface components {
     };
     /** FullNoteDBModel */
     FullNoteDBModel: {
-      /**
-       * Id
-       * Format: uuid
-       */
-      id: string;
       /** Title */
       title: string;
       /** Text */
@@ -3653,6 +3654,11 @@ export interface components {
       persona_id: string;
       /** Is Public */
       is_public: boolean;
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
       /**
        * Created At
        * Format: date-time
@@ -3687,33 +3693,18 @@ export interface components {
       to_id: string;
       /** Is Read */
       is_read: boolean;
-      /**
-       * Post Id
-       * Format: uuid
-       */
-      post_id?: string;
-      /**
-       * Chat Message Id
-       * Format: uuid
-       */
-      chat_message_id?: string;
-      /**
-       * Chat Thread Id
-       * Format: uuid
-       */
-      chat_thread_id?: string;
-      /**
-       * Variant Id
-       * Format: uuid
-       */
-      variant_id?: string;
-      /**
-       * Transaction Id
-       * Format: uuid
-       */
-      transaction_id?: string;
+      /** Post Id */
+      post_id?: string | null;
+      /** Chat Message Id */
+      chat_message_id?: string | null;
+      /** Chat Thread Id */
+      chat_thread_id?: string | null;
+      /** Variant Id */
+      variant_id?: string | null;
+      /** Transaction Id */
+      transaction_id?: string | null;
       /** Meta */
-      meta?: Record<string, never>;
+      meta?: Record<string, never> | null;
       /**
        * Id
        * Format: uuid
@@ -3730,20 +3721,20 @@ export interface components {
        */
       updated_at: string;
       from_persona: components["schemas"]["PublicPersonaDBModel"];
-      post?: components["schemas"]["PostDBModel"];
-      chat_message?: components["schemas"]["ChatMessageDBModel"];
-      chat_thread?: components["schemas"]["ChatThreadDBModel"];
-      variant?: components["schemas"]["VariantDBModel"];
-      transaction?: components["schemas"]["KarmaLedgerDBModel"];
+      post?: components["schemas"]["PostDBModel"] | null;
+      chat_message?: components["schemas"]["ChatMessageDBModel"] | null;
+      chat_thread?: components["schemas"]["ChatThreadDBModel"] | null;
+      variant?: components["schemas"]["VariantDBModel"] | null;
+      transaction?: components["schemas"]["KarmaLedgerDBModel"] | null;
     };
     /** FullOidcAuthorizationCodeDBModel */
     FullOidcAuthorizationCodeDBModel: {
       /** Nonce */
-      nonce: string;
+      nonce?: string | null;
       /** Code Challenge */
-      code_challenge?: string;
+      code_challenge?: string | null;
       /** Code Challenge Method */
-      code_challenge_method?: string;
+      code_challenge_method?: string | null;
       /**
        * Id
        * Format: uuid
@@ -3786,95 +3777,98 @@ export interface components {
        * Format: uuid
        */
       id: string;
-      /**
-       * User Id
-       * Format: uuid
-       */
-      user_id?: string;
+      /** User Id */
+      user_id?: string | null;
       /** Display Name */
-      display_name?: string;
+      display_name?: string | null;
       /** Username */
       username: string;
       /** Description */
-      description?: string;
+      description?: string | null;
       /** Avatar */
-      avatar?: string;
+      avatar?: string | null;
       /** Cover Image */
-      cover_image?: string;
+      cover_image?: string | null;
       /** Id Token */
-      id_token?: string;
+      id_token?: string | null;
       visibility: components["schemas"]["PersonaVisibility"];
       /** Miscellaneous Data */
-      miscellaneous_data?: Record<string, never>;
+      miscellaneous_data?: Record<string, never> | null;
       /** Twitter Profile */
-      twitter_profile?: Record<string, never>;
+      twitter_profile?: Record<string, never> | null;
       /** Authentication Credentials */
-      authentication_credentials?: Record<string, never>;
+      authentication_credentials?: Record<string, never> | null;
       /** Telegram Bot Token Encrypted */
-      telegram_bot_token_encrypted?: string;
+      telegram_bot_token_encrypted?: string | null;
       /** Is Governor */
       is_governor: boolean;
       /** Verified */
-      verified?: boolean;
+      verified?: boolean | null;
       /** Interactive Mode */
-      interactive_mode?: boolean;
+      interactive_mode?: boolean | null;
       /** Prompted Settings */
       prompted_settings: Record<string, never>;
       /** Prompter Settings */
       prompter_settings: Record<string, never>;
       /** Creator Inference Cost Multiplier */
-      creator_inference_cost_multiplier: number;
+      creator_inference_cost_multiplier: string;
       /** Deva Level */
       deva_level: number;
       /** User Level */
       user_level: number;
       /** Tags */
-      tags?: unknown[];
+      tags?: unknown[] | null;
       /** Hashed Id */
-      hashed_id?: string;
+      hashed_id?: string | null;
       /** Allow Multiple Airdrop Claims */
       allow_multiple_airdrop_claims: boolean;
       /** Get Airdrop */
       get_airdrop: boolean;
       /** Karma Reputation */
-      karma_reputation: number;
+      karma_reputation: string;
       /** Auto Ingest Post */
       auto_ingest_post: boolean;
       /** Exclude Deva Prompt Post */
       exclude_deva_prompt_post: boolean;
       /** Karma Confirmation Threshold */
-      karma_confirmation_threshold: number;
+      karma_confirmation_threshold: string;
       /** Karma Confirmation Threshold Enabled */
       karma_confirmation_threshold_enabled: boolean;
       /** Allow Genie Daily Allowance */
       allow_genie_daily_allowance: boolean;
       /** Bronze Karma */
-      bronze_karma: number;
+      bronze_karma: string;
       /** Silver Karma */
-      silver_karma: number;
+      silver_karma: string;
       /** Gold Karma */
-      gold_karma: number;
+      gold_karma: string;
       /** Purchased Silver Karma */
-      purchased_silver_karma: number;
+      purchased_silver_karma: string;
       /** Purchased Gold Karma */
-      purchased_gold_karma: number;
+      purchased_gold_karma: string;
       /** Public Key */
       public_key: string;
       /** Telegram Id */
-      telegram_id?: string;
+      telegram_id?: string | null;
       /** Discord Id */
-      discord_id?: string;
-      /**
-       * Invited By
-       * Format: uuid
-       */
-      invited_by?: string;
+      discord_id?: string | null;
+      /** Invited By */
+      invited_by?: string | null;
       /** Has Followed Ten Planet Twitter */
       has_followed_ten_planet_twitter: boolean;
       /** From Foom */
       from_foom: boolean;
+      /** From Yaps */
+      from_yaps: boolean;
+      /**
+       * Yaps Last Indexed At
+       * Format: date-time
+       */
+      yaps_last_indexed_at: string;
       /** Auto Post Twitter */
       auto_post_twitter: boolean;
+      /** Smart */
+      smart: boolean;
       /**
        * Created At
        * Format: date-time
@@ -3911,30 +3905,20 @@ export interface components {
        * Format: uuid
        */
       persona_id: string;
-      /**
-       * In Reply To Id
-       * Format: uuid
-       */
-      in_reply_to_id?: string;
+      /** In Reply To Id */
+      in_reply_to_id?: string | null;
       /** Skipped */
       skipped: boolean;
-      /**
-       * Mentioned Profile Persona Id
-       * Format: uuid
-       */
-      mentioned_profile_persona_id?: string;
-      /**
-       * Mentioned As Bot Persona Id
-       * Format: uuid
-       */
-      mentioned_as_bot_persona_id?: string;
-      /**
-       * Channel Id
-       * Format: uuid
-       */
-      channel_id?: string;
+      /** Mentioned Profile Persona Id */
+      mentioned_profile_persona_id?: string | null;
+      /** Mentioned As Bot Persona Id */
+      mentioned_as_bot_persona_id?: string | null;
+      /** Channel Id */
+      channel_id?: string | null;
       /** Twitter Tweet Id */
-      twitter_tweet_id?: string;
+      twitter_tweet_id?: string | null;
+      /** Twitter Cross Post */
+      twitter_cross_post: boolean;
       /** Auto Generated */
       auto_generated: boolean;
       /**
@@ -3948,19 +3932,16 @@ export interface components {
        */
       updated_at: string;
       /** Backlink Tweet Url */
-      backlink_tweet_url?: string;
+      backlink_tweet_url?: string | null;
       /** Replies Count */
       replies_count?: number;
       /** Likes Count */
       likes_count?: number;
       /** Dislikes Count */
       dislikes_count?: number;
-      user_reaction?: components["schemas"]["PostReaction"];
-      /**
-       * User Ingest
-       * Format: uuid4
-       */
-      user_ingest?: string;
+      user_reaction?: components["schemas"]["PostReaction"] | null;
+      /** User Ingest */
+      user_ingest?: string | null;
       /** Prompter Contribution */
       prompter_contribution?: number;
       persona: components["schemas"]["PublicPersonaDBModel"];
@@ -3968,7 +3949,7 @@ export interface components {
       retrievals?: components["schemas"]["RetrievalDBModel"][];
       /** Variants */
       variants?: components["schemas"]["VariantPersonaDBModel"][];
-      minted_gem?: components["schemas"]["GemDBModel"];
+      minted_gem?: components["schemas"]["GemDBModel"] | null;
     };
     /** FullReferralDBModel */
     FullReferralDBModel: {
@@ -3979,13 +3960,10 @@ export interface components {
        * Format: uuid
        */
       referrer_id: string;
-      /**
-       * Referred Id
-       * Format: uuid
-       */
-      referred_id?: string;
+      /** Referred Id */
+      referred_id?: string | null;
       /** Reserved For */
-      reserved_for?: string;
+      reserved_for?: string | null;
       /**
        * Id
        * Format: uuid
@@ -4001,8 +3979,8 @@ export interface components {
        * Format: date-time
        */
       updated_at: string;
-      referred?: components["schemas"]["PublicPersonaDBModel"];
-      status?: components["schemas"]["ReferralStatus"];
+      referred?: components["schemas"]["PublicPersonaDBModel"] | null;
+      status?: components["schemas"]["ReferralStatus"] | null;
     };
     /** FullTwitterPersonaAssociationDBModel */
     FullTwitterPersonaAssociationDBModel: {
@@ -4018,11 +3996,8 @@ export interface components {
        * Format: date-time
        */
       last_used_at: string;
-      /**
-       * Next Post Twitter At
-       * Format: date-time
-       */
-      next_post_twitter_at?: string;
+      /** Next Post Twitter At */
+      next_post_twitter_at?: string | null;
       /**
        * Id
        * Format: uuid
@@ -4056,16 +4031,10 @@ export interface components {
       text: string;
       /** In Reply To */
       in_reply_to: string;
-      /**
-       * Post Id
-       * Format: uuid
-       */
-      post_id?: string;
-      /**
-       * Chat Message Id
-       * Format: uuid
-       */
-      chat_message_id?: string;
+      /** Post Id */
+      post_id?: string | null;
+      /** Chat Message Id */
+      chat_message_id?: string | null;
       /** Published */
       published: boolean;
       /** Learned */
@@ -4089,10 +4058,10 @@ export interface components {
       likes_count?: number;
       /** Dislikes Count */
       dislikes_count?: number;
-      user_reaction?: components["schemas"]["VariantReaction"];
+      user_reaction?: components["schemas"]["VariantReaction"] | null;
       persona: components["schemas"]["PublicPersonaDBModel"];
-      post?: components["schemas"]["PostDBModel"];
-      chat_message?: components["schemas"]["ChatMessageDBModel"];
+      post?: components["schemas"]["PostDBModel"] | null;
+      chat_message?: components["schemas"]["ChatMessageDBModel"] | null;
     };
     /** FullVoiceNoteDBModel */
     FullVoiceNoteDBModel: {
@@ -4104,14 +4073,14 @@ export interface components {
       /** Title */
       title: string;
       /** Audio Url */
-      audio_url?: string;
+      audio_url?: string | null;
       /** Duration Seconds */
-      duration_seconds?: number;
+      duration_seconds?: number | null;
       /** Transcript Url */
-      transcript_url?: string;
+      transcript_url?: string | null;
       transcript_state: components["schemas"]["TranscriptState"];
       /** Etl Arn */
-      etl_arn?: string;
+      etl_arn?: string | null;
       /**
        * Persona Id
        * Format: uuid
@@ -4155,17 +4124,11 @@ export interface components {
       /** Meta */
       meta: Record<string, never>;
       /** Aiss Balance */
-      aiss_balance: number;
-      /**
-       * Signer Wallet Id
-       * Format: uuid
-       */
-      signer_wallet_id?: string;
-      /**
-       * Passkey Id
-       * Format: uuid
-       */
-      passkey_id?: string;
+      aiss_balance: string;
+      /** Signer Wallet Id */
+      signer_wallet_id?: string | null;
+      /** Passkey Id */
+      passkey_id?: string | null;
       /**
        * Created At
        * Format: date-time
@@ -4178,7 +4141,7 @@ export interface components {
       updated_at: string;
       /** Smart Wallets */
       smart_wallets?: components["schemas"]["WalletDBModel"][];
-      passkey?: components["schemas"]["PasskeyDBModel"];
+      passkey?: components["schemas"]["PasskeyDBModel"] | null;
     };
     /** GemDBModel */
     GemDBModel: {
@@ -4221,15 +4184,12 @@ export interface components {
       id: string;
       /** Username */
       username: string;
-      /**
-       * User Id
-       * Format: uuid4
-       */
-      user_id?: string;
+      /** User Id */
+      user_id?: string | null;
       /** Display Name */
-      display_name?: string;
+      display_name?: string | null;
       /** Avatar */
-      avatar?: string;
+      avatar?: string | null;
       /** Level */
       level: number;
       /** Rank */
@@ -4243,8 +4203,7 @@ export interface components {
     };
     /**
      * GemListSort
-     * @description An enumeration.
-     * @enum {unknown}
+     * @enum {string}
      */
     GemListSort: "NEWEST" | "OLDEST";
     /** GenerateCharacter */
@@ -4264,15 +4223,12 @@ export interface components {
       id: string;
       /** Username */
       username: string;
-      /**
-       * User Id
-       * Format: uuid4
-       */
-      user_id?: string;
+      /** User Id */
+      user_id?: string | null;
       /** Display Name */
-      display_name?: string;
+      display_name?: string | null;
       /** Avatar */
-      avatar?: string;
+      avatar?: string | null;
       /** Level */
       level: number;
       /** Rank */
@@ -4319,9 +4275,9 @@ export interface components {
       source_type: components["schemas"]["IngestSourceType"];
       state: components["schemas"]["IngestState"];
       /** Error */
-      error?: Record<string, never>;
+      error?: Record<string, never> | null;
       /** Etl Arn */
-      etl_arn?: string;
+      etl_arn?: string | null;
       /** Etl Params */
       etl_params: Record<string, never>;
       /** Meta */
@@ -4332,26 +4288,14 @@ export interface components {
       estimated_cost: number;
       /** Is Public */
       is_public: boolean;
-      /**
-       * Post Id
-       * Format: uuid
-       */
-      post_id?: string;
-      /**
-       * Note Id
-       * Format: uuid
-       */
-      note_id?: string;
-      /**
-       * Voice Note Id
-       * Format: uuid
-       */
-      voice_note_id?: string;
-      /**
-       * Last Revised At
-       * Format: date-time
-       */
-      last_revised_at?: string;
+      /** Post Id */
+      post_id?: string | null;
+      /** Note Id */
+      note_id?: string | null;
+      /** Voice Note Id */
+      voice_note_id?: string | null;
+      /** Last Revised At */
+      last_revised_at?: string | null;
       /**
        * Id
        * Format: uuid
@@ -4388,17 +4332,18 @@ export interface components {
        * @default false
        */
       use_archive?: boolean;
+      [key: string]: unknown;
     };
     /**
      * IngestSourceType
      * @description Enum of source types.
-     * @enum {unknown}
+     * @enum {string}
      */
     IngestSourceType: "YOUTUBE_VIDEO" | "YOUTUBE_CAPTIONS" | "YOUTUBE_CHANNEL" | "YOUTUBE_PLAYLIST" | "TWITTER_USER" | "TWITTER_TWEET" | "WIKIPEDIA_ARTICLE" | "CUSTOM_JSON" | "PDF" | "CUSTOM_MARKDOWN" | "RSS" | "PODCAST" | "MEDIUM_ARTICLE" | "SUBSTACK_BLOG" | "VEDA" | "AUDIO" | "AUDIO_TRANSCRIPT" | "IMAGE" | "WEBPAGE" | "WORD" | "POWERPOINT" | "TEXT" | "TEXT_TO_IMAGE" | "IMAGE_TO_IMAGE" | "NOTION";
     /**
      * IngestState
      * @description Enum of ingest states.
-     * @enum {unknown}
+     * @enum {string}
      */
     IngestState: "PENDING" | "PROPOSED" | "IN_PROGRESS" | "NO_DATA" | "COMPLETED" | "FAILED" | "INACTIVE" | "PAYMENT_PENDING" | "PAYMENT_DONE";
     /** InviteUserCount */
@@ -4436,9 +4381,9 @@ export interface components {
     /** KarmaLedgerDBModel */
     KarmaLedgerDBModel: {
       /** Amount */
-      amount: number;
+      amount: string;
       /** Net Amount */
-      net_amount: number;
+      net_amount: string;
       karma_type: components["schemas"]["KarmaType"];
       transaction_type: components["schemas"]["TransactionType"];
       /**
@@ -4451,11 +4396,8 @@ export interface components {
        * Format: uuid
        */
       to_id: string;
-      /**
-       * Reference Id
-       * Format: uuid
-       */
-      reference_id?: string;
+      /** Reference Id */
+      reference_id?: string | null;
       /** Meta */
       meta: Record<string, never>;
       /**
@@ -4476,33 +4418,25 @@ export interface components {
      * GOLD - karma earned from queries (if the query was paid in gold karma)
      * PURCHASED_SILVER - karma purchased with USD
      * PURCHASED_GOLD - karma purchased with USDC
-     * @enum {unknown}
+     * @enum {string}
      */
     KarmaType: "BRONZE" | "SILVER" | "GOLD" | "PURCHASED_SILVER" | "PURCHASED_GOLD";
     /**
      * LLM
-     * @description An enumeration.
-     * @enum {unknown}
+     * @enum {string}
      */
     LLM: "openai:gpt-3.5-turbo" | "openai:gpt-4-turbo" | "openai:gpt-4o" | "anthropic:claude-instant-1" | "anthropic:claude-2" | "anthropic:claude-3-opus-20240229" | "anthropic:claude-3-sonnet-20240229" | "anthropic:claude-3-haiku-20240307" | "together:meta-llama/Llama-2-13b-chat-hf" | "together:meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo" | "together:meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo" | "together:meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo" | "together:mistralai/Mistral-7B-Instruct-v0.3" | "together:mistralai/Mixtral-8x7B-Instruct-v0.1" | "google:gemini-1.5-pro-latest";
     /**
      * LLMName
-     * @description An enumeration.
-     * @enum {unknown}
+     * @enum {string}
      */
     LLMName: "claude-instant-1" | "claude-2" | "claude-3-opus-20240229" | "claude-3-sonnet-20240229" | "claude-3-haiku-20240307" | "gpt-3.5-turbo" | "gpt-4-turbo" | "gpt-4o" | "meta-llama/Llama-2-13b-chat-hf" | "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo" | "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo" | "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo" | "mistralai/Mistral-7B-Instruct-v0.3" | "mistralai/Mixtral-8x7B-Instruct-v0.1" | "gemini-1.5-pro-latest";
     /** LibraryItem */
     LibraryItem: {
-      /**
-       * Variant Id
-       * Format: uuid4
-       */
-      variant_id?: string;
-      /**
-       * Reply Id
-       * Format: uuid4
-       */
-      reply_id?: string;
+      /** Variant Id */
+      variant_id?: string | null;
+      /** Reply Id */
+      reply_id?: string | null;
       /**
        * Id
        * Format: uuid4
@@ -4511,18 +4445,18 @@ export interface components {
       /** Url */
       url: string;
       /** Html Url */
-      html_url?: string;
+      html_url?: string | null;
       /** Type */
       type: components["schemas"]["ArtifactSourceType"] | components["schemas"]["LibraryItemBaseType"];
       /** File Size */
-      file_size?: string;
+      file_size?: string | null;
       /**
        * Created At
        * Format: date-time
        */
       created_at: string;
       /** Text */
-      text?: string;
+      text?: string | null;
       /** Learned */
       learned: boolean;
       /** Skipped */
@@ -4536,7 +4470,7 @@ export interface components {
       /** Status */
       status: string;
       /** Meta */
-      meta?: Record<string, never>;
+      meta?: Record<string, never> | null;
       /**
        * Is Public
        * @default true
@@ -4547,8 +4481,7 @@ export interface components {
     };
     /**
      * LibraryItemBaseType
-     * @description An enumeration.
-     * @enum {unknown}
+     * @enum {string}
      */
     LibraryItemBaseType: "POST" | "CHAT_MESSAGE";
     /** LinkDiscord */
@@ -4600,18 +4533,18 @@ export interface components {
       /** Meta */
       meta?: Record<string, never>;
       /** Signature */
-      signature?: string;
+      signature?: string | null;
       /** Smart Wallet Name */
-      smart_wallet_name?: string;
+      smart_wallet_name?: string | null;
       /** Smart Wallet Address */
-      smart_wallet_address?: string;
+      smart_wallet_address?: string | null;
       /** Smart Wallet Meta */
-      smart_wallet_meta?: Record<string, never>;
+      smart_wallet_meta?: Record<string, never> | null;
     };
     /** LiquidityPair */
     LiquidityPair: {
       /** Balance */
-      balance?: string;
+      balance?: string | null;
       /** Address */
       address: string;
       /** Token A Balance */
@@ -4626,8 +4559,8 @@ export interface components {
       token_a_address: string;
       /** Token B Address */
       token_b_address: string;
-      deva_a?: components["schemas"]["DisplayPersona"];
-      deva_b?: components["schemas"]["DisplayPersona"];
+      deva_a?: components["schemas"]["DisplayPersona"] | null;
+      deva_b?: components["schemas"]["DisplayPersona"] | null;
     };
     /** LiquidityPairsResult */
     LiquidityPairsResult: {
@@ -4646,8 +4579,7 @@ export interface components {
     };
     /**
      * MessageAuthorType
-     * @description An enumeration.
-     * @enum {unknown}
+     * @enum {string}
      */
     MessageAuthorType: "BOT" | "USER" | "SYSTEM";
     /** NWReferralLBItems */
@@ -4659,15 +4591,12 @@ export interface components {
       id: string;
       /** Username */
       username: string;
-      /**
-       * User Id
-       * Format: uuid4
-       */
-      user_id?: string;
+      /** User Id */
+      user_id?: string | null;
       /** Display Name */
-      display_name?: string;
+      display_name?: string | null;
       /** Avatar */
-      avatar?: string;
+      avatar?: string | null;
       /** Level */
       level: number;
       /** Rank */
@@ -4698,11 +4627,8 @@ export interface components {
        * Format: uuid
        */
       persona_id: string;
-      /**
-       * In Reply To Id
-       * Format: uuid
-       */
-      in_reply_to_id?: string;
+      /** In Reply To Id */
+      in_reply_to_id?: string | null;
       /** Text */
       text: string;
       /**
@@ -4718,11 +4644,6 @@ export interface components {
     };
     /** NoteDBModel */
     NoteDBModel: {
-      /**
-       * Id
-       * Format: uuid
-       */
-      id: string;
       /** Title */
       title: string;
       /** Text */
@@ -4736,6 +4657,11 @@ export interface components {
       persona_id: string;
       /** Is Public */
       is_public: boolean;
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
       /**
        * Created At
        * Format: date-time
@@ -4757,8 +4683,7 @@ export interface components {
     };
     /**
      * NotificationType
-     * @description An enumeration.
-     * @enum {unknown}
+     * @enum {string}
      */
     NotificationType: "MENTION_IN_FEED" | "REPLY_IN_FEED" | "LIKE_IN_FEED" | "LIKE_ON_DEVA_RESPONSE_IN_FEED" | "HUMAN_MENTION_IN_FEED" | "MENTION_IN_CHAT" | "ADDED_TO_THREAD" | "HUMAN_MENTION_IN_CHAT" | "REPLY_IN_CHAT" | "VARIANT_PROPOSED" | "VARIANT_PUBLISHED" | "DISLIKE_ON_VARIANT" | "LIKE_ON_VARIANT" | "BRONZE_KARMA_CREDIT" | "SILVER_KARMA_CREDIT" | "GOLD_KARMA_CREDIT" | "PAYMENT_FAILURE";
     /** OidcAccessTokenJWT */
@@ -4780,11 +4705,11 @@ export interface components {
     /** OidcAuthorizationCodeDBModel */
     OidcAuthorizationCodeDBModel: {
       /** Nonce */
-      nonce: string;
+      nonce?: string | null;
       /** Code Challenge */
-      code_challenge?: string;
+      code_challenge?: string | null;
       /** Code Challenge Method */
-      code_challenge_method?: string;
+      code_challenge_method?: string | null;
       /**
        * Id
        * Format: uuid
@@ -4827,20 +4752,19 @@ export interface components {
       /** Client Name */
       client_name: string;
       /** Avatar */
-      avatar?: string;
+      avatar?: string | null;
       /** Terms Url */
-      terms_url?: string;
+      terms_url?: string | null;
       /** Policy Url */
-      policy_url?: string;
+      policy_url?: string | null;
       /** Scopes */
       scopes: unknown[];
-      /**
-       * Persona Id
-       * Format: uuid
-       */
-      persona_id?: string;
+      /** Origin Urls */
+      origin_urls?: unknown[] | null;
+      /** Persona Id */
+      persona_id?: string | null;
       /** Client Description */
-      client_description?: string;
+      client_description?: string | null;
       /**
        * Id
        * Format: uuid
@@ -4864,20 +4788,19 @@ export interface components {
       /** Client Name */
       client_name: string;
       /** Avatar */
-      avatar?: string;
+      avatar?: string | null;
       /** Terms Url */
-      terms_url?: string;
+      terms_url?: string | null;
       /** Policy Url */
-      policy_url?: string;
+      policy_url?: string | null;
       /** Scopes */
       scopes: unknown[];
-      /**
-       * Persona Id
-       * Format: uuid
-       */
-      persona_id?: string;
+      /** Origin Urls */
+      origin_urls?: unknown[] | null;
+      /** Persona Id */
+      persona_id?: string | null;
       /** Client Description */
-      client_description?: string;
+      client_description?: string | null;
       /**
        * Id
        * Format: uuid
@@ -4901,9 +4824,9 @@ export interface components {
       /** Nonce */
       nonce: string;
       /** Factory */
-      factory?: string;
+      factory?: string | null;
       /** Factorydata */
-      factoryData?: string;
+      factoryData?: string | null;
       /** Calldata */
       callData: string;
       /** Callgaslimit */
@@ -4913,9 +4836,9 @@ export interface components {
       /** Preverificationgas */
       preVerificationGas: string;
       /** Paymasterverificationgaslimit */
-      paymasterVerificationGasLimit?: string;
+      paymasterVerificationGasLimit?: string | null;
       /** Paymasterpostopgaslimit */
-      paymasterPostOpGasLimit?: string;
+      paymasterPostOpGasLimit?: string | null;
       /** Maxfeepergas */
       maxFeePerGas: string;
       /** Maxpriorityfeepergas */
@@ -4923,9 +4846,9 @@ export interface components {
       /** Signature */
       signature: string;
       /** Paymaster */
-      paymaster?: string;
+      paymaster?: string | null;
       /** Paymasterdata */
-      paymasterData?: string;
+      paymasterData?: string | null;
     };
     /** OperationReciept */
     OperationReciept: {
@@ -4977,7 +4900,7 @@ export interface components {
     /** OrePrice */
     OrePrice: {
       /** Price */
-      price: number;
+      price: string;
       currency: components["schemas"]["CURRENCY_TYPE"];
     };
     /** OwnedPersonaGemModel */
@@ -4989,11 +4912,11 @@ export interface components {
       /** Erc20 Address */
       erc20_address: string;
       /** Erc1155 Balance */
-      erc1155_balance?: string;
+      erc1155_balance?: string | null;
       /** Erc20 Balance */
-      erc20_balance?: string;
+      erc20_balance?: string | null;
       /** Owner */
-      owner?: string;
+      owner?: string | null;
     };
     /** PCKERequest */
     PCKERequest: {
@@ -5002,6 +4925,8 @@ export interface components {
        * Format: uuid4
        */
       client_id: string;
+      /** Expires In */
+      expires_in?: number | null;
       /**
        * Authorization Code
        * Format: uuid4
@@ -5009,8 +4934,6 @@ export interface components {
       authorization_code: string;
       /** Code Verifier */
       code_verifier: string;
-      /** Expires In */
-      expires_in?: number;
     };
     /** PaginatedActivityFeed */
     PaginatedActivityFeed: {
@@ -5046,13 +4969,6 @@ export interface components {
       total: number;
       /** Items */
       items: components["schemas"]["ChannelDBModel"][];
-    };
-    /** PaginatedChatMessagePersonaReplyRetrievalsVariantss */
-    PaginatedChatMessagePersonaReplyRetrievalsVariantss: {
-      /** Total */
-      total: number;
-      /** Items */
-      items: components["schemas"]["ChatMessagePersonaReplyRetrievalsVariants"][];
     };
     /** PaginatedChatThreadMemberss */
     PaginatedChatThreadMemberss: {
@@ -5096,12 +5012,12 @@ export interface components {
       /** Items */
       items: components["schemas"]["ExternalAiTokenDBModel"][];
     };
-    /** PaginatedFoomAiTokens */
-    PaginatedFoomAiTokens: {
+    /** PaginatedFullAITokens */
+    PaginatedFullAITokens: {
       /** Total */
       total: number;
       /** Items */
-      items: components["schemas"]["FoomAiTokenDBModel"][];
+      items: components["schemas"]["FullAITokenDBModel"][];
     };
     /** PaginatedFullAirdropPoints */
     PaginatedFullAirdropPoints: {
@@ -5109,6 +5025,13 @@ export interface components {
       total: number;
       /** Items */
       items: components["schemas"]["FullAirdropPointDBModel"][];
+    };
+    /** PaginatedFullChatMessages */
+    PaginatedFullChatMessages: {
+      /** Total */
+      total: number;
+      /** Items */
+      items: components["schemas"]["FullChatMessageDBModel"][];
     };
     /** PaginatedFullKarmaLedgers */
     PaginatedFullKarmaLedgers: {
@@ -5200,11 +5123,8 @@ export interface components {
       total: number;
       /** Items */
       items: components["schemas"]["LibraryItem"][];
-      /**
-       * Min Created At
-       * Format: date-time
-       */
-      min_created_at: string;
+      /** Min Created At */
+      min_created_at: string | null;
     };
     /** PaginatedNWReferralLBItemss */
     PaginatedNWReferralLBItemss: {
@@ -5226,6 +5146,13 @@ export interface components {
       total: number;
       /** Items */
       items: components["schemas"]["PersonaDBModel"][];
+    };
+    /** PaginatedPostWithReplieses */
+    PaginatedPostWithReplieses: {
+      /** Total */
+      total: number;
+      /** Items */
+      items: components["schemas"]["PostWithRepliesDBModel"][];
     };
     /** PaginatedPrompterLBItems */
     PaginatedPrompterLBItems: {
@@ -5323,61 +5250,64 @@ export interface components {
        * Format: uuid
        */
       id: string;
-      /**
-       * User Id
-       * Format: uuid
-       */
-      user_id?: string;
+      /** User Id */
+      user_id?: string | null;
       /** Display Name */
-      display_name?: string;
+      display_name?: string | null;
       /** Username */
       username: string;
       /** Description */
-      description?: string;
+      description?: string | null;
       /** Avatar */
-      avatar?: string;
+      avatar?: string | null;
       /** Cover Image */
-      cover_image?: string;
+      cover_image?: string | null;
       /** Id Token */
-      id_token?: string;
+      id_token?: string | null;
       visibility: components["schemas"]["PersonaVisibility"];
       /** Miscellaneous Data */
-      miscellaneous_data?: Record<string, never>;
+      miscellaneous_data?: Record<string, never> | null;
       /** Twitter Profile */
-      twitter_profile?: Record<string, never>;
+      twitter_profile?: Record<string, never> | null;
       /** Telegram Bot Token Encrypted */
-      telegram_bot_token_encrypted?: string;
+      telegram_bot_token_encrypted?: string | null;
       /** Verified */
-      verified?: boolean;
+      verified?: boolean | null;
       /** Prompted Settings */
       prompted_settings: Record<string, never>;
       /** Creator Inference Cost Multiplier */
-      creator_inference_cost_multiplier: number;
+      creator_inference_cost_multiplier: string;
       /** Deva Level */
       deva_level: number;
       /** User Level */
       user_level: number;
       /** Tags */
-      tags?: unknown[];
+      tags?: unknown[] | null;
       /** Allow Multiple Airdrop Claims */
       allow_multiple_airdrop_claims: boolean;
       /** Get Airdrop */
       get_airdrop: boolean;
       /** Karma Reputation */
-      karma_reputation: number;
+      karma_reputation: string;
       /** Allow Genie Daily Allowance */
       allow_genie_daily_allowance: boolean;
-      /**
-       * Invited By
-       * Format: uuid
-       */
-      invited_by?: string;
+      /** Invited By */
+      invited_by?: string | null;
       /** Has Followed Ten Planet Twitter */
       has_followed_ten_planet_twitter: boolean;
       /** From Foom */
       from_foom: boolean;
+      /** From Yaps */
+      from_yaps: boolean;
+      /**
+       * Yaps Last Indexed At
+       * Format: date-time
+       */
+      yaps_last_indexed_at: string;
       /** Auto Post Twitter */
       auto_post_twitter: boolean;
+      /** Smart */
+      smart: boolean;
       /**
        * Created At
        * Format: date-time
@@ -5404,95 +5334,98 @@ export interface components {
        * Format: uuid
        */
       id: string;
-      /**
-       * User Id
-       * Format: uuid
-       */
-      user_id?: string;
+      /** User Id */
+      user_id?: string | null;
       /** Display Name */
-      display_name?: string;
+      display_name?: string | null;
       /** Username */
       username: string;
       /** Description */
-      description?: string;
+      description?: string | null;
       /** Avatar */
-      avatar?: string;
+      avatar?: string | null;
       /** Cover Image */
-      cover_image?: string;
+      cover_image?: string | null;
       /** Id Token */
-      id_token?: string;
+      id_token?: string | null;
       visibility: components["schemas"]["PersonaVisibility"];
       /** Miscellaneous Data */
-      miscellaneous_data?: Record<string, never>;
+      miscellaneous_data?: Record<string, never> | null;
       /** Twitter Profile */
-      twitter_profile?: Record<string, never>;
+      twitter_profile?: Record<string, never> | null;
       /** Authentication Credentials */
-      authentication_credentials?: Record<string, never>;
+      authentication_credentials?: Record<string, never> | null;
       /** Telegram Bot Token Encrypted */
-      telegram_bot_token_encrypted?: string;
+      telegram_bot_token_encrypted?: string | null;
       /** Is Governor */
       is_governor: boolean;
       /** Verified */
-      verified?: boolean;
+      verified?: boolean | null;
       /** Interactive Mode */
-      interactive_mode?: boolean;
+      interactive_mode?: boolean | null;
       /** Prompted Settings */
       prompted_settings: Record<string, never>;
       /** Prompter Settings */
       prompter_settings: Record<string, never>;
       /** Creator Inference Cost Multiplier */
-      creator_inference_cost_multiplier: number;
+      creator_inference_cost_multiplier: string;
       /** Deva Level */
       deva_level: number;
       /** User Level */
       user_level: number;
       /** Tags */
-      tags?: unknown[];
+      tags?: unknown[] | null;
       /** Hashed Id */
-      hashed_id?: string;
+      hashed_id?: string | null;
       /** Allow Multiple Airdrop Claims */
       allow_multiple_airdrop_claims: boolean;
       /** Get Airdrop */
       get_airdrop: boolean;
       /** Karma Reputation */
-      karma_reputation: number;
+      karma_reputation: string;
       /** Auto Ingest Post */
       auto_ingest_post: boolean;
       /** Exclude Deva Prompt Post */
       exclude_deva_prompt_post: boolean;
       /** Karma Confirmation Threshold */
-      karma_confirmation_threshold: number;
+      karma_confirmation_threshold: string;
       /** Karma Confirmation Threshold Enabled */
       karma_confirmation_threshold_enabled: boolean;
       /** Allow Genie Daily Allowance */
       allow_genie_daily_allowance: boolean;
       /** Bronze Karma */
-      bronze_karma: number;
+      bronze_karma: string;
       /** Silver Karma */
-      silver_karma: number;
+      silver_karma: string;
       /** Gold Karma */
-      gold_karma: number;
+      gold_karma: string;
       /** Purchased Silver Karma */
-      purchased_silver_karma: number;
+      purchased_silver_karma: string;
       /** Purchased Gold Karma */
-      purchased_gold_karma: number;
+      purchased_gold_karma: string;
       /** Public Key */
       public_key: string;
       /** Telegram Id */
-      telegram_id?: string;
+      telegram_id?: string | null;
       /** Discord Id */
-      discord_id?: string;
-      /**
-       * Invited By
-       * Format: uuid
-       */
-      invited_by?: string;
+      discord_id?: string | null;
+      /** Invited By */
+      invited_by?: string | null;
       /** Has Followed Ten Planet Twitter */
       has_followed_ten_planet_twitter: boolean;
       /** From Foom */
       from_foom: boolean;
+      /** From Yaps */
+      from_yaps: boolean;
+      /**
+       * Yaps Last Indexed At
+       * Format: date-time
+       */
+      yaps_last_indexed_at: string;
       /** Auto Post Twitter */
       auto_post_twitter: boolean;
+      /** Smart */
+      smart: boolean;
       /**
        * Created At
        * Format: date-time
@@ -5512,14 +5445,12 @@ export interface components {
     };
     /**
      * PersonaSort
-     * @description An enumeration.
-     * @enum {unknown}
+     * @enum {string}
      */
     PersonaSort: "AVATAR" | "USERNAME" | "CREATED_AT" | "KARMA";
     /**
      * PersonaType
-     * @description An enumeration.
-     * @enum {unknown}
+     * @enum {string}
      */
     PersonaType: "USER" | "BOT" | "ALL";
     /** PersonaUserCategoriesDBModel */
@@ -5529,61 +5460,64 @@ export interface components {
        * Format: uuid
        */
       id: string;
-      /**
-       * User Id
-       * Format: uuid
-       */
-      user_id?: string;
+      /** User Id */
+      user_id?: string | null;
       /** Display Name */
-      display_name?: string;
+      display_name?: string | null;
       /** Username */
       username: string;
       /** Description */
-      description?: string;
+      description?: string | null;
       /** Avatar */
-      avatar?: string;
+      avatar?: string | null;
       /** Cover Image */
-      cover_image?: string;
+      cover_image?: string | null;
       /** Id Token */
-      id_token?: string;
+      id_token?: string | null;
       visibility: components["schemas"]["PersonaVisibility"];
       /** Miscellaneous Data */
-      miscellaneous_data?: Record<string, never>;
+      miscellaneous_data?: Record<string, never> | null;
       /** Twitter Profile */
-      twitter_profile?: Record<string, never>;
+      twitter_profile?: Record<string, never> | null;
       /** Telegram Bot Token Encrypted */
-      telegram_bot_token_encrypted?: string;
+      telegram_bot_token_encrypted?: string | null;
       /** Verified */
-      verified?: boolean;
+      verified?: boolean | null;
       /** Prompted Settings */
       prompted_settings: Record<string, never>;
       /** Creator Inference Cost Multiplier */
-      creator_inference_cost_multiplier: number;
+      creator_inference_cost_multiplier: string;
       /** Deva Level */
       deva_level: number;
       /** User Level */
       user_level: number;
       /** Tags */
-      tags?: unknown[];
+      tags?: unknown[] | null;
       /** Allow Multiple Airdrop Claims */
       allow_multiple_airdrop_claims: boolean;
       /** Get Airdrop */
       get_airdrop: boolean;
       /** Karma Reputation */
-      karma_reputation: number;
+      karma_reputation: string;
       /** Allow Genie Daily Allowance */
       allow_genie_daily_allowance: boolean;
-      /**
-       * Invited By
-       * Format: uuid
-       */
-      invited_by?: string;
+      /** Invited By */
+      invited_by?: string | null;
       /** Has Followed Ten Planet Twitter */
       has_followed_ten_planet_twitter: boolean;
       /** From Foom */
       from_foom: boolean;
+      /** From Yaps */
+      from_yaps: boolean;
+      /**
+       * Yaps Last Indexed At
+       * Format: date-time
+       */
+      yaps_last_indexed_at: string;
       /** Auto Post Twitter */
       auto_post_twitter: boolean;
+      /** Smart */
+      smart: boolean;
       /**
        * Created At
        * Format: date-time
@@ -5602,12 +5536,11 @@ export interface components {
       followed_count?: number;
       /** Categories */
       categories?: components["schemas"]["CategoryDBModel"][];
-      user?: components["schemas"]["UserDBModel"];
+      user?: components["schemas"]["UserDBModel"] | null;
     };
     /**
      * PersonaVisibility
-     * @description An enumeration.
-     * @enum {unknown}
+     * @enum {string}
      */
     PersonaVisibility: "PUBLIC" | "PRIVATE" | "OFF";
     /** PersonaWithInvitedByPersonaDBModel */
@@ -5617,95 +5550,98 @@ export interface components {
        * Format: uuid
        */
       id: string;
-      /**
-       * User Id
-       * Format: uuid
-       */
-      user_id?: string;
+      /** User Id */
+      user_id?: string | null;
       /** Display Name */
-      display_name?: string;
+      display_name?: string | null;
       /** Username */
       username: string;
       /** Description */
-      description?: string;
+      description?: string | null;
       /** Avatar */
-      avatar?: string;
+      avatar?: string | null;
       /** Cover Image */
-      cover_image?: string;
+      cover_image?: string | null;
       /** Id Token */
-      id_token?: string;
+      id_token?: string | null;
       visibility: components["schemas"]["PersonaVisibility"];
       /** Miscellaneous Data */
-      miscellaneous_data?: Record<string, never>;
+      miscellaneous_data?: Record<string, never> | null;
       /** Twitter Profile */
-      twitter_profile?: Record<string, never>;
+      twitter_profile?: Record<string, never> | null;
       /** Authentication Credentials */
-      authentication_credentials?: Record<string, never>;
+      authentication_credentials?: Record<string, never> | null;
       /** Telegram Bot Token Encrypted */
-      telegram_bot_token_encrypted?: string;
+      telegram_bot_token_encrypted?: string | null;
       /** Is Governor */
       is_governor: boolean;
       /** Verified */
-      verified?: boolean;
+      verified?: boolean | null;
       /** Interactive Mode */
-      interactive_mode?: boolean;
+      interactive_mode?: boolean | null;
       /** Prompted Settings */
       prompted_settings: Record<string, never>;
       /** Prompter Settings */
       prompter_settings: Record<string, never>;
       /** Creator Inference Cost Multiplier */
-      creator_inference_cost_multiplier: number;
+      creator_inference_cost_multiplier: string;
       /** Deva Level */
       deva_level: number;
       /** User Level */
       user_level: number;
       /** Tags */
-      tags?: unknown[];
+      tags?: unknown[] | null;
       /** Hashed Id */
-      hashed_id?: string;
+      hashed_id?: string | null;
       /** Allow Multiple Airdrop Claims */
       allow_multiple_airdrop_claims: boolean;
       /** Get Airdrop */
       get_airdrop: boolean;
       /** Karma Reputation */
-      karma_reputation: number;
+      karma_reputation: string;
       /** Auto Ingest Post */
       auto_ingest_post: boolean;
       /** Exclude Deva Prompt Post */
       exclude_deva_prompt_post: boolean;
       /** Karma Confirmation Threshold */
-      karma_confirmation_threshold: number;
+      karma_confirmation_threshold: string;
       /** Karma Confirmation Threshold Enabled */
       karma_confirmation_threshold_enabled: boolean;
       /** Allow Genie Daily Allowance */
       allow_genie_daily_allowance: boolean;
       /** Bronze Karma */
-      bronze_karma: number;
+      bronze_karma: string;
       /** Silver Karma */
-      silver_karma: number;
+      silver_karma: string;
       /** Gold Karma */
-      gold_karma: number;
+      gold_karma: string;
       /** Purchased Silver Karma */
-      purchased_silver_karma: number;
+      purchased_silver_karma: string;
       /** Purchased Gold Karma */
-      purchased_gold_karma: number;
+      purchased_gold_karma: string;
       /** Public Key */
       public_key: string;
       /** Telegram Id */
-      telegram_id?: string;
+      telegram_id?: string | null;
       /** Discord Id */
-      discord_id?: string;
-      /**
-       * Invited By
-       * Format: uuid
-       */
-      invited_by?: string;
+      discord_id?: string | null;
+      /** Invited By */
+      invited_by?: string | null;
       /** Has Followed Ten Planet Twitter */
       has_followed_ten_planet_twitter: boolean;
       /** From Foom */
       from_foom: boolean;
+      /** From Yaps */
+      from_yaps: boolean;
+      /**
+       * Yaps Last Indexed At
+       * Format: date-time
+       */
+      yaps_last_indexed_at: string;
       /** Auto Post Twitter */
       auto_post_twitter: boolean;
+      /** Smart */
+      smart: boolean;
       /**
        * Created At
        * Format: date-time
@@ -5722,12 +5658,16 @@ export interface components {
       followers_count?: number;
       /** Followed Count */
       followed_count?: number;
-      invited_by_persona?: components["schemas"]["PublicPersonaDBModel"];
+      invited_by_persona?: components["schemas"]["PublicPersonaDBModel"] | null;
     };
     /**
+     * PoolStatus
+     * @enum {string}
+     */
+    PoolStatus: "BONDING_CURVE_POOL" | "METORA_POOL_CREATED" | "METORA_POOL_FUNDED";
+    /**
      * PostAuthorType
-     * @description An enumeration.
-     * @enum {unknown}
+     * @enum {string}
      */
     PostAuthorType: "BOT" | "USER";
     /** PostConfig */
@@ -5765,30 +5705,20 @@ export interface components {
        * Format: uuid
        */
       persona_id: string;
-      /**
-       * In Reply To Id
-       * Format: uuid
-       */
-      in_reply_to_id?: string;
+      /** In Reply To Id */
+      in_reply_to_id?: string | null;
       /** Skipped */
       skipped: boolean;
-      /**
-       * Mentioned Profile Persona Id
-       * Format: uuid
-       */
-      mentioned_profile_persona_id?: string;
-      /**
-       * Mentioned As Bot Persona Id
-       * Format: uuid
-       */
-      mentioned_as_bot_persona_id?: string;
-      /**
-       * Channel Id
-       * Format: uuid
-       */
-      channel_id?: string;
+      /** Mentioned Profile Persona Id */
+      mentioned_profile_persona_id?: string | null;
+      /** Mentioned As Bot Persona Id */
+      mentioned_as_bot_persona_id?: string | null;
+      /** Channel Id */
+      channel_id?: string | null;
       /** Twitter Tweet Id */
-      twitter_tweet_id?: string;
+      twitter_tweet_id?: string | null;
+      /** Twitter Cross Post */
+      twitter_cross_post: boolean;
       /** Auto Generated */
       auto_generated: boolean;
       /**
@@ -5802,26 +5732,22 @@ export interface components {
        */
       updated_at: string;
       /** Backlink Tweet Url */
-      backlink_tweet_url?: string;
+      backlink_tweet_url?: string | null;
       /** Replies Count */
       replies_count?: number;
       /** Likes Count */
       likes_count?: number;
       /** Dislikes Count */
       dislikes_count?: number;
-      user_reaction?: components["schemas"]["PostReaction"];
-      /**
-       * User Ingest
-       * Format: uuid4
-       */
-      user_ingest?: string;
+      user_reaction?: components["schemas"]["PostReaction"] | null;
+      /** User Ingest */
+      user_ingest?: string | null;
       /** Prompter Contribution */
       prompter_contribution?: number;
     };
     /**
      * PostReaction
-     * @description An enumeration.
-     * @enum {unknown}
+     * @enum {string}
      */
     PostReaction: "LIKE" | "DISLIKE";
     /** PostTweetRequest */
@@ -5836,6 +5762,65 @@ export interface components {
        * Format: uuid4
        */
       post_id: string;
+    };
+    /** PostWithPersonaAndGemDBModel */
+    PostWithPersonaAndGemDBModel: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      author_type: components["schemas"]["PostAuthorType"];
+      /** Text */
+      text: string;
+      /** Is Deleted */
+      is_deleted: boolean;
+      /**
+       * Persona Id
+       * Format: uuid
+       */
+      persona_id: string;
+      /** In Reply To Id */
+      in_reply_to_id?: string | null;
+      /** Skipped */
+      skipped: boolean;
+      /** Mentioned Profile Persona Id */
+      mentioned_profile_persona_id?: string | null;
+      /** Mentioned As Bot Persona Id */
+      mentioned_as_bot_persona_id?: string | null;
+      /** Channel Id */
+      channel_id?: string | null;
+      /** Twitter Tweet Id */
+      twitter_tweet_id?: string | null;
+      /** Twitter Cross Post */
+      twitter_cross_post: boolean;
+      /** Auto Generated */
+      auto_generated: boolean;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /**
+       * Updated At
+       * Format: date-time
+       */
+      updated_at: string;
+      /** Backlink Tweet Url */
+      backlink_tweet_url?: string | null;
+      /** Replies Count */
+      replies_count?: number;
+      /** Likes Count */
+      likes_count?: number;
+      /** Dislikes Count */
+      dislikes_count?: number;
+      user_reaction?: components["schemas"]["PostReaction"] | null;
+      /** User Ingest */
+      user_ingest?: string | null;
+      /** Prompter Contribution */
+      prompter_contribution?: number;
+      persona: components["schemas"]["PublicPersonaDBModel"];
+      minted_gem?: components["schemas"]["GemDBModel"] | null;
     };
     /** PostWithPersonaDBModel */
     PostWithPersonaDBModel: {
@@ -5854,30 +5839,20 @@ export interface components {
        * Format: uuid
        */
       persona_id: string;
-      /**
-       * In Reply To Id
-       * Format: uuid
-       */
-      in_reply_to_id?: string;
+      /** In Reply To Id */
+      in_reply_to_id?: string | null;
       /** Skipped */
       skipped: boolean;
-      /**
-       * Mentioned Profile Persona Id
-       * Format: uuid
-       */
-      mentioned_profile_persona_id?: string;
-      /**
-       * Mentioned As Bot Persona Id
-       * Format: uuid
-       */
-      mentioned_as_bot_persona_id?: string;
-      /**
-       * Channel Id
-       * Format: uuid
-       */
-      channel_id?: string;
+      /** Mentioned Profile Persona Id */
+      mentioned_profile_persona_id?: string | null;
+      /** Mentioned As Bot Persona Id */
+      mentioned_as_bot_persona_id?: string | null;
+      /** Channel Id */
+      channel_id?: string | null;
       /** Twitter Tweet Id */
-      twitter_tweet_id?: string;
+      twitter_tweet_id?: string | null;
+      /** Twitter Cross Post */
+      twitter_cross_post: boolean;
       /** Auto Generated */
       auto_generated: boolean;
       /**
@@ -5891,23 +5866,79 @@ export interface components {
        */
       updated_at: string;
       /** Backlink Tweet Url */
-      backlink_tweet_url?: string;
+      backlink_tweet_url?: string | null;
       /** Replies Count */
       replies_count?: number;
       /** Likes Count */
       likes_count?: number;
       /** Dislikes Count */
       dislikes_count?: number;
-      user_reaction?: components["schemas"]["PostReaction"];
-      /**
-       * User Ingest
-       * Format: uuid4
-       */
-      user_ingest?: string;
+      user_reaction?: components["schemas"]["PostReaction"] | null;
+      /** User Ingest */
+      user_ingest?: string | null;
       /** Prompter Contribution */
       prompter_contribution?: number;
       persona: components["schemas"]["PublicPersonaDBModel"];
-      minted_gem?: components["schemas"]["GemDBModel"];
+    };
+    /** PostWithRepliesDBModel */
+    PostWithRepliesDBModel: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      author_type: components["schemas"]["PostAuthorType"];
+      /** Text */
+      text: string;
+      /** Is Deleted */
+      is_deleted: boolean;
+      /**
+       * Persona Id
+       * Format: uuid
+       */
+      persona_id: string;
+      /** In Reply To Id */
+      in_reply_to_id?: string | null;
+      /** Skipped */
+      skipped: boolean;
+      /** Mentioned Profile Persona Id */
+      mentioned_profile_persona_id?: string | null;
+      /** Mentioned As Bot Persona Id */
+      mentioned_as_bot_persona_id?: string | null;
+      /** Channel Id */
+      channel_id?: string | null;
+      /** Twitter Tweet Id */
+      twitter_tweet_id?: string | null;
+      /** Twitter Cross Post */
+      twitter_cross_post: boolean;
+      /** Auto Generated */
+      auto_generated: boolean;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /**
+       * Updated At
+       * Format: date-time
+       */
+      updated_at: string;
+      /** Backlink Tweet Url */
+      backlink_tweet_url?: string | null;
+      /** Replies Count */
+      replies_count?: number;
+      /** Likes Count */
+      likes_count?: number;
+      /** Dislikes Count */
+      dislikes_count?: number;
+      user_reaction?: components["schemas"]["PostReaction"] | null;
+      /** User Ingest */
+      user_ingest?: string | null;
+      /** Prompter Contribution */
+      prompter_contribution?: number;
+      persona: components["schemas"]["PublicPersonaDBModel"];
+      in_reply_to?: components["schemas"]["PostWithPersonaDBModel"] | null;
+      first_reply?: components["schemas"]["PostWithPersonaDBModel"] | null;
     };
     /** ProcessDeposit */
     ProcessDeposit: {
@@ -5916,10 +5947,10 @@ export interface components {
     /** PromotionalMeta */
     PromotionalMeta: {
       reason: components["schemas"]["PromotionalMetaReason"];
+      [key: string]: unknown;
     };
     /**
      * PromotionalMetaReason
-     * @description An enumeration.
      * @enum {string}
      */
     PromotionalMetaReason: "DAILY_ALLOWANCE" | "FOUNDERS_REWARD" | "TESTING" | "PROMOTION";
@@ -5931,37 +5962,37 @@ export interface components {
        */
       to_id: string;
       /** Amount */
-      amount: number;
+      amount: number | string;
       meta: components["schemas"]["PromotionalMeta"];
       /**
        * Transaction Type
        * @default PROMOTIONAL
-       * @enum {string}
+       * @constant
        */
       transaction_type?: "PROMOTIONAL";
       /**
        * Karma Type
        * @default BRONZE
-       * @enum {string}
+       * @constant
        */
       karma_type?: "BRONZE";
     };
     /** PromptParamsSettings */
     PromptParamsSettings: {
       /** Max Tokens */
-      max_tokens?: number;
-      model?: components["schemas"]["LLM"];
+      max_tokens?: number | null;
+      model?: components["schemas"]["LLM"] | null;
       /** Temperature */
-      temperature?: number;
+      temperature?: number | null;
       /** Num Retrievals */
-      num_retrievals?: number;
+      num_retrievals?: number | null;
       /**
        * Include Default Instructions
        * @default true
        */
       include_default_instructions?: boolean;
       /** Custom Instructions */
-      custom_instructions?: string;
+      custom_instructions?: string | null;
       /**
        * Allow Model Override
        * @default true
@@ -5988,29 +6019,30 @@ export interface components {
       source_url: string;
       source_type: components["schemas"]["IngestSourceType"];
       /** Href */
-      href?: string;
+      href?: string | null;
       /** Start Time */
-      start_time?: number;
+      start_time?: number | null;
       /** End Time */
-      end_time?: number;
+      end_time?: number | null;
       /** Title */
-      title?: string;
+      title?: string | null;
       /** Links */
       links?: string[];
       /** References */
       references?: string[];
       /** Revision Id */
-      revision_id?: string;
+      revision_id?: string | null;
       /** Author */
-      author?: string;
+      author?: string | null;
       /** Published At */
-      published_at?: string;
+      published_at?: string | null;
       /** Language */
-      language?: string;
+      language?: string | null;
       /** Replying To */
-      replying_to?: string;
+      replying_to?: string | null;
       /** Authors */
       authors?: string[];
+      [key: string]: unknown;
     };
     /** PromptRetrievalVariant */
     PromptRetrievalVariant: {
@@ -6031,7 +6063,7 @@ export interface components {
       /**
        * Source Type
        * @default VARIANT
-       * @enum {string}
+       * @constant
        */
       source_type?: "VARIANT";
     };
@@ -6044,15 +6076,12 @@ export interface components {
       id: string;
       /** Username */
       username: string;
-      /**
-       * User Id
-       * Format: uuid4
-       */
-      user_id?: string;
+      /** User Id */
+      user_id?: string | null;
       /** Display Name */
-      display_name?: string;
+      display_name?: string | null;
       /** Avatar */
-      avatar?: string;
+      avatar?: string | null;
       /** Level */
       level: number;
       /** Rank */
@@ -6069,61 +6098,64 @@ export interface components {
        * Format: uuid
        */
       id: string;
-      /**
-       * User Id
-       * Format: uuid
-       */
-      user_id?: string;
+      /** User Id */
+      user_id?: string | null;
       /** Display Name */
-      display_name?: string;
+      display_name?: string | null;
       /** Username */
       username: string;
       /** Description */
-      description?: string;
+      description?: string | null;
       /** Avatar */
-      avatar?: string;
+      avatar?: string | null;
       /** Cover Image */
-      cover_image?: string;
+      cover_image?: string | null;
       /** Id Token */
-      id_token?: string;
+      id_token?: string | null;
       visibility: components["schemas"]["PersonaVisibility"];
       /** Miscellaneous Data */
-      miscellaneous_data?: Record<string, never>;
+      miscellaneous_data?: Record<string, never> | null;
       /** Twitter Profile */
-      twitter_profile?: Record<string, never>;
+      twitter_profile?: Record<string, never> | null;
       /** Telegram Bot Token Encrypted */
-      telegram_bot_token_encrypted?: string;
+      telegram_bot_token_encrypted?: string | null;
       /** Verified */
-      verified?: boolean;
+      verified?: boolean | null;
       /** Prompted Settings */
       prompted_settings: Record<string, never>;
       /** Creator Inference Cost Multiplier */
-      creator_inference_cost_multiplier: number;
+      creator_inference_cost_multiplier: string;
       /** Deva Level */
       deva_level: number;
       /** User Level */
       user_level: number;
       /** Tags */
-      tags?: unknown[];
+      tags?: unknown[] | null;
       /** Allow Multiple Airdrop Claims */
       allow_multiple_airdrop_claims: boolean;
       /** Get Airdrop */
       get_airdrop: boolean;
       /** Karma Reputation */
-      karma_reputation: number;
+      karma_reputation: string;
       /** Allow Genie Daily Allowance */
       allow_genie_daily_allowance: boolean;
-      /**
-       * Invited By
-       * Format: uuid
-       */
-      invited_by?: string;
+      /** Invited By */
+      invited_by?: string | null;
       /** Has Followed Ten Planet Twitter */
       has_followed_ten_planet_twitter: boolean;
       /** From Foom */
       from_foom: boolean;
+      /** From Yaps */
+      from_yaps: boolean;
+      /**
+       * Yaps Last Indexed At
+       * Format: date-time
+       */
+      yaps_last_indexed_at: string;
       /** Auto Post Twitter */
       auto_post_twitter: boolean;
+      /** Smart */
+      smart: boolean;
       /**
        * Created At
        * Format: date-time
@@ -6160,23 +6192,17 @@ export interface components {
     QueryDryPost: {
       /** Text */
       text: string;
-      /**
-       * In Reply To Id
-       * Format: uuid4
-       */
-      in_reply_to_id?: string;
-      /**
-       * Channel Id
-       * Format: uuid4
-       */
-      channel_id?: string;
+      /** In Reply To Id */
+      in_reply_to_id?: string | null;
+      /** Channel Id */
+      channel_id?: string | null;
     };
     /** QueryDryResponse */
     QueryDryResponse: {
       /** Formatted Conversation History */
-      formatted_conversation_history?: string[];
+      formatted_conversation_history?: string[] | null;
       /** Formatted Retrievals */
-      formatted_retrievals?: string[];
+      formatted_retrievals?: string[] | null;
       /** Retrievals */
       retrievals: (components["schemas"]["PromptRetrievalExcerpt"] | components["schemas"]["PromptRetrievalVariant"])[];
       /** Conversation History */
@@ -6189,19 +6215,19 @@ export interface components {
       /** Temperature */
       temperature: number;
       /** Estimated Cost */
-      estimated_cost: number;
+      estimated_cost: string;
       /** Messages */
-      messages?: Record<string, never>[];
+      messages?: Record<string, never>[] | null;
       /** Prompt */
-      prompt?: string;
+      prompt?: string | null;
     };
     /** ReactPost */
     ReactPost: {
-      reaction?: components["schemas"]["PostReaction"];
+      reaction?: components["schemas"]["PostReaction"] | null;
     };
     /** ReactVariant */
     ReactVariant: {
-      reaction?: components["schemas"]["VariantReaction"];
+      reaction?: components["schemas"]["VariantReaction"] | null;
     };
     /** ReferralDBModel */
     ReferralDBModel: {
@@ -6212,13 +6238,10 @@ export interface components {
        * Format: uuid
        */
       referrer_id: string;
-      /**
-       * Referred Id
-       * Format: uuid
-       */
-      referred_id?: string;
+      /** Referred Id */
+      referred_id?: string | null;
       /** Reserved For */
-      reserved_for?: string;
+      reserved_for?: string | null;
       /**
        * Id
        * Format: uuid
@@ -6244,15 +6267,12 @@ export interface components {
       id: string;
       /** Username */
       username: string;
-      /**
-       * User Id
-       * Format: uuid4
-       */
-      user_id?: string;
+      /** User Id */
+      user_id?: string | null;
       /** Display Name */
-      display_name?: string;
+      display_name?: string | null;
       /** Avatar */
-      avatar?: string;
+      avatar?: string | null;
       /** Level */
       level: number;
       /** Rank */
@@ -6282,18 +6302,17 @@ export interface components {
       /** Twitter Points */
       twitter_points: number;
       /** Aiss Points */
-      aiss_points: number;
+      aiss_points: string;
       /** Web2 Without Mult Points */
-      web2_without_mult_points: number;
+      web2_without_mult_points: string;
       /** Web2 Points */
-      web2_points: number;
+      web2_points: string;
       /** Waitlist Points */
-      waitlist_points: number;
+      waitlist_points: string;
     };
     /**
      * ReferralStatus
-     * @description An enumeration.
-     * @enum {unknown}
+     * @enum {string}
      */
     ReferralStatus: "JOINED" | "SENT" | "UNUSED";
     /** RefreshTokenRequest */
@@ -6303,10 +6322,10 @@ export interface components {
        * Format: uuid4
        */
       client_id: string;
-      /** Client Secret */
-      client_secret: string;
       /** Expires In */
-      expires_in?: number;
+      expires_in?: number | null;
+      /** Client Secret */
+      client_secret?: string | null;
       /**
        * Refresh Token
        * Format: uuid4
@@ -6360,23 +6379,17 @@ export interface components {
       /** Content */
       content: string;
       /** Handle */
-      handle?: string;
+      handle?: string | null;
       /** Source Url */
-      source_url?: string;
+      source_url?: string | null;
       /** Type */
       type: string;
       /** Type Custom Data */
-      type_custom_data?: Record<string, never>;
-      /**
-       * Post Id
-       * Format: uuid
-       */
-      post_id?: string;
-      /**
-       * Chat Message Id
-       * Format: uuid
-       */
-      chat_message_id?: string;
+      type_custom_data?: Record<string, never> | null;
+      /** Post Id */
+      post_id?: string | null;
+      /** Chat Message Id */
+      chat_message_id?: string | null;
       /**
        * Id
        * Format: uuid
@@ -6443,7 +6456,7 @@ export interface components {
     /** SkipPost */
     SkipPost: {
       /** Skipped */
-      skipped?: boolean;
+      skipped?: boolean | null;
     };
     /** StripeCreateAccount */
     StripeCreateAccount: {
@@ -6462,8 +6475,7 @@ export interface components {
     };
     /**
      * SystemMessageType
-     * @description An enumeration.
-     * @enum {unknown}
+     * @enum {string}
      */
     SystemMessageType: "EPHEMANON_UPDATED" | "EPHEMANON_DISABLED" | "MEMBER_ADDED" | "MEMBER_REMOVED" | "TITLE_EDITED" | "THREAD_CREATED" | "USER_JOINED";
     /** Tensor */
@@ -6486,7 +6498,7 @@ export interface components {
        */
       client_id: string;
       /** Client Secret */
-      client_secret: string;
+      client_secret?: string | null;
     };
     /** TrainerLBItems */
     TrainerLBItems: {
@@ -6497,15 +6509,12 @@ export interface components {
       id: string;
       /** Username */
       username: string;
-      /**
-       * User Id
-       * Format: uuid4
-       */
-      user_id?: string;
+      /** User Id */
+      user_id?: string | null;
       /** Display Name */
-      display_name?: string;
+      display_name?: string | null;
       /** Avatar */
-      avatar?: string;
+      avatar?: string | null;
       /** Level */
       level: number;
       /** Rank */
@@ -6521,8 +6530,7 @@ export interface components {
     };
     /**
      * TransactionType
-     * @description An enumeration.
-     * @enum {unknown}
+     * @enum {string}
      */
     TransactionType: "PROMOTIONAL" | "VARIANT_PROPOSAL" | "VARIANT_PUBLISH" | "VARIANT_VOTE" | "CURRENCY_CREDIT" | "INGEST_CREATION" | "INGEST_STORAGE" | "CURRENCY_DEBIT" | "QUERY" | "QUERY_REFERRAL" | "QUERY_TRAINER" | "GAS_CHARGES" | "ORE_PURCHASE";
     /** TranscriptDBModel */
@@ -6539,19 +6547,13 @@ export interface components {
       /** End */
       end: number;
       /** Speaker */
-      speaker?: string;
+      speaker?: string | null;
       /** Audio Segment Url */
-      audio_segment_url?: string;
-      /**
-       * Voice Note Id
-       * Format: uuid
-       */
-      voice_note_id?: string;
-      /**
-       * Artifact Id
-       * Format: uuid
-       */
-      artifact_id?: string;
+      audio_segment_url?: string | null;
+      /** Voice Note Id */
+      voice_note_id?: string | null;
+      /** Artifact Id */
+      artifact_id?: string | null;
       /**
        * Created At
        * Format: date-time
@@ -6566,7 +6568,7 @@ export interface components {
     /**
      * TranscriptState
      * @description Enum of transcript states.
-     * @enum {unknown}
+     * @enum {string}
      */
     TranscriptState: "PENDING" | "IN_PROGRESS" | "NO_DATA" | "COMPLETED" | "FAILED";
     /** TweetDBModel */
@@ -6588,13 +6590,13 @@ export interface components {
        */
       published_at: string;
       /** Language */
-      language?: string;
+      language?: string | null;
       /** Replying To */
-      replying_to?: string;
+      replying_to?: string | null;
       /** Source Url */
-      source_url?: string;
+      source_url?: string | null;
       /** Tweet Metadata */
-      tweet_metadata?: Record<string, never>;
+      tweet_metadata?: Record<string, never> | null;
       /**
        * Persona Id
        * Format: uuid
@@ -6613,13 +6615,11 @@ export interface components {
     };
     /**
      * TweetOrderByRequest
-     * @description An enumeration.
      * @enum {string}
      */
     TweetOrderByRequest: "like" | "retweet" | "view" | "reply";
     /**
      * TweetTimeRangeRequest
-     * @description An enumeration.
      * @enum {string}
      */
     TweetTimeRangeRequest: "1d" | "7d" | "1M" | "3M" | "6M" | "1Y";
@@ -6645,8 +6645,7 @@ export interface components {
     };
     /**
      * TwitterClientPlan
-     * @description An enumeration.
-     * @enum {unknown}
+     * @enum {string}
      */
     TwitterClientPlan: "FREE" | "BASIC" | "PRO";
     /**
@@ -6660,15 +6659,15 @@ export interface components {
        */
       token_type?: string;
       /** Expires In */
-      expires_in?: number;
+      expires_in?: number | null;
       /** Access Token */
       access_token: string;
       /** Refresh Token */
       refresh_token: string;
       /** Scope */
-      scope?: string;
+      scope?: string | null;
       /** Expires At */
-      expires_at?: number;
+      expires_at?: number | null;
       /**
        * Provider
        * @default twitter
@@ -6680,7 +6679,7 @@ export interface components {
        */
       type?: string;
       /** Provideraccountid */
-      providerAccountId?: string;
+      providerAccountId?: string | null;
     };
     /** TwitterPersonaAssociationDBModel */
     TwitterPersonaAssociationDBModel: {
@@ -6696,11 +6695,8 @@ export interface components {
        * Format: date-time
        */
       last_used_at: string;
-      /**
-       * Next Post Twitter At
-       * Format: date-time
-       */
-      next_post_twitter_at?: string;
+      /** Next Post Twitter At */
+      next_post_twitter_at?: string | null;
       /**
        * Id
        * Format: uuid
@@ -6723,148 +6719,147 @@ export interface components {
       id_str: string;
       /** Screen Name */
       screen_name: string;
+      /** Name */
+      name: string;
+      [key: string]: unknown;
+    };
+    /** UpdateAiToken */
+    UpdateAiToken: {
+      /** Bonding Curve Pool Address */
+      bonding_curve_pool_address?: string | null;
+      pool_status?: components["schemas"]["PoolStatus"] | null;
+      /** Meteora Pool Address */
+      meteora_pool_address?: string | null;
     };
     /** UpdateChannel */
     UpdateChannel: {
       /** Name */
-      name?: string;
+      name?: string | null;
       /** Handle */
-      handle?: string;
+      handle?: string | null;
       /** Description */
-      description?: string;
-      /**
-       * Avatar
-       * Format: uri
-       */
-      avatar?: string;
+      description?: string | null;
+      /** Avatar */
+      avatar?: string | null;
     };
     /** UpdateCharacter */
     UpdateCharacter: {
       /** Bio */
-      bio?: string[];
+      bio?: string[] | null;
       /** Lore */
-      lore?: string[];
+      lore?: string[] | null;
       /** Knowledge */
-      knowledge?: string[];
+      knowledge?: string[] | null;
       /** Adjectives */
-      adjectives?: string[];
+      adjectives?: string[] | null;
       /** Topics */
-      topics?: string[];
+      topics?: string[] | null;
       /** Message Examples */
-      message_examples?: string[];
+      message_examples?: string[] | null;
       /** Post Examples */
-      post_examples?: string[];
+      post_examples?: string[] | null;
       /** Post Custom Prompt */
-      post_custom_prompt?: string;
-      style?: components["schemas"]["CharacterStyle"];
-      post_config?: components["schemas"]["PostConfig"];
-      created_by?: components["schemas"]["CharacterCreatedBy"];
+      post_custom_prompt?: string | null;
+      style?: components["schemas"]["CharacterStyle"] | null;
+      post_config?: components["schemas"]["PostConfig"] | null;
+      created_by?: components["schemas"]["CharacterCreatedBy"] | null;
     };
     /** UpdateChatMessage */
     UpdateChatMessage: {
-      vote?: components["schemas"]["VoteEnum"];
+      vote?: components["schemas"]["VoteEnum"] | null;
       /** Skipped */
-      skipped?: boolean;
+      skipped?: boolean | null;
     };
     /** UpdateChatThread */
     UpdateChatThread: {
       /** Title */
-      title?: string;
+      title?: string | null;
       /** Members */
-      members?: string[];
+      members?: string[] | null;
       /** Disappearing Messages Seconds */
-      disappearing_messages_seconds?: number;
+      disappearing_messages_seconds?: number | null;
       /** Image Url */
-      image_url?: string;
+      image_url?: string | null;
     };
     /** UpdateClient */
     UpdateClient: {
       /** Redirect Uris */
-      redirect_uris?: string[];
+      redirect_uris?: string[] | null;
       /** Client Name */
-      client_name?: string;
+      client_name?: string | null;
       /** Scopes */
-      scopes?: string[];
+      scopes?: string[] | null;
     };
     /** UpdateNote */
     UpdateNote: {
       /** Title */
-      title?: string;
+      title?: string | null;
       /** Text */
-      text?: string;
+      text?: string | null;
       /** Backlink Note Ids */
-      backlink_note_ids?: string[];
+      backlink_note_ids?: string[] | null;
       /** Backlink Post Ids */
-      backlink_post_ids?: string[];
+      backlink_post_ids?: string[] | null;
       /** Is Public */
-      is_public?: boolean;
+      is_public?: boolean | null;
     };
     /** UpdatePersona */
     UpdatePersona: {
       /** Username */
-      username?: string;
+      username?: string | null;
       /** Display Name */
-      display_name?: string;
+      display_name?: string | null;
       /** Description */
-      description?: string;
-      /**
-       * Avatar
-       * Format: uri
-       */
-      avatar?: string;
-      /**
-       * Cover Image
-       * Format: uri
-       */
-      cover_image?: string;
+      description?: string | null;
+      /** Avatar */
+      avatar?: string | null;
+      /** Cover Image */
+      cover_image?: string | null;
       /** Id Token */
-      id_token?: string;
-      visibility?: components["schemas"]["PersonaVisibility"];
+      id_token?: string | null;
+      visibility?: components["schemas"]["PersonaVisibility"] | null;
       /** Miscellaneous Data */
-      miscellaneous_data?: Record<string, never>;
+      miscellaneous_data?: Record<string, never> | null;
       /** Verified */
-      verified?: boolean;
+      verified?: boolean | null;
       /** Interactive Mode */
-      interactive_mode?: boolean;
+      interactive_mode?: boolean | null;
       /** Categories */
-      categories?: string[];
+      categories?: string[] | null;
       /** Categories To Add */
-      categories_to_add?: string[];
+      categories_to_add?: string[] | null;
       /** Categories To Remove */
-      categories_to_remove?: string[];
+      categories_to_remove?: string[] | null;
       /** Authentication Credentials */
-      authentication_credentials?: Record<string, never>;
+      authentication_credentials?: Record<string, never> | null;
       /** Telegram Bot Token */
-      telegram_bot_token?: string;
+      telegram_bot_token?: string | null;
       /** Twitter Profile */
-      twitter_profile?: Record<string, never>;
-      prompted_settings?: components["schemas"]["PromptParamsSettings"];
-      prompter_settings?: components["schemas"]["PromptParamsSettings"];
+      twitter_profile?: Record<string, never> | null;
+      prompted_settings?: components["schemas"]["PromptParamsSettings"] | null;
+      prompter_settings?: components["schemas"]["PromptParamsSettings"] | null;
       /** Creator Inference Cost Multiplier */
-      creator_inference_cost_multiplier?: number;
+      creator_inference_cost_multiplier?: number | string | null;
       /** Tags */
-      tags?: string[];
+      tags?: string[] | null;
       /** Is Governor */
-      is_governor?: boolean;
-      /**
-       * Invited By
-       * Format: uuid4
-       */
-      invited_by?: string;
+      is_governor?: boolean | null;
+      /** Invited By */
+      invited_by?: string | null;
       /** Has Followed Ten Planet Twitter */
-      has_followed_ten_planet_twitter?: boolean;
+      has_followed_ten_planet_twitter?: boolean | null;
       /** Auto Ingest Post */
-      auto_ingest_post?: boolean;
+      auto_ingest_post?: boolean | null;
       /** Auto Post Twitter */
-      auto_post_twitter?: boolean;
+      auto_post_twitter?: boolean | null;
       /** Exclude Deva Prompt Post */
-      exclude_deva_prompt_post?: boolean;
+      exclude_deva_prompt_post?: boolean | null;
       /** Karma Confirmation Threshold */
-      karma_confirmation_threshold?: number;
+      karma_confirmation_threshold?: number | null;
       /** Karma Confirmation Threshold Enabled */
-      karma_confirmation_threshold_enabled?: boolean;
+      karma_confirmation_threshold_enabled?: boolean | null;
       /** Get Airdrop */
-      get_airdrop?: boolean;
+      get_airdrop?: boolean | null;
     };
     /** UpdatePersonaAllowGenieDailyAllowance */
     UpdatePersonaAllowGenieDailyAllowance: {
@@ -6881,6 +6876,11 @@ export interface components {
       /** From Foom */
       from_foom: boolean;
     };
+    /** UpdatePersonaFromYaps */
+    UpdatePersonaFromYaps: {
+      /** From Yaps */
+      from_yaps: boolean;
+    };
     /** UpdatePersonaGetAirdrop */
     UpdatePersonaGetAirdrop: {
       /** Get Airdrop */
@@ -6893,33 +6893,32 @@ export interface components {
     };
     /** UpdateSession */
     UpdateSession: {
-      /**
-       * User Id
-       * Format: uuid4
-       */
-      user_id?: string;
+      /** User Id */
+      user_id?: string | null;
       /** Session Token */
-      session_token?: string;
-      /**
-       * Expires At
-       * Format: date-time
-       */
-      expires_at?: string;
+      session_token?: string | null;
+      /** Expires At */
+      expires_at?: string | null;
+    };
+    /** UpdateSmartPersona */
+    UpdateSmartPersona: {
+      /** Smart */
+      smart: boolean;
     };
     /** UpdateTranscript */
     UpdateTranscript: {
       /** Text */
-      text?: string;
+      text?: string | null;
       /** Speaker */
-      speaker?: string;
+      speaker?: string | null;
     };
     /** UpdateTwitterClient */
     UpdateTwitterClient: {
-      plan?: components["schemas"]["TwitterClientPlan"];
+      plan?: components["schemas"]["TwitterClientPlan"] | null;
       /** Secret */
-      secret?: string;
+      secret?: string | null;
       /** Reserved For */
-      reserved_for?: string[];
+      reserved_for?: string[] | null;
     };
     /** UpdateVariantRequest */
     UpdateVariantRequest: {
@@ -6934,11 +6933,11 @@ export interface components {
     /** UpdateWallet */
     UpdateWallet: {
       /** Name */
-      name?: string;
+      name?: string | null;
       /** Primary */
-      primary?: boolean;
+      primary?: boolean | null;
       /** Meta */
-      meta?: Record<string, never>;
+      meta?: Record<string, never> | null;
     };
     /** UseVerificationToken */
     UseVerificationToken: {
@@ -6956,15 +6955,12 @@ export interface components {
       wait_listed: boolean;
       /** Welcomed */
       welcomed: boolean;
-      /**
-       * Email Verified
-       * Format: date-time
-       */
-      email_verified?: string;
+      /** Email Verified */
+      email_verified?: string | null;
       /** Stripe Customer Id */
-      stripe_customer_id?: string;
+      stripe_customer_id?: string | null;
       /** Stripe Account Id */
-      stripe_account_id?: string;
+      stripe_account_id?: string | null;
       /** Stripe Account Kyc Done */
       stripe_account_kyc_done: boolean;
       /**
@@ -6990,31 +6986,25 @@ export interface components {
        * Format: uuid4
        */
       id: string;
+      /** Email */
+      email: string;
+      role: components["schemas"]["UserRole"];
+      /** Email Verified */
+      email_verified?: string | null;
+      /** Name */
+      name?: string | null;
+      /** Preferred Username */
+      preferred_username?: string | null;
+      /** Description */
+      description?: string | null;
+      /** Picture */
+      picture?: string | null;
+      persona?: components["schemas"]["UserPersonaInfo"] | null;
       /**
        * Sub
        * Format: uuid4
        */
       sub: string;
-      /** Email */
-      email: string;
-      role: components["schemas"]["UserRole"];
-      /**
-       * Email Verified
-       * Format: date-time
-       */
-      email_verified?: string;
-      /** Name */
-      name?: string;
-      /** Preferred Username */
-      preferred_username?: string;
-      /** Description */
-      description?: string;
-      /**
-       * Picture
-       * Format: uri
-       */
-      picture?: string;
-      persona?: components["schemas"]["UserPersonaInfo"];
     };
     /** UserPersonaDBModel */
     UserPersonaDBModel: {
@@ -7025,15 +7015,12 @@ export interface components {
       wait_listed: boolean;
       /** Welcomed */
       welcomed: boolean;
-      /**
-       * Email Verified
-       * Format: date-time
-       */
-      email_verified?: string;
+      /** Email Verified */
+      email_verified?: string | null;
       /** Stripe Customer Id */
-      stripe_customer_id?: string;
+      stripe_customer_id?: string | null;
       /** Stripe Account Id */
-      stripe_account_id?: string;
+      stripe_account_id?: string | null;
       /** Stripe Account Kyc Done */
       stripe_account_kyc_done: boolean;
       /**
@@ -7051,7 +7038,7 @@ export interface components {
        * Format: date-time
        */
       updated_at: string;
-      persona?: components["schemas"]["PersonaDBModel"];
+      persona?: components["schemas"]["PersonaDBModel"] | null;
     };
     /** UserPersonaDBModelWithInvitedByPersona */
     UserPersonaDBModelWithInvitedByPersona: {
@@ -7062,15 +7049,12 @@ export interface components {
       wait_listed: boolean;
       /** Welcomed */
       welcomed: boolean;
-      /**
-       * Email Verified
-       * Format: date-time
-       */
-      email_verified?: string;
+      /** Email Verified */
+      email_verified?: string | null;
       /** Stripe Customer Id */
-      stripe_customer_id?: string;
+      stripe_customer_id?: string | null;
       /** Stripe Account Id */
-      stripe_account_id?: string;
+      stripe_account_id?: string | null;
       /** Stripe Account Kyc Done */
       stripe_account_kyc_done: boolean;
       /**
@@ -7088,26 +7072,22 @@ export interface components {
        * Format: date-time
        */
       updated_at: string;
-      persona?: components["schemas"]["PersonaWithInvitedByPersonaDBModel"];
+      persona?: components["schemas"]["PersonaWithInvitedByPersonaDBModel"] | null;
     };
     /** UserPersonaInfo */
     UserPersonaInfo: {
       /** Username */
       username: string;
       /** Display Name */
-      display_name?: string;
+      display_name?: string | null;
       /** Description */
-      description?: string;
-      /**
-       * Avatar
-       * Format: uri
-       */
-      avatar?: string;
+      description?: string | null;
+      /** Avatar */
+      avatar?: string | null;
     };
     /**
      * UserRole
-     * @description An enumeration.
-     * @enum {unknown}
+     * @enum {string}
      */
     UserRole: "ADMIN" | "USER" | "GUILD" | "INFLORENCER";
     /** UserWithPersonaDBModel */
@@ -7119,15 +7099,12 @@ export interface components {
       wait_listed: boolean;
       /** Welcomed */
       welcomed: boolean;
-      /**
-       * Email Verified
-       * Format: date-time
-       */
-      email_verified?: string;
+      /** Email Verified */
+      email_verified?: string | null;
       /** Stripe Customer Id */
-      stripe_customer_id?: string;
+      stripe_customer_id?: string | null;
       /** Stripe Account Id */
-      stripe_account_id?: string;
+      stripe_account_id?: string | null;
       /** Stripe Account Kyc Done */
       stripe_account_kyc_done: boolean;
       /**
@@ -7172,16 +7149,10 @@ export interface components {
       text: string;
       /** In Reply To */
       in_reply_to: string;
-      /**
-       * Post Id
-       * Format: uuid
-       */
-      post_id?: string;
-      /**
-       * Chat Message Id
-       * Format: uuid
-       */
-      chat_message_id?: string;
+      /** Post Id */
+      post_id?: string | null;
+      /** Chat Message Id */
+      chat_message_id?: string | null;
       /** Published */
       published: boolean;
       /** Learned */
@@ -7205,8 +7176,13 @@ export interface components {
       likes_count?: number;
       /** Dislikes Count */
       dislikes_count?: number;
-      user_reaction?: components["schemas"]["VariantReaction"];
+      user_reaction?: components["schemas"]["VariantReaction"] | null;
     };
+    /**
+     * VariantListSort
+     * @enum {string}
+     */
+    VariantListSort: "LATEST" | "KARMA_SPENT";
     /** VariantPersonaDBModel */
     VariantPersonaDBModel: {
       /**
@@ -7223,16 +7199,10 @@ export interface components {
       text: string;
       /** In Reply To */
       in_reply_to: string;
-      /**
-       * Post Id
-       * Format: uuid
-       */
-      post_id?: string;
-      /**
-       * Chat Message Id
-       * Format: uuid
-       */
-      chat_message_id?: string;
+      /** Post Id */
+      post_id?: string | null;
+      /** Chat Message Id */
+      chat_message_id?: string | null;
       /** Published */
       published: boolean;
       /** Learned */
@@ -7256,13 +7226,12 @@ export interface components {
       likes_count?: number;
       /** Dislikes Count */
       dislikes_count?: number;
-      user_reaction?: components["schemas"]["VariantReaction"];
+      user_reaction?: components["schemas"]["VariantReaction"] | null;
       persona: components["schemas"]["PublicPersonaDBModel"];
     };
     /**
      * VariantReaction
-     * @description An enumeration.
-     * @enum {unknown}
+     * @enum {string}
      */
     VariantReaction: "LIKE" | "DISLIKE";
     /** VerificationTokenDBModel */
@@ -7287,14 +7256,14 @@ export interface components {
       /** Title */
       title: string;
       /** Audio Url */
-      audio_url?: string;
+      audio_url?: string | null;
       /** Duration Seconds */
-      duration_seconds?: number;
+      duration_seconds?: number | null;
       /** Transcript Url */
-      transcript_url?: string;
+      transcript_url?: string | null;
       transcript_state: components["schemas"]["TranscriptState"];
       /** Etl Arn */
-      etl_arn?: string;
+      etl_arn?: string | null;
       /**
        * Persona Id
        * Format: uuid
@@ -7313,7 +7282,6 @@ export interface components {
     };
     /**
      * VoteEnum
-     * @description An enumeration.
      * @enum {integer}
      */
     VoteEnum: 1 | -1;
@@ -7377,8 +7345,7 @@ export interface components {
     };
     /**
      * WalletChain
-     * @description An enumeration.
-     * @enum {unknown}
+     * @enum {string}
      */
     WalletChain: "TEN_PLANET" | "ETHEREUM" | "SOLANA" | "ARBITRUM" | "OPTIMISM" | "BASE";
     /** WalletDBModel */
@@ -7406,17 +7373,11 @@ export interface components {
       /** Meta */
       meta: Record<string, never>;
       /** Aiss Balance */
-      aiss_balance: number;
-      /**
-       * Signer Wallet Id
-       * Format: uuid
-       */
-      signer_wallet_id?: string;
-      /**
-       * Passkey Id
-       * Format: uuid
-       */
-      passkey_id?: string;
+      aiss_balance: string;
+      /** Signer Wallet Id */
+      signer_wallet_id?: string | null;
+      /** Passkey Id */
+      passkey_id?: string | null;
       /**
        * Created At
        * Format: date-time
@@ -7430,53 +7391,30 @@ export interface components {
     };
     /**
      * WalletType
-     * @description An enumeration.
-     * @enum {unknown}
+     * @enum {string}
      */
     WalletType: "EMBEDDED" | "SMART_ACCOUNT" | "INJECTED" | "PASSKEY";
     /**
      * Web3TransactionType
-     * @description An enumeration.
      * @enum {string}
      */
     Web3TransactionType: "CONTRACT_APPROVAL" | "MINT_GEM" | "SWAP" | "CONVERT" | "ADD_LIQUIDITY" | "REMOVE_LIQUIDITY" | "CREATE_LIQUIDITY_POOL" | "MISC";
     /** UpdateUser */
     schemas__auth__UpdateUser: {
-      /**
-       * Email
-       * Format: email
-       */
-      email?: string;
-      /**
-       * Email Verified
-       * Format: date-time
-       */
-      email_verified?: string;
+      /** Email */
+      email?: string | null;
+      /** Email Verified */
+      email_verified?: string | null;
       /** Wait Listed */
-      wait_listed?: boolean;
-      role?: components["schemas"]["UserRole"];
+      wait_listed?: boolean | null;
+      role?: components["schemas"]["UserRole"] | null;
     };
-    /**
-     * VariantListSort
-     * @description An enumeration.
-     * @enum {unknown}
-     */
-    schemas__chat_message__VariantListSort: "LATEST" | "KARMA_SPENT";
-    /**
-     * VariantListSort
-     * @description An enumeration.
-     * @enum {unknown}
-     */
-    schemas__post__VariantListSort: "LATEST" | "KARMA_SPENT";
     /** UpdateUser */
     schemas__user__UpdateUser: {
-      /**
-       * Email
-       * Format: email
-       */
-      email?: string;
+      /** Email */
+      email?: string | null;
       /** Welcomed */
-      welcomed?: boolean;
+      welcomed?: boolean | null;
     };
   };
   responses: never;
@@ -7496,15 +7434,15 @@ export interface operations {
   get_activity_feed_activity_get: {
     parameters: {
       query?: {
-        after_created_at?: string;
-        before_created_at?: string;
+        after_created_at?: string | null;
+        before_created_at?: string | null;
         limit?: number;
-        username?: string;
+        username?: string | null;
       };
     };
     responses: {
       /** @description Successful Response */
-      201: {
+      200: {
         content: {
           "application/json": components["schemas"]["PaginatedActivityFeed"];
         };
@@ -7593,7 +7531,7 @@ export interface operations {
       query?: {
         skip?: number;
         limit?: number;
-        claimed?: boolean;
+        claimed?: boolean | null;
       };
     };
     responses: {
@@ -7666,11 +7604,15 @@ export interface operations {
   list_artifacts_artifact_get: {
     parameters: {
       query?: {
-        ingest_id?: string;
-        persona_id?: string;
-        states?: components["schemas"]["ArtifactState"][];
+        ingest_id?: string | null;
+        persona_id?: string | null;
         skip?: number;
         limit?: number;
+      };
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["ArtifactState"][] | null;
       };
     };
     responses: {
@@ -7696,7 +7638,7 @@ export interface operations {
   get_eta_artifact_get_eta_get: {
     parameters: {
       query?: {
-        source_types?: components["schemas"]["ArtifactSourceType"][];
+        source_types?: components["schemas"]["ArtifactSourceType"][] | null;
       };
     };
     responses: {
@@ -7939,64 +7881,15 @@ export interface operations {
       query?: {
         skip?: number;
         limit?: number;
+        dependencies?: unknown;
       };
     };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["PaginatedFoomAiTokens"];
+          "application/json": components["schemas"]["PaginatedFullAITokens"];
         };
-      };
-      /** @description Not found */
-      404: {
-        content: never;
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Create Ai Token */
-  create_ai_token_ai_token_post: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["CreateAiToken"];
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      201: {
-        content: {
-          "application/json": components["schemas"]["FoomAiTokenDBModel"];
-        };
-      };
-      /** @description Not found */
-      404: {
-        content: never;
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Delete Ai Token */
-  delete_ai_token_ai_token___id__delete: {
-    parameters: {
-      path: {
-        _id: string;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      204: {
-        content: never;
       };
       /** @description Not found */
       404: {
@@ -8676,8 +8569,8 @@ export interface operations {
   list_category_category_get: {
     parameters: {
       query?: {
-        query?: string;
-        categories?: string[];
+        query?: string | null;
+        categories?: string[] | null;
       };
     };
     responses: {
@@ -8706,8 +8599,8 @@ export interface operations {
   list_channels_channel_get: {
     parameters: {
       query?: {
-        query?: string;
-        persona_channel_id?: string;
+        query?: string | null;
+        persona_channel_id?: string | null;
         skip?: number;
         limit?: number;
       };
@@ -8860,11 +8753,11 @@ export interface operations {
     parameters: {
       query: {
         thread_id: string;
-        before_created_at?: string;
-        after_created_at?: string;
+        before_created_at?: string | null;
+        after_created_at?: string | null;
         exclude_expired?: boolean;
-        author_type?: components["schemas"]["MessageAuthorType"];
-        thread_persona_id?: string;
+        author_type?: components["schemas"]["MessageAuthorType"] | null;
+        thread_persona_id?: string | null;
         skip?: number;
         limit?: number;
       };
@@ -8873,7 +8766,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["PaginatedChatMessagePersonaReplyRetrievalsVariantss"];
+          "application/json": components["schemas"]["PaginatedFullChatMessages"];
         };
       };
       /** @description Not found */
@@ -8924,11 +8817,11 @@ export interface operations {
   list_message_variants_chat_message_variant_list_get: {
     parameters: {
       query?: {
-        persona_id?: string;
-        has_published?: boolean;
+        persona_id?: string | null;
+        has_published?: boolean | null;
         skip?: number;
         limit?: number;
-        sort_by?: components["schemas"]["schemas__chat_message__VariantListSort"];
+        sort_by?: components["schemas"]["VariantListSort"];
         include_skipped?: boolean;
       };
     };
@@ -8936,7 +8829,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["PaginatedChatMessagePersonaReplyRetrievalsVariantss"];
+          "application/json": components["schemas"]["PaginatedFullChatMessages"];
         };
       };
       /** @description Not found */
@@ -9085,7 +8978,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["QueryDryResponse"];
+          "application/json": unknown;
         };
       };
       /** @description Not found */
@@ -9120,7 +9013,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["PaginatedChatMessagePersonaReplyRetrievalsVariantss"];
+          "application/json": components["schemas"]["PaginatedFullChatMessages"];
         };
       };
       /** @description Not found */
@@ -9176,13 +9069,13 @@ export interface operations {
   list_thread_chat_thread_get: {
     parameters: {
       query?: {
-        title?: string;
+        title?: string | null;
         /** @description All members(usernames) must be in the thread */
-        members_all?: string[];
+        members_all?: string[] | null;
         /** @description Any members(usernames) must be in the thread */
-        members_any?: string[];
-        is_direct_message?: boolean;
-        thread_persona_id?: string;
+        members_any?: string[] | null;
+        is_direct_message?: boolean | null;
+        thread_persona_id?: string | null;
         skip?: number;
         limit?: number;
       };
@@ -9525,7 +9418,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["CharacterDBModel"];
+          "application/json": components["schemas"]["CharacterDBModel"] | null;
         };
       };
       /** @description Not found */
@@ -9548,7 +9441,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["CharacterDBModel"];
+          "application/json": components["schemas"]["CharacterDBModel"] | null;
         };
       };
       /** @description Not found */
@@ -9693,9 +9586,9 @@ export interface operations {
   list_excerpts_excerpt_get: {
     parameters: {
       query?: {
-        artifact_id?: string;
-        ingest_id?: string;
-        persona_id?: string;
+        artifact_id?: string | null;
+        ingest_id?: string | null;
+        persona_id?: string | null;
         skip?: number;
         limit?: number;
       };
@@ -9782,7 +9675,7 @@ export interface operations {
   get_external_ai_tokens_external_ai_token_get: {
     parameters: {
       query?: {
-        persona_id?: string;
+        persona_id?: string | null;
         skip?: number;
         limit?: number;
       };
@@ -9887,11 +9780,11 @@ export interface operations {
   list_ingests_ingest_get: {
     parameters: {
       query?: {
-        persona_id?: string;
-        source_types?: components["schemas"]["IngestSourceType"][];
-        states?: components["schemas"]["IngestState"][];
-        interactive_mode?: boolean;
-        source_url?: string;
+        persona_id?: string | null;
+        source_types?: components["schemas"]["IngestSourceType"][] | null;
+        states?: components["schemas"]["IngestState"][] | null;
+        interactive_mode?: boolean | null;
+        source_url?: string | null;
         skip?: number;
         limit?: number;
       };
@@ -10115,10 +10008,10 @@ export interface operations {
     };
   };
   /**
-   * Un Ingest
+   * Re Ingest
    * @description Un ingest by id
    */
-  un_ingest_ingest___id__re_ingest_put: {
+  re_ingest_ingest___id__re_ingest_put: {
     parameters: {
       path: {
         _id: string;
@@ -10224,7 +10117,7 @@ export interface operations {
         persona_id: string;
         skip?: number;
         limit?: number;
-        claimed?: boolean;
+        claimed?: boolean | null;
         raise_error?: boolean;
       };
     };
@@ -10315,6 +10208,124 @@ export interface operations {
       };
     };
   };
+  /** Get Ai Tokens */
+  get_ai_tokens_internal_ai_token_get: {
+    parameters: {
+      query?: {
+        skip?: number;
+        limit?: number;
+        raise_error?: boolean;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["PaginatedFullAITokens"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Create Ai Token */
+  create_ai_token_internal_ai_token_post: {
+    parameters: {
+      query?: {
+        raise_error?: boolean;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreateAiToken"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        content: {
+          "application/json": components["schemas"]["FoomAiTokenDBModel"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Update Ai Token */
+  update_ai_token_internal_ai_token___id__put: {
+    parameters: {
+      query?: {
+        raise_error?: boolean;
+      };
+      path: {
+        _id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UpdateAiToken"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      204: {
+        content: never;
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Delete Ai Token */
+  delete_ai_token_internal_ai_token___id__delete: {
+    parameters: {
+      query?: {
+        raise_error?: boolean;
+      };
+      path: {
+        _id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      204: {
+        content: never;
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
   /** Delete Artifact */
   delete_artifact_internal_artifact___id__delete: {
     parameters: {
@@ -10362,7 +10373,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["CharacterDBModel"];
+          "application/json": components["schemas"]["CharacterDBModel"] | null;
         };
       };
       /** @description Not found */
@@ -10545,7 +10556,7 @@ export interface operations {
   get_external_ai_tokens_internal_external_ai_token_get: {
     parameters: {
       query?: {
-        persona_id?: string;
+        persona_id?: string | null;
         skip?: number;
         limit?: number;
         raise_error?: boolean;
@@ -10769,14 +10780,14 @@ export interface operations {
     parameters: {
       query?: {
         /** @description Substring search on display_name and username fields */
-        query?: string;
-        usernames?: string[];
+        query?: string | null;
+        usernames?: string[] | null;
         /** @description Search for personas with any of the given categories */
-        categories_any?: string[];
+        categories_any?: string[] | null;
         /** @description Search for personas with all of the given categories */
-        categories_all?: string[];
-        display_name?: string;
-        has_on_chain_gem?: boolean;
+        categories_all?: string[] | null;
+        display_name?: string | null;
+        has_on_chain_gem?: boolean | null;
         type?: components["schemas"]["PersonaType"];
         skip?: number;
         limit?: number;
@@ -11152,6 +11163,77 @@ export interface operations {
     };
   };
   /**
+   * Create Yaps Persona
+   * @description Creates a Yaps persona object.
+   */
+  create_yaps_persona_internal_persona_yaps_post: {
+    parameters: {
+      query?: {
+        raise_error?: boolean;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreateYapsPersona"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        content: {
+          "application/json": components["schemas"]["PersonaDBModel"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Update Persona From Yaps
+   * @description Update persona is user from Yaps
+   */
+  update_persona_from_yaps_internal_persona___id__from_yaps_put: {
+    parameters: {
+      query?: {
+        raise_error?: boolean;
+      };
+      path: {
+        _id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UpdatePersonaFromYaps"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
    * Get Personas To Post Twitter
    * @description Get personas to post twitter
    */
@@ -11166,6 +11248,43 @@ export interface operations {
       200: {
         content: {
           "application/json": string[];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Update Persona Is Smart
+   * @description Update persona is smart if persona is from KOL intelligence list
+   */
+  update_persona_is_smart_internal_persona___id__smart_put: {
+    parameters: {
+      query?: {
+        raise_error?: boolean;
+      };
+      path: {
+        _id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UpdateSmartPersona"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
         };
       };
       /** @description Not found */
@@ -11317,10 +11436,10 @@ export interface operations {
   list_retrievals_internal_retrieval_get: {
     parameters: {
       query?: {
-        chat_message_id?: string;
-        post_id?: string;
-        before_created_at?: string;
-        after_created_at?: string;
+        chat_message_id?: string | null;
+        post_id?: string | null;
+        before_created_at?: string | null;
+        after_created_at?: string | null;
         skip?: number;
         limit?: number;
         raise_error?: boolean;
@@ -12070,8 +12189,8 @@ export interface operations {
     parameters: {
       query?: {
         only_primary?: boolean;
-        persona_id?: string;
-        search_query?: string;
+        persona_id?: string | null;
+        search_query?: string | null;
         skip?: number;
         limit?: number;
         raise_error?: boolean;
@@ -12129,7 +12248,7 @@ export interface operations {
   list_user_transactions_karma_get: {
     parameters: {
       query?: {
-        persona_id?: string;
+        persona_id?: string | null;
         skip?: number;
         limit?: number;
       };
@@ -12294,10 +12413,10 @@ export interface operations {
   deva_leaderboard_leaderboard_deva_get: {
     parameters: {
       query?: {
-        karma_type?: components["schemas"]["KarmaType"];
-        search_query?: string;
+        karma_type?: components["schemas"]["KarmaType"] | null;
+        search_query?: string | null;
         search_query_threshold?: number;
-        usernames?: string[];
+        usernames?: string[] | null;
         skip?: number;
         limit?: number;
       };
@@ -12328,10 +12447,10 @@ export interface operations {
   creator_leaderboard_leaderboard_creator_get: {
     parameters: {
       query?: {
-        karma_type?: components["schemas"]["KarmaType"];
-        search_query?: string;
+        karma_type?: components["schemas"]["KarmaType"] | null;
+        search_query?: string | null;
         search_query_threshold?: number;
-        usernames?: string[];
+        usernames?: string[] | null;
         skip?: number;
         limit?: number;
       };
@@ -12362,10 +12481,10 @@ export interface operations {
   prompter_leaderboard_leaderboard_prompter_get: {
     parameters: {
       query?: {
-        karma_type?: components["schemas"]["KarmaType"];
-        search_query?: string;
+        karma_type?: components["schemas"]["KarmaType"] | null;
+        search_query?: string | null;
         search_query_threshold?: number;
-        usernames?: string[];
+        usernames?: string[] | null;
         skip?: number;
         limit?: number;
       };
@@ -12396,9 +12515,9 @@ export interface operations {
   trainer_leaderboard_leaderboard_trainer_get: {
     parameters: {
       query?: {
-        search_query?: string;
+        search_query?: string | null;
         search_query_threshold?: number;
-        usernames?: string[];
+        usernames?: string[] | null;
         skip?: number;
         limit?: number;
       };
@@ -12429,9 +12548,9 @@ export interface operations {
   referral_leaderboard_leaderboard_referral_get: {
     parameters: {
       query?: {
-        search_query?: string;
+        search_query?: string | null;
         search_query_threshold?: number;
-        usernames?: string[];
+        usernames?: string[] | null;
         skip?: number;
         limit?: number;
       };
@@ -12462,9 +12581,9 @@ export interface operations {
   nw_referral_leaderboard_leaderboard_nw_referral_get: {
     parameters: {
       query?: {
-        search_query?: string;
+        search_query?: string | null;
         search_query_threshold?: number;
-        usernames?: string[];
+        usernames?: string[] | null;
         skip?: number;
         limit?: number;
       };
@@ -12495,10 +12614,10 @@ export interface operations {
   governor_leaderboard_leaderboard_governor_get: {
     parameters: {
       query?: {
-        karma_type?: components["schemas"]["KarmaType"];
-        search_query?: string;
+        karma_type?: components["schemas"]["KarmaType"] | null;
+        search_query?: string | null;
         search_query_threshold?: number;
-        usernames?: string[];
+        usernames?: string[] | null;
         skip?: number;
         limit?: number;
       };
@@ -12529,9 +12648,9 @@ export interface operations {
   gem_leaderboard_leaderboard_gem_get: {
     parameters: {
       query?: {
-        search_query?: string;
+        search_query?: string | null;
         search_query_threshold?: number;
-        usernames?: string[];
+        usernames?: string[] | null;
         skip?: number;
         limit?: number;
       };
@@ -12559,10 +12678,10 @@ export interface operations {
   get_skipped_items_library_skipped_get: {
     parameters: {
       query?: {
-        created_at_before?: string;
+        created_at_before?: string | null;
         limit?: number;
         source_types?: (components["schemas"]["ArtifactSourceType"] | components["schemas"]["LibraryItemBaseType"])[];
-        search_query?: string;
+        search_query?: string | null;
       };
     };
     responses: {
@@ -12588,10 +12707,10 @@ export interface operations {
   get_memorized_items_library_memorized_get: {
     parameters: {
       query?: {
-        created_at_before?: string;
+        created_at_before?: string | null;
         limit?: number;
         source_types?: (components["schemas"]["ArtifactSourceType"] | components["schemas"]["LibraryItemBaseType"])[];
-        search_query?: string;
+        search_query?: string | null;
       };
     };
     responses: {
@@ -12617,10 +12736,10 @@ export interface operations {
   get_memorizing_items_library_memorizing_get: {
     parameters: {
       query?: {
-        created_at_before?: string;
+        created_at_before?: string | null;
         limit?: number;
         source_types?: (components["schemas"]["ArtifactSourceType"] | components["schemas"]["LibraryItemBaseType"])[];
-        search_query?: string;
+        search_query?: string | null;
       };
     };
     responses: {
@@ -12646,10 +12765,10 @@ export interface operations {
   get_proposed_items_library_proposed_get: {
     parameters: {
       query?: {
-        created_at_before?: string;
+        created_at_before?: string | null;
         limit?: number;
         source_types?: (components["schemas"]["ArtifactSourceType"] | components["schemas"]["LibraryItemBaseType"])[];
-        search_query?: string;
+        search_query?: string | null;
       };
     };
     responses: {
@@ -12675,10 +12794,10 @@ export interface operations {
   get_forgotten_items_library_forgotten_get: {
     parameters: {
       query?: {
-        created_at_before?: string;
+        created_at_before?: string | null;
         limit?: number;
         source_types?: (components["schemas"]["ArtifactSourceType"] | components["schemas"]["LibraryItemBaseType"])[];
-        search_query?: string;
+        search_query?: string | null;
       };
     };
     responses: {
@@ -12704,10 +12823,10 @@ export interface operations {
   get_failed_items_library_failed_get: {
     parameters: {
       query?: {
-        created_at_before?: string;
+        created_at_before?: string | null;
         limit?: number;
         source_types?: (components["schemas"]["ArtifactSourceType"] | components["schemas"]["LibraryItemBaseType"])[];
-        search_query?: string;
+        search_query?: string | null;
       };
     };
     responses: {
@@ -12737,13 +12856,14 @@ export interface operations {
     parameters: {
       query?: {
         /** @description Search query */
-        query?: string;
-        created_at_before?: string;
-        created_at_after?: string;
-        updated_at_before?: string;
-        updated_at_after?: string;
-        daily_note?: boolean;
-        backlink_post_id?: string;
+        query?: string | null;
+        created_at_before?: string | null;
+        created_at_after?: string | null;
+        updated_at_before?: string | null;
+        updated_at_after?: string | null;
+        daily_note?: boolean | null;
+        backlink_post_id?: string | null;
+        is_public?: boolean | null;
         skip?: number;
         limit?: number;
       };
@@ -12782,6 +12902,44 @@ export interface operations {
       201: {
         content: {
           "application/json": components["schemas"]["NoteDBModel"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Notes
+   * @description Get all notes
+   */
+  get_notes_note_public_get: {
+    parameters: {
+      query?: {
+        /** @description Search query */
+        query?: string | null;
+        created_at_before?: string | null;
+        created_at_after?: string | null;
+        updated_at_before?: string | null;
+        updated_at_after?: string | null;
+        daily_note?: boolean | null;
+        backlink_post_id?: string | null;
+        skip?: number;
+        limit?: number;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["PaginatedFullNotes"];
         };
       };
       /** @description Not found */
@@ -12853,10 +13011,10 @@ export interface operations {
     };
   };
   /**
-   * Get Note
+   * Get Public Note
    * @description Get a published note by ID
    */
-  get_note_note___id__public_get: {
+  get_public_note_note___id__public_get: {
     parameters: {
       path: {
         _id: string;
@@ -12866,7 +13024,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["FullNoteDBModel"];
+          "application/json": components["schemas"]["FullNoteDBModel"] | null;
         };
       };
       /** @description Not found */
@@ -13036,7 +13194,7 @@ export interface operations {
   list_notifications_notification_get: {
     parameters: {
       query?: {
-        is_read?: boolean;
+        is_read?: boolean | null;
         skip?: number;
         limit?: number;
       };
@@ -13107,7 +13265,7 @@ export interface operations {
   authorize_oidc_client_authorize_post: {
     requestBody: {
       content: {
-        "application/json": components["schemas"]["AuthorizeRequest"];
+        "application/json": components["schemas"]["AuthorizeRequestToken"] | components["schemas"]["AuthorizeRequestPKCE"];
       };
     };
     responses: {
@@ -13129,8 +13287,8 @@ export interface operations {
       };
     };
   };
-  /** Authorize */
-  authorize_oidc_client_authorize___id__get: {
+  /** Get Authorization Code */
+  get_authorization_code_oidc_client_authorize___id__get: {
     parameters: {
       path: {
         _id: string;
@@ -13303,8 +13461,29 @@ export interface operations {
       };
     };
   };
+  /** Jwks Options */
+  jwks_options_oidc_jwks_options: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+    };
+  };
   /** Get Token */
   get_token_oidc_token_post: {
+    parameters: {
+      header?: {
+        origin?: string | null;
+        "x-forwarded-host"?: string | null;
+      };
+    };
     requestBody: {
       content: {
         "application/json": components["schemas"]["AuthTokenRequest"] | components["schemas"]["RefreshTokenRequest"] | components["schemas"]["PCKERequest"];
@@ -13329,8 +13508,29 @@ export interface operations {
       };
     };
   };
+  /** Token Options */
+  token_options_oidc_token_options: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+    };
+  };
   /** Revoke Token */
   revoke_token_oidc_token_revoke_post: {
+    parameters: {
+      header?: {
+        origin?: string | null;
+        "x-forwarded-host"?: string | null;
+      };
+    };
     requestBody: {
       content: {
         "application/json": components["schemas"]["TokenRequest"];
@@ -13353,8 +13553,29 @@ export interface operations {
       };
     };
   };
+  /** Revoke Options */
+  revoke_options_oidc_token_revoke_options: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+    };
+  };
   /** Introspect Token */
   introspect_token_oidc_token_introspect_post: {
+    parameters: {
+      header?: {
+        origin?: string | null;
+        "x-forwarded-host"?: string | null;
+      };
+    };
     requestBody: {
       content: {
         "application/json": components["schemas"]["TokenRequest"];
@@ -13379,13 +13600,55 @@ export interface operations {
       };
     };
   };
+  /** Introspect Options */
+  introspect_options_oidc_token_introspect_options: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+    };
+  };
   /** Userinfo */
   userinfo_oidc_userinfo_get: {
+    parameters: {
+      header?: {
+        origin?: string | null;
+        "x-forwarded-host"?: string | null;
+      };
+    };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
           "application/json": components["schemas"]["UserInfo"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Userinfo Options */
+  userinfo_options_oidc_userinfo_options: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
         };
       };
       /** @description Not found */
@@ -13401,6 +13664,269 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["ScopesInfo"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+    };
+  };
+  /**
+   * Get Feed
+   * @description Get paginated feed of posts with their replies.
+   * Works for both authenticated and unauthenticated users.
+   */
+  get_feed_sdk_feed_get: {
+    parameters: {
+      query?: {
+        channel_id?: string | null;
+        before_created_at?: string | null;
+        after_created_at?: string | null;
+        /** @description Filter posts by persona */
+        filter_persona_id?: string | null;
+        is_deleted?: boolean | null;
+        /** @description Search query */
+        query?: string | null;
+        skip?: number;
+        limit?: number;
+        order_by?: "updated_at" | "created_at";
+        order_direction?: "desc" | "asc";
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["PaginatedPostWithReplieses"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Feed Options */
+  feed_options_sdk_feed_options: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+    };
+  };
+  /**
+   * Create Post
+   * @description Create a Post with CORS support for client applications
+   */
+  create_post_sdk_feed_post_post: {
+    parameters: {
+      header?: {
+        origin?: string | null;
+        "x-forwarded-host"?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreateUserPost"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        content: {
+          "application/json": components["schemas"]["FullPostDBModel"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Feed Options */
+  feed_options_sdk_feed_post_options: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+    };
+  };
+  /**
+   * React To Post
+   * @description React to a post with CORS support for client applications
+   */
+  react_to_post_sdk_feed_post___id__react_put: {
+    parameters: {
+      header?: {
+        origin?: string | null;
+        "x-forwarded-host"?: string | null;
+      };
+      path: {
+        _id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ReactPost"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["FullPostDBModel"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Post React Options */
+  post_react_options_sdk_feed_post___id__react_options: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+    };
+  };
+  /**
+   * Get Channel By Handle
+   * @description Get a channel by handle
+   */
+  get_channel_by_handle_sdk_channel_handle__handle__get: {
+    parameters: {
+      path: {
+        handle: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ChannelDBModel"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Channel Handle Options */
+  channel_handle_options_sdk_channel_handle__handle__options: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+    };
+  };
+  /**
+   * List Public Personas
+   * @description Returns a paginated list of personas filtered by the given parameters.
+   * Public endpoint with CORS support.
+   */
+  list_public_personas_sdk_persona_public_get: {
+    parameters: {
+      query?: {
+        /** @description Substring search on display_name and username fields */
+        query?: string | null;
+        usernames?: string[] | null;
+        /** @description Search for personas with any of the given categories */
+        categories_any?: string[] | null;
+        /** @description Search for personas with all of the given categories */
+        categories_all?: string[] | null;
+        display_name?: string | null;
+        has_on_chain_gem?: boolean | null;
+        type?: components["schemas"]["PersonaType"];
+        from_foom?: boolean | null;
+        from_yaps?: boolean | null;
+        smart?: boolean | null;
+        sort_by?: components["schemas"]["PersonaSort"][] | null;
+        skip?: number;
+        limit?: number;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["PaginatedPersonaCategorieses"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Public Personas Options */
+  public_personas_options_sdk_persona_public_options: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
         };
       };
       /** @description Not found */
@@ -13477,17 +14003,19 @@ export interface operations {
     parameters: {
       query?: {
         /** @description Substring search on display_name and username fields */
-        query?: string;
-        usernames?: string[];
+        query?: string | null;
+        usernames?: string[] | null;
         /** @description Search for personas with any of the given categories */
-        categories_any?: string[];
+        categories_any?: string[] | null;
         /** @description Search for personas with all of the given categories */
-        categories_all?: string[];
-        display_name?: string;
-        has_on_chain_gem?: boolean;
+        categories_all?: string[] | null;
+        display_name?: string | null;
+        has_on_chain_gem?: boolean | null;
         type?: components["schemas"]["PersonaType"];
-        from_foom?: boolean;
-        sort_by?: components["schemas"]["PersonaSort"][];
+        from_foom?: boolean | null;
+        from_yaps?: boolean | null;
+        smart?: boolean | null;
+        sort_by?: components["schemas"]["PersonaSort"][] | null;
         skip?: number;
         limit?: number;
       };
@@ -13858,17 +14386,17 @@ export interface operations {
   list_posts_post_get: {
     parameters: {
       query?: {
-        channel_id?: string;
-        channel_handle?: string;
-        in_reply_to_id?: string;
-        before_created_at?: string;
-        after_created_at?: string;
+        channel_id?: string | null;
+        channel_handle?: string | null;
+        in_reply_to_id?: string | null;
+        before_created_at?: string | null;
+        after_created_at?: string | null;
         /** @description Filter posts by persona */
-        filter_persona_id?: string;
-        author_type?: components["schemas"]["PostAuthorType"];
-        is_deleted?: boolean;
+        filter_persona_id?: string | null;
+        author_type?: components["schemas"]["PostAuthorType"] | null;
+        is_deleted?: boolean | null;
         /** @description Search query */
-        query?: string;
+        query?: string | null;
         skip?: number;
         limit?: number;
         order_by?: "updated_at" | "created_at";
@@ -13930,17 +14458,17 @@ export interface operations {
   list_public_posts_post_public_get: {
     parameters: {
       query?: {
-        channel_id?: string;
-        channel_handle?: string;
-        in_reply_to_id?: string;
-        before_created_at?: string;
-        after_created_at?: string;
+        channel_id?: string | null;
+        channel_handle?: string | null;
+        in_reply_to_id?: string | null;
+        before_created_at?: string | null;
+        after_created_at?: string | null;
         /** @description Filter posts by persona */
-        filter_persona_id?: string;
-        author_type?: components["schemas"]["PostAuthorType"];
-        is_deleted?: boolean;
+        filter_persona_id?: string | null;
+        author_type?: components["schemas"]["PostAuthorType"] | null;
+        is_deleted?: boolean | null;
         /** @description Search query */
-        query?: string;
+        query?: string | null;
         skip?: number;
         limit?: number;
         order_by?: "updated_at" | "created_at";
@@ -13973,10 +14501,10 @@ export interface operations {
   list_post_variants_post_variant_list_get: {
     parameters: {
       query?: {
-        has_published?: boolean;
+        has_published?: boolean | null;
         skip?: number;
         limit?: number;
-        sort_by?: components["schemas"]["schemas__post__VariantListSort"];
+        sort_by?: components["schemas"]["VariantListSort"];
         include_skipped?: boolean;
       };
     };
@@ -14220,9 +14748,9 @@ export interface operations {
       query?: {
         skip?: number;
         limit?: number;
-        username?: string;
+        username?: string | null;
         is_human?: boolean;
-        channel_id?: string;
+        channel_id?: string | null;
       };
     };
     responses: {
@@ -14251,10 +14779,10 @@ export interface operations {
   list_profile_persona_reacted_posts_post_persona_reactions_get: {
     parameters: {
       query?: {
-        reaction?: components["schemas"]["PostReaction"];
+        reaction?: components["schemas"]["PostReaction"] | null;
         skip?: number;
         limit?: number;
-        username?: string;
+        username?: string | null;
       };
     };
     responses: {
@@ -14334,7 +14862,7 @@ export interface operations {
       /** @description Successful Response */
       201: {
         content: {
-          "application/json": components["schemas"]["FullPostDBModel"];
+          "application/json": components["schemas"]["FullPostDBModel"] | null;
         };
       };
       /** @description Not found */
@@ -14359,7 +14887,7 @@ export interface operations {
       query?: {
         skip?: number;
         limit?: number;
-        status?: components["schemas"]["ReferralStatus"];
+        status?: components["schemas"]["ReferralStatus"] | null;
       };
     };
     responses: {
@@ -14608,6 +15136,36 @@ export interface operations {
         content: {
           "application/json": unknown;
         };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Unlink Persona From User
+   * @description Unlink persona from user
+   */
+  unlink_persona_from_user_secure_persona___id__unlink_user_delete: {
+    parameters: {
+      query?: {
+        raise_error?: boolean;
+      };
+      path: {
+        _id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      204: {
+        content: never;
       };
       /** @description Not found */
       404: {
@@ -15062,7 +15620,7 @@ export interface operations {
   create_user_client_token_user_client__client_id__token_post: {
     parameters: {
       query?: {
-        expires_in?: number;
+        expires_in?: number | null;
       };
       path: {
         client_id: string;
@@ -15148,8 +15706,8 @@ export interface operations {
   list_variants_variant_get: {
     parameters: {
       query?: {
-        persona_id?: string;
-        published?: boolean;
+        persona_id?: string | null;
+        published?: boolean | null;
         own?: boolean;
         skip?: number;
         limit?: number;
@@ -15210,7 +15768,7 @@ export interface operations {
   delete_variant_by_persona_id_variant_delete: {
     parameters: {
       query?: {
-        persona_id?: string;
+        persona_id?: string | null;
       };
     };
     responses: {
@@ -15238,7 +15796,7 @@ export interface operations {
     parameters: {
       query: {
         chat_message_id: string;
-        published?: boolean;
+        published?: boolean | null;
         skip?: number;
         limit?: number;
       };
@@ -15270,7 +15828,7 @@ export interface operations {
     parameters: {
       query: {
         post_id: string;
-        published?: boolean;
+        published?: boolean | null;
         skip?: number;
         limit?: number;
       };
@@ -15490,7 +16048,7 @@ export interface operations {
   list_profile_persona_reacted_variants_variant_persona_reactions_get: {
     parameters: {
       query?: {
-        reaction?: components["schemas"]["VariantReaction"];
+        reaction?: components["schemas"]["VariantReaction"] | null;
         skip?: number;
         limit?: number;
       };
@@ -15522,11 +16080,11 @@ export interface operations {
     parameters: {
       query?: {
         /** @description Search query */
-        query?: string;
-        created_at_before?: string;
-        created_at_after?: string;
-        updated_at_before?: string;
-        updated_at_after?: string;
+        query?: string | null;
+        created_at_before?: string | null;
+        created_at_after?: string | null;
+        updated_at_before?: string | null;
+        updated_at_after?: string | null;
         skip?: number;
         limit?: number;
       };
@@ -15953,10 +16511,10 @@ export interface operations {
     };
   };
   /**
-   * Link Wallet
+   * Link Passkey Wallet
    * @description Link a wallet to a user.
    */
-  link_wallet_wallet_passkey_post: {
+  link_passkey_wallet_wallet_passkey_post: {
     requestBody: {
       content: {
         "application/json": components["schemas"]["LinkPasskeyWallet"];
@@ -16073,7 +16631,7 @@ export interface operations {
     parameters: {
       query?: {
         only_primary?: boolean;
-        search_query?: string;
+        search_query?: string | null;
         sort_by?: components["schemas"]["GemListSort"];
         skip?: number;
         limit?: number;
@@ -16103,8 +16661,8 @@ export interface operations {
     parameters: {
       query?: {
         only_primary?: boolean;
-        persona_id?: string;
-        search_query?: string;
+        persona_id?: string | null;
+        search_query?: string | null;
         skip?: number;
         limit?: number;
       };
@@ -16212,7 +16770,7 @@ export interface operations {
   get_liquidity_pairs_web3_gem_pairs_get: {
     parameters: {
       query?: {
-        address?: string;
+        address?: string | null;
         skip?: number;
         limit?: number;
       };

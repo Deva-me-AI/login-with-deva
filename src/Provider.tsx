@@ -5,30 +5,33 @@ import {
   generateCodeVerifier,
   generateCodeChallenge,
   epochAtSecondsFromNow,
+  epochTimeIsPast,
 } from "./lib/crypto";
 import { useStorage } from "./hooks/use-storage";
 import useSWR from "swr";
 import { fetcher } from "./lib/fetcher";
 import type { OidcAccessTokenJWT, UserInfo } from "./server";
 import { jwtDecode } from "jwt-decode";
-
-// TODO: move env
-const baseUrl = "http://localhost:3000";
+import { useInterval } from "./hooks/use-timeout";
+import { type Envs, envToUrl } from "./config";
 
 export type DevaProviderProps = {
   clientId: string;
   redirectUri: string;
   scopes: string[];
   children: React.ReactNode;
+  env: Envs;
 };
 
 type OpenIdConfig = {
   authorization_endpoint: string;
   token_endpoint: string;
   userinfo_endpoint: string;
+  revocation_endpoint: string;
 };
 
-const useOpenIdConfig = () => {
+const useOpenIdConfig = (env: Envs) => {
+  const baseUrl = envToUrl(env);
   const { data, error, isLoading } = useSWR<OpenIdConfig, Error>(
     `${baseUrl}/.well-known/openid-configuration`,
     fetcher,
@@ -43,7 +46,7 @@ const useUserInfo = (
   const { data, error, isLoading } = useSWR<UserInfo, Error>(
     authToken ? userInfoUrl : false,
     () =>
-      fetcher(userInfoUrl!, {
+      fetcher<UserInfo>(userInfoUrl!, {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
@@ -57,13 +60,64 @@ const useUserInfo = (
   };
 };
 
+const useRefreshToken = (
+  clientId: string,
+  refreshToken: string | null,
+  tokenEndpoint?: string,
+) => {
+  const refresh = useCallback(async () => {
+    if (!refreshToken || !tokenEndpoint) {
+      console.log("no refresh token or token endpoint");
+      return;
+    }
+
+    return fetcher<OidcAccessTokenJWT>(tokenEndpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({
+        client_id: clientId,
+        refresh_token: refreshToken,
+      }),
+    });
+  }, [refreshToken, clientId, tokenEndpoint]);
+
+  return refresh;
+};
+
+const useRevokeToken = (
+  accessToken: string | null,
+  clientId: string,
+  revokeUri?: string,
+) => {
+  const revoke = useCallback(async () => {
+    if (!revokeUri || !accessToken) {
+      return;
+    }
+    await fetch(revokeUri, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        access_token: accessToken,
+        client_id: clientId,
+      }),
+    });
+  }, [accessToken, clientId, revokeUri]);
+
+  return revoke;
+};
+
 export function DevaProvider({
   clientId,
   redirectUri,
   scopes,
   children,
+  env,
 }: DevaProviderProps) {
-  const { openIdConfig, isOpenIdConfigLoading, error } = useOpenIdConfig();
+  const { openIdConfig, isOpenIdConfigLoading, error } = useOpenIdConfig(env);
   if (error) {
     console.error(openIdConfig);
   }
@@ -84,29 +138,40 @@ export function DevaProvider({
   );
   const [expiresIn, setExpiresIn] = useStorage("expires_in", 0); // TODO: figure out sensible default
 
-  let tokenExp = expiresIn;
+  const [isRefreshing, setIsRefreshing] = useStorage("is_refreshing", false);
 
-  const handleTokenResponse = (res: OidcAccessTokenJWT) => {
-    setAccessToken(res.access_token);
-    setIdToken(res.id_token);
-    // Decode IdToken, so we can use "exp" from that as fallback if expire not returned in the response
-    try {
-      const decodedToken = jwtDecode(res.id_token);
-      tokenExp = Math.round(Number(decodedToken.exp) - Date.now() / 1000); // number of seconds from now
-    } catch (e) {
-      console.warn(`Failed to decode idToken: ${(e as Error).message}`);
-    }
+  const handleTokenResponse = useCallback(
+    (res: OidcAccessTokenJWT) => {
+      let tokenExp = expiresIn;
+      setAccessToken(res.access_token);
+      setIdToken(res.id_token);
+      // Decode IdToken, so we can use "exp" from that as fallback if expire not returned in the response
+      try {
+        const decodedToken = jwtDecode(res.id_token);
+        tokenExp = Math.round(Number(decodedToken.exp) - Date.now() / 1000); // number of seconds from now
+      } catch (e) {
+        console.warn(`Failed to decode idToken: ${(e as Error).message}`);
+      }
 
-    const tokenExpiresIn = res.expires_in ?? tokenExp;
+      const tokenExpiresIn = res.expires_in ?? tokenExp;
 
-    setExpiresIn(epochAtSecondsFromNow(tokenExpiresIn));
-    setRefreshToken(res.refresh_token);
-    setCodeVerifier("");
-  };
+      setExpiresIn(epochAtSecondsFromNow(tokenExpiresIn));
+      setRefreshToken(res.refresh_token);
+      setCodeVerifier("");
+    },
+    [
+      setAccessToken,
+      setIdToken,
+      setExpiresIn,
+      setRefreshToken,
+      setCodeVerifier,
+      expiresIn,
+    ],
+  );
 
   const [authError, setAuthError] = useState<string | null>(null);
 
-  const { userInfo, isUserInfoLoading, userInfoError } = useUserInfo(
+  const { userInfo } = useUserInfo(
     openIdConfig?.userinfo_endpoint,
     accessToken,
   );
@@ -127,12 +192,16 @@ export function DevaProvider({
     setRefreshToken,
   ]);
 
+  const revokeToken = useRevokeToken(
+    accessToken,
+    clientId,
+    openIdConfig?.revocation_endpoint,
+  );
   const logout = useCallback(async () => {
+    await revokeToken();
     clearState();
     setAuthError(null);
-
-    // TODO: revoke access
-  }, [clearState]);
+  }, [clearState, revokeToken]);
 
   const login = useCallback(async () => {
     clearState();
@@ -170,9 +239,64 @@ export function DevaProvider({
     openIdConfig,
   ]);
 
-  useEffect(() => {
-    // TODO: refresh token timer
-  }, []);
+  const callRefreshApi = useRefreshToken(
+    clientId,
+    refreshToken,
+    openIdConfig?.token_endpoint,
+  );
+
+  const refresh = useCallback(
+    async (init = false) => {
+      if (!accessToken) {
+        console.log("no access token");
+        return;
+      }
+
+      if (!epochTimeIsPast(expiresIn)) {
+        console.log("access token not expired yet");
+        return;
+      }
+
+      if (isRefreshing && !init) {
+        console.log("already refreshing");
+        return;
+      }
+
+      if (!refreshToken) {
+        // TODO: handle this better
+        console.log("no refresh token");
+        return;
+      }
+
+      setIsRefreshing(true);
+      // TODO: handle error
+      const res = await callRefreshApi();
+
+      setIsRefreshing(false);
+
+      if (res) {
+        handleTokenResponse(res);
+      }
+    },
+    [
+      accessToken,
+      refreshToken,
+      callRefreshApi,
+      handleTokenResponse,
+      isRefreshing,
+      expiresIn,
+      setIsRefreshing,
+    ],
+  );
+
+  const stagger = 10000 * Math.random();
+  useInterval(
+    () => {
+      void refresh();
+    },
+    refreshToken ? 1000 + stagger : null,
+    [refresh],
+  );
 
   useEffect(() => {
     let code = "";
@@ -182,55 +306,54 @@ export function DevaProvider({
       return;
     }
 
-    if (!authInProgress) {
-      return;
+    if (authInProgress) {
+      const params = new URLSearchParams(window.location.search);
+      code = params.get("code") ?? "";
+
+      if (!code) {
+        const error_description =
+          params.get("error_description") ?? "An unknown error occurred";
+
+        console.error(
+          `${error_description}\nExpected  to find a '?code=' parameter in the URL but found none`,
+        );
+        setAuthError(error_description);
+        clearState();
+        return;
+      }
+
+      setAuthInProgress(false);
+
+      // we can only attempt to fetch tokens once
+      if (fetchingTokensRef.current) {
+        return;
+      }
+
+      fetchingTokensRef.current = true;
+
+      fetcher<OidcAccessTokenJWT>(openIdConfig?.token_endpoint ?? "", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+          client_id: clientId,
+          redirect_uri: redirectUri,
+          code,
+          code_verifier: codeVerifier,
+          grant_type: "authorization_code",
+        }),
+      })
+        .then(handleTokenResponse)
+        .catch((error) => {
+          console.error("error in fetching", error);
+          setAuthError("An error occurred while fetching tokens");
+        });
+
+      // clear search params
+      window.history.replaceState({}, document.title, window.location.pathname);
     }
-
-    const params = new URLSearchParams(window.location.search);
-    code = params.get("code") ?? "";
-
-    if (!code) {
-      const error_description =
-        params.get("error_description") ?? "An unknown error occurred";
-
-      console.error(
-        `${error_description}\nExpected  to find a '?code=' parameter in the URL but found none`,
-      );
-      setAuthError(error_description);
-      clearState();
-      return;
-    }
-
-    setAuthInProgress(false);
-
-    // we can only attempt to fetch tokens once
-    if (fetchingTokensRef.current) {
-      return;
-    }
-
-    fetchingTokensRef.current = true;
-
-    fetcher(openIdConfig?.token_endpoint ?? "", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: new URLSearchParams({
-        client_id: clientId,
-        redirect_uri: redirectUri,
-        code,
-        code_verifier: codeVerifier,
-        grant_type: "authorization_code",
-      }),
-    })
-      .then(handleTokenResponse)
-      .catch((error) => {
-        console.error("error in fetching", error);
-        setAuthError("An error occurred while fetching tokens");
-      });
-
-    // clear search params
-    window.history.replaceState({}, document.title, window.location.pathname);
+    void refresh();
   }, [isOpenIdConfigLoading]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
@@ -239,6 +362,8 @@ export function DevaProvider({
         clientId,
         redirectUri,
         scopes,
+
+        env,
 
         login,
         logout,
@@ -251,6 +376,7 @@ export function DevaProvider({
         refreshToken,
 
         user: userInfo ?? null,
+        isAuthenticated: !!accessToken,
       }}
     >
       {children}
