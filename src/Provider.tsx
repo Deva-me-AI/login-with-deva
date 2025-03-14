@@ -117,6 +117,7 @@ export function DevaProvider({
   children,
   env,
 }: DevaProviderProps) {
+  const url = envToUrl(env);
   const { openIdConfig, isOpenIdConfigLoading, error } = useOpenIdConfig(env);
   if (error) {
     console.error(openIdConfig);
@@ -377,6 +378,8 @@ export function DevaProvider({
 
         user: userInfo ?? null,
         isAuthenticated: !!accessToken,
+
+        url,
       }}
     >
       {children}

@@ -22,6 +22,8 @@ export type DevaContext = {
   user: UserInfo | null;
 
   isAuthenticated: boolean;
+
+  url: string;
 };
 
 const defaultDevaContext: DevaContext = {
@@ -44,6 +46,8 @@ const defaultDevaContext: DevaContext = {
   user: null,
 
   isAuthenticated: false,
+
+  url: "",
 };
 
 export const DevaContext = createContext<DevaContext | null>(null);

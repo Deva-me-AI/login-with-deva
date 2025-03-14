@@ -5,15 +5,50 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { HelpCircle, CircleX } from "lucide-react";
+import { useSWRFetcher } from "@/lib/fetcher";
+import { useDevaContext } from "@/DevaContext";
+import type { PagintedPersonas } from "@/server";
+
+const useDevaSupport = () => {
+  const { url, accessToken } = useDevaContext();
+
+  const params = new URLSearchParams({ usernames: "deva_support" });
+  const {
+    data: support,
+    isLoading: isSupportLoading,
+    error: personaFetchError,
+  } = useSWRFetcher<PagintedPersonas, Error>(
+    accessToken ? `${url}/api/sdk/persona/public?${params}` : null,
+    {
+      headers: accessToken
+        ? {
+            Authorization: `Bearer ${accessToken}`,
+          }
+        : undefined,
+    },
+  );
+
+  return {
+    support: support?.items[0],
+    isSupportLoading,
+    personaFetchError,
+  };
+};
 
 export const Intercom = () => {
+  const { isAuthenticated } = useDevaContext();
   const [isOpen, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isInitializing, setIsInitializing] = useState(false);
+  const { support, isSupportLoading, personaFetchError } = useDevaSupport();
 
   const handleOpenChange = (isOpen: boolean) => {
     setOpen(isOpen);
   };
+
+  if (!isAuthenticated) {
+    return null;
+  }
 
   return (
     <Popover open={isOpen} onOpenChange={handleOpenChange}>
