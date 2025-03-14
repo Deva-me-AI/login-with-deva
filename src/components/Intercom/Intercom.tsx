@@ -4,7 +4,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { HelpCircle, X } from "lucide-react";
+import { HelpCircle, CircleX } from "lucide-react";
 
 export const Intercom = () => {
   const [isOpen, setOpen] = useState(false);
@@ -24,7 +24,7 @@ export const Intercom = () => {
         >
           <button className="bg-midnight-900 m-3 flex items-center justify-center rounded-full">
             {isOpen ? (
-              <X className="h-[30px] w-[30px] p-2 text-white" />
+              <CircleX className="h-[50px] w-[50px] p-2 text-white" />
             ) : (
               <HelpCircle className="h-[50px] w-[50px] p-2 text-white" />
             )}
