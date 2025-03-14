@@ -4,7 +4,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { MessageCircle } from "lucide-react";
-import { useDeva } from "@/use-deva";
 import type {
   Channel,
   PagintedPostWithReply,
@@ -30,7 +29,7 @@ interface UsePostsParams {
 
 const usePosts = ({ handle, env, limit = 20 }: UsePostsParams) => {
   const url = envToUrl(env);
-  const { accessToken } = useDeva();
+  const { accessToken } = useDevaContext();
   const [cursor, setCursor] = useState(0);
 
   // Use a map to store posts by ID and an array to maintain order

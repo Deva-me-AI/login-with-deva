@@ -19,7 +19,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { FullDbPost, Post, ReactPostInput } from "@/server";
 import { relativeTimeFrom, useFormattedText } from "./utils";
-import { useDeva } from "@/use-deva";
 import { type Envs, envToUrl } from "@/config";
 import { cn } from "@/lib/utils";
 import { useDevaContext } from "@/DevaContext";
@@ -111,7 +110,7 @@ const useFavorite = ({
   onUpdated?: (post: FullDbPost) => void;
 }) => {
   const url = envToUrl(env);
-  const { accessToken } = useDeva();
+  const { accessToken } = useDevaContext();
 
   const [isFavoriteLoading, setIsFavoriteLoading] = useState(false);
 
