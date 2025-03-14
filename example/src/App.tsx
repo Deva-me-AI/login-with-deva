@@ -1,7 +1,7 @@
 import "deva-sdk/style.css";
 import "./index.css";
 import "./App.css";
-import { DevaProvider, useDeva, ChannelFeed } from "deva-sdk";
+import { DevaProvider, useDeva, ChannelFeed, Intercom } from "deva-sdk";
 import { ReactNode, useState, useEffect } from "react";
 
 export function Card({
@@ -43,64 +43,67 @@ function Content() {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "row",
-        flexWrap: "wrap",
-        justifyContent: "center",
-        gap: "1rem",
-        width: "100%",
-        marginBottom: "2rem",
-      }}
-    >
-      <Card>
-        {user ? (
-          <>
-            <h2
-              style={{
-                marginTop: ".5rem",
-                marginBottom: "1rem",
-              }}
-            >
-              Welcome
-            </h2>
-            <h3
-              style={{
-                marginBottom: "1rem",
-              }}
-            >
-              {user?.persona?.display_name ??
-                user?.persona?.username ??
-                user?.preferred_username}
-            </h3>
-            <button className="button" onClick={logout}>
-              logout
+    <>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          flexWrap: "wrap",
+          justifyContent: "center",
+          gap: "1rem",
+          width: "100%",
+          marginBottom: "2rem",
+        }}
+      >
+        <Card>
+          {user ? (
+            <>
+              <h2
+                style={{
+                  marginTop: ".5rem",
+                  marginBottom: "1rem",
+                }}
+              >
+                Welcome
+              </h2>
+              <h3
+                style={{
+                  marginBottom: "1rem",
+                }}
+              >
+                {user?.persona?.display_name ??
+                  user?.persona?.username ??
+                  user?.preferred_username}
+              </h3>
+              <button className="button" onClick={logout}>
+                logout
+              </button>
+            </>
+          ) : (
+            <button className="button" onClick={login}>
+              login
             </button>
-          </>
-        ) : (
-          <button className="button" onClick={login}>
-            login
-          </button>
-        )}
-      </Card>
-      <Card>
-        <div className="channel-select-container">
-          <select
-            value={selectedChannel}
-            onChange={handleChannelChange}
-            className="channel-select"
-          >
-            <option value="empty">Empty Channel</option>
-            <option value="eliza">Eliza</option>
-            <option value="null">404</option>
-          </select>
-        </div>
-        <div className="content-container">
-          <ChannelFeed handle={selectedChannel} />
-        </div>
-      </Card>
-    </div>
+          )}
+        </Card>
+        <Card>
+          <div className="channel-select-container">
+            <select
+              value={selectedChannel}
+              onChange={handleChannelChange}
+              className="channel-select"
+            >
+              <option value="empty">Empty Channel</option>
+              <option value="eliza">Eliza</option>
+              <option value="null">404</option>
+            </select>
+          </div>
+          <div className="content-container">
+            <ChannelFeed handle={selectedChannel} />
+          </div>
+        </Card>
+      </div>
+      <Intercom />
+    </>
   );
 }
 
