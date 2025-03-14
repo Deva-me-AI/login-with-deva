@@ -1,6 +1,9 @@
 import { useState } from "react";
-import { cn } from "@/lib/utils";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { HelpCircle, X } from "lucide-react";
 
 export const Intercom = () => {
@@ -13,8 +16,8 @@ export const Intercom = () => {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
+    <Popover open={isOpen} onOpenChange={handleOpenChange}>
+      <PopoverTrigger asChild>
         <div
           id="intercom-container"
           className="absolute bottom-28 right-4 z-10 md:bottom-10 md:right-10"
@@ -27,10 +30,15 @@ export const Intercom = () => {
             )}
           </button>
         </div>
-      </DialogTrigger>
+      </PopoverTrigger>
 
-      <DialogContent className="border-none bg-transparent p-0 shadow-none">
-        <div className="bg-midnight-900 left-1/2 h-[90vh] max-h-[530px] w-[90vw] max-w-[400px] -translate-x-1/2 rounded-[20px] border border-[#22252A] md:left-auto md:mb-32 md:mr-10 md:translate-x-0">
+      <PopoverContent
+        className="w-auto border-none bg-transparent p-0 shadow-none"
+        align="end"
+        side="top"
+        sideOffset={16}
+      >
+        <div className="bg-midnight-900 h-[90vh] max-h-[530px] w-[90vw] max-w-[400px] rounded-[20px] border border-[#22252A]">
           {error ? (
             <div className="flex h-full items-center justify-center p-4 text-center text-red-500">
               {error}
@@ -43,7 +51,7 @@ export const Intercom = () => {
             <div>Chat inside</div>
           )}
         </div>
-      </DialogContent>
-    </Dialog>
+      </PopoverContent>
+    </Popover>
   );
 };
