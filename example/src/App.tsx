@@ -62,6 +62,8 @@ function Content() {
                 style={{
                   marginTop: ".5rem",
                   marginBottom: "1rem",
+                  fontSize: "2.4em",
+                  lineHeight: "1.25",
                 }}
               >
                 Welcome
@@ -122,7 +124,16 @@ function App() {
             marginBottom: "1rem",
           }}
         >
-          <h1>Deva-Sdk</h1>
+          <h1
+            className="h1"
+            style={{
+              fontSize: "3.2em",
+              lineHeight: "1.1",
+              wordWrap: "break-word",
+            }}
+          >
+            Deva-Sdk
+          </h1>
         </header>
         <Content />
       </>
