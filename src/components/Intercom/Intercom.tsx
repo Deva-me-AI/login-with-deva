@@ -7,7 +7,7 @@ import {
 import { HelpCircle, CircleX } from "lucide-react";
 import { useSWRFetcher } from "@/lib/fetcher";
 import { useDevaContext } from "@/DevaContext";
-import type { PagintedPersonas } from "@/server";
+import type { Message, PagintedPersonas, Thread } from "@/server";
 
 const useDevaSupport = () => {
   const { url, accessToken } = useDevaContext();
@@ -35,12 +35,66 @@ const useDevaSupport = () => {
   };
 };
 
+const useDevaThread = () => {
+  const { url, accessToken } = useDevaContext();
+
+  const {
+    data: thread,
+    isLoading: isThreadLoading,
+    error: threadFetchError,
+  } = useSWRFetcher<Thread, Error>(
+    accessToken ? `${url}/api/sdk/chat/dm/deva_support` : null,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+
+  return {
+    thread,
+    isThreadLoading,
+    threadFetchError,
+  };
+};
+
+const useDevaMessages = ({ threadId }: { threadId?: string }) => {
+  const { url, accessToken } = useDevaContext();
+
+  const {
+    data: messages,
+    isLoading: isMessagesLoading,
+    error: messagesFetchError,
+  } = useSWRFetcher<Message, Error>(
+    threadId && accessToken ? `${url}/api/sdk/chat/${threadId}/messages` : null,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+
+  return {
+    messages,
+    isMessagesLoading,
+    messagesFetchError,
+  };
+};
+
 export const Intercom = () => {
   const { isAuthenticated } = useDevaContext();
   const [isOpen, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isInitializing, setIsInitializing] = useState(false);
   const { support, isSupportLoading, personaFetchError } = useDevaSupport();
+  const { thread, isThreadLoading, threadFetchError } = useDevaThread();
+  const { messages, isMessagesLoading, messagesFetchError } = useDevaMessages({
+    threadId: thread?.id,
+  });
+
+  console.log("support", support);
+  console.log("thread", thread, isThreadLoading, threadFetchError);
+  console.log("messages", messages, isMessagesLoading, messagesFetchError);
 
   const handleOpenChange = (isOpen: boolean) => {
     setOpen(isOpen);

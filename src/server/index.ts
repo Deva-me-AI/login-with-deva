@@ -16,3 +16,5 @@ export type PublicPersona = components["schemas"]["PublicPersonaDBModel"];
 export type PagintedPersonas =
   components["schemas"]["PaginatedPersonaCategorieses"];
 export type ReactPostInput = components["schemas"]["ReactPost"];
+export type Thread = components["schemas"]["ChatThreadMembersDBModel"];
+export type Message = components["schemas"]["ChatMessageDBModel"];
