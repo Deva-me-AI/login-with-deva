@@ -7,7 +7,7 @@ import {
 import { HelpCircle, CircleX, MoveUpRight } from "lucide-react";
 import { useSWRFetcher } from "@/lib/fetcher";
 import { useDevaContext } from "@/DevaContext";
-import type { Message, PagintedPersonas, Thread } from "@/server";
+import type { PaginatedMessages, PagintedPersonas, Thread } from "@/server";
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
 import { ScrollArea } from "../ui/scroll-area";
 import { cn } from "@/lib/utils";
@@ -66,11 +66,12 @@ const useDevaThread = () => {
 const useDevaMessages = ({ threadId }: { threadId?: string }) => {
   const { url, accessToken } = useDevaContext();
 
+  // TODO: add pagination
   const {
     data: messages,
     isLoading: isMessagesLoading,
     error: messagesFetchError,
-  } = useSWRFetcher<Message, Error>(
+  } = useSWRFetcher<PaginatedMessages, Error>(
     threadId && accessToken ? `${url}/api/sdk/chat/${threadId}/messages` : null,
     {
       headers: {
@@ -80,7 +81,7 @@ const useDevaMessages = ({ threadId }: { threadId?: string }) => {
   );
 
   return {
-    messages,
+    messages: messages?.items ?? [],
     isMessagesLoading,
     messagesFetchError,
   };
@@ -201,7 +202,11 @@ export const Intercom = () => {
               </div>
 
               <div id="support-messages-container" className="flex-grow">
-                <ScrollArea className="h-full"></ScrollArea>
+                <ScrollArea className="h-full">
+                  {messages.map((message) => (
+                    <div key={message.id}>{message.text}</div>
+                  ))}
+                </ScrollArea>
               </div>
 
               <div
@@ -217,10 +222,10 @@ export const Intercom = () => {
                   )}
                 >
                   <div className="relative flex h-full flex-1 md:flex-col">
-                    <div className="bg-catskill-200 relative flex w-full flex-grow items-center rounded-[36px] py-2 pl-3 text-white shadow-[0_0_15px_rgba(0,0,0,0.10)] md:py-2 md:pl-4">
+                    <div className="relative flex w-full flex-grow items-center rounded-[36px] bg-catskill-200 py-2 pl-3 text-white shadow-[0_0_15px_rgba(0,0,0,0.10)] md:py-2 md:pl-4">
                       <div
                         id="support-input"
-                        className="w-full overflow-hidden [&>div>div]:overflow-hidden bg-catskill-200" // Removes scroll in the chat input
+                        className="w-full overflow-hidden bg-catskill-200 [&>div>div]:overflow-hidden" // Removes scroll in the chat input
                         style={{ gridColumn: "2", gridRow: "1" }}
                       >
                         {thread && (

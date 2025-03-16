@@ -18,3 +18,5 @@ export type PagintedPersonas =
 export type ReactPostInput = components["schemas"]["ReactPost"];
 export type Thread = components["schemas"]["ChatThreadMembersDBModel"];
 export type Message = components["schemas"]["ChatMessageDBModel"];
+export type PaginatedMessages =
+  components["schemas"]["PaginatedFullChatMessages"];
