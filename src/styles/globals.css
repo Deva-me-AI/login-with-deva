@@ -82,3 +82,7 @@
   font-size: inherit;
   font-weight: 500;
 }
+.remirror-theme .ProseMirror:active,
+.remirror-theme .ProseMirror:focus {
+  box-shadow: none;
+}

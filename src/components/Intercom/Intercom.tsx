@@ -12,6 +12,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
 import { ScrollArea } from "../ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { Spinner } from "../ui/spinner";
+import { PostInput } from "../PostEditor/PostInput";
 
 const useDevaSupport = () => {
   const { url, accessToken } = useDevaContext();
@@ -165,7 +166,7 @@ export const Intercom = () => {
           ) : (
             <div
               id="intercom-container"
-              className="relative h-[100dvh-65px] w-full flex flex-col md:h-full"
+              className="relative flex h-[100dvh-65px] w-full flex-col md:h-full"
             >
               <div
                 id="support-header"
@@ -219,16 +220,19 @@ export const Intercom = () => {
                     <div className="bg-catskill-200 relative flex w-full flex-grow items-center rounded-[36px] py-2 pl-3 text-white shadow-[0_0_15px_rgba(0,0,0,0.10)] md:py-2 md:pl-4">
                       <div
                         id="support-input"
-                        className="w-full overflow-hidden [&>div>div]:overflow-hidden" // Removes scroll in the chat input
+                        className="w-full overflow-hidden [&>div>div]:overflow-hidden bg-catskill-200" // Removes scroll in the chat input
                         style={{ gridColumn: "2", gridRow: "1" }}
                       >
                         {thread && (
-                          <input
-                            type="text"
+                          <PostInput
+                            id="support-input"
+                            postId={thread.id}
+                            onSubmit={() => {
+                              console.log("submit", text);
+                            }}
                             value={text}
-                            onChange={(e) => setText(e.target.value)}
                             placeholder="Type a message..."
-                            className="h-full w-full bg-transparent text-white outline-none"
+                            onChange={setText}
                           />
                         )}
                       </div>

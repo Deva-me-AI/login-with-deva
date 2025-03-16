@@ -57,6 +57,10 @@ export default {
           "4": "hsl(var(--chart-4))",
           "5": "hsl(var(--chart-5))",
         },
+        catskill: {
+          200: '#1C1F23',
+          400: '#494F59'
+        },
       },
     },
   },
