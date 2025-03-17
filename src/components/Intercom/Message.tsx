@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { cn } from "@/lib/utils";
-import { ContextIcon } from "./Icons";
+import { ContextIcon } from "@/components/ui/icons";
 import { ChatBubble } from "./ChatBubble";
 import { ChatMenu } from "./ChatMenu";
 import { ContextPane } from "./ContextPane";
@@ -46,11 +46,11 @@ export const Message = ({
           <div>
             <Avatar>
               <AvatarImage
-                src={msg.persona?.avatar || "/icons/profile.svg"}
+                src={msg.persona?.avatar ?? "/icons/profile.svg"}
                 alt={msg.persona?.username || "User"}
               />
               <AvatarFallback>
-                {msg.persona?.username?.[0] || "U"}
+                {msg.persona?.username?.[0] ?? "U"}
               </AvatarFallback>
             </Avatar>
           </div>
@@ -169,7 +169,7 @@ export const Message = ({
               className="bg-athens-100 flex w-full flex-col gap-6 rounded-[20px] px-6 py-5"
             >
               <ContextPane
-                retrievals={msg.retrievals || []}
+                retrievals={msg.retrievals ?? []}
                 handleClose={() => setContextOpened(false)}
                 setHref={setHref}
               />
