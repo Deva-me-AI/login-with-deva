@@ -13,6 +13,7 @@ import { ScrollArea } from "../ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { Spinner } from "../ui/spinner";
 import { PostInput } from "../PostEditor/PostInput";
+import { Message } from "./Message";
 
 const useDevaSupport = () => {
   const { url, accessToken } = useDevaContext();
@@ -204,7 +205,7 @@ export const Intercom = () => {
               <div id="support-messages-container" className="flex-grow">
                 <ScrollArea className="h-full">
                   {messages.map((message) => (
-                    <div key={message.id}>{message.text}</div>
+                    <Message key={message.id} message={message} />
                   ))}
                 </ScrollArea>
               </div>

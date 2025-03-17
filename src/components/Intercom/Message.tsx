@@ -1,8 +1,8 @@
 import { useState, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { ContextIcon } from "@/components/ui/icons";
-import { ChatBubble } from "./ChatBubble";
-import { ChatMenu } from "./ChatMenu";
+import { ChatBubble } from "./Bubble";
+import { ChatMenu } from "./Menu";
 import { ContextPane } from "./ContextPane";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -11,7 +11,7 @@ import type { Message as MessageType } from "@/server";
 
 interface MessageProps {
   className?: string;
-  msg: MessageType;
+  message: MessageType;
   isMyMessage?: boolean;
   isModal?: boolean;
   setReplyingTo?: (msg: MessageType) => void;
@@ -19,7 +19,7 @@ interface MessageProps {
 
 export const Message = ({
   className,
-  msg,
+  message,
   isMyMessage = false,
   isModal = false,
   setReplyingTo,
@@ -28,7 +28,7 @@ export const Message = ({
   const [dropdown, setDropdown] = useState(false);
   const [ctxHovered, setCtxHovered] = useState(false);
   const [contextOpened, setContextOpened] = useState(false);
-  const [currentMessageText, setCurrentMessageText] = useState(msg?.text);
+  const [currentMessageText, setCurrentMessageText] = useState(message?.text);
   const [setHref] = useState("");
 
   const contextRef = useRef(null);
@@ -36,21 +36,21 @@ export const Message = ({
   return (
     <div
       className={cn("group w-full text-gray-100", className)}
-      data-timestamp={msg.created_at}
+      data-timestamp={message.created_at}
       onClick={() => {
         setMsgHovered((h) => !h);
       }}
     >
       <div className="m-auto flex items-end gap-3 p-4 py-2 text-base md:max-w-2xl md:gap-3 lg:max-w-2xl lg:px-0 xl:max-w-3xl">
-        {(msg.author_type === "BOT" || !isMyMessage) && (
+        {(message.author_type === "BOT" || !isMyMessage) && (
           <div>
             <Avatar>
               <AvatarImage
-                src={msg.persona?.avatar ?? "/icons/profile.svg"}
-                alt={msg.persona?.username || "User"}
+                src={message.persona?.avatar ?? "/icons/profile.svg"}
+                alt={message.persona?.username || "User"}
               />
               <AvatarFallback>
-                {msg.persona?.username?.[0] ?? "U"}
+                {message.persona?.username?.[0] ?? "U"}
               </AvatarFallback>
             </Avatar>
           </div>
@@ -58,7 +58,7 @@ export const Message = ({
 
         <div
           className={cn(
-            msg.author_type === "BOT"
+            message.author_type === "BOT"
               ? "flex flex-1 flex-row items-center gap-2"
               : "w-full",
           )}
@@ -78,7 +78,7 @@ export const Message = ({
                   transition={{ duration: 0.3, ease: "easeInOut" }}
                 >
                   <ChatMenu
-                    msg={msg}
+                    msg={message}
                     dropdown={dropdown}
                     setDropdown={setDropdown}
                     setReplyingTo={setReplyingTo}
@@ -95,21 +95,21 @@ export const Message = ({
                   : "ml-0 bg-catskill-200 py-[10px]",
               )}
             >
-              {msg ? (
+              {message ? (
                 <ChatBubble
                   response={currentMessageText ?? ""}
-                  author_type={msg.author_type || "BOT"}
-                  persona={msg.persona}
-                  createdAt={msg.created_at as unknown as Date}
-                  reply={msg.in_reply_to}
+                  author_type={message.author_type || "BOT"}
+                  persona={message.persona}
+                  createdAt={message.created_at as unknown as Date}
+                  reply={message.in_reply_to}
                 />
               ) : null}
 
               <div className="flex flex-row items-center gap-8">
-                {msg.author_type === "BOT" && currentMessageText && (
+                {message.author_type === "BOT" && currentMessageText && (
                   <div className="flex flex-col gap-3 pt-1">
                     <button
-                      disabled={!msg.retrievals?.length}
+                      disabled={!message.retrievals?.length}
                       className="flex w-fit flex-row items-center gap-2.5 text-sm transition duration-200 ease-in-out"
                       onMouseEnter={() => setCtxHovered(true)}
                       onMouseLeave={() => setCtxHovered(false)}
@@ -125,7 +125,10 @@ export const Message = ({
                         />
                       </div>
                       <span>
-                        {msg?.retrievals?.filter((r) => !!r.content)?.length}
+                        {
+                          message?.retrievals?.filter((r) => !!r.content)
+                            ?.length
+                        }
                       </span>
                     </button>
                   </div>
@@ -141,7 +144,7 @@ export const Message = ({
                   transition={{ duration: 0.3, ease: "easeInOut" }}
                 >
                   <ChatMenu
-                    msg={msg}
+                    msg={message}
                     dropdown={dropdown}
                     setDropdown={setDropdown}
                     setReplyingTo={setReplyingTo}
@@ -169,7 +172,7 @@ export const Message = ({
               className="bg-athens-100 flex w-full flex-col gap-6 rounded-[20px] px-6 py-5"
             >
               <ContextPane
-                retrievals={msg.retrievals ?? []}
+                retrievals={message.retrievals ?? []}
                 handleClose={() => setContextOpened(false)}
                 setHref={setHref}
               />
