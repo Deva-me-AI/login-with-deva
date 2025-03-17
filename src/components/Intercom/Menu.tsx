@@ -1,9 +1,13 @@
-import { useRef } from "react";
+import { useState } from "react";
 import type { Message } from "@/server";
 import { cn } from "@/lib/utils";
-import { AnimatePresence, motion } from "framer-motion";
-import { ModalContainer } from "@/components/Modal/ModalContainer";
-import { DropdownOption } from "@/components/Dropdown/DropdownOption";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 import {
   Reply,
   MoreVertical,
@@ -14,7 +18,6 @@ import {
   Share,
   AlertTriangle,
 } from "lucide-react";
-import { useOnClickOutside } from "@/hooks/use-on-click-outside";
 
 interface Props {
   msg: Message;
@@ -24,13 +27,28 @@ interface Props {
   isModal?: boolean;
 }
 
-const ChatMenu = ({
+export const ChatMenu = ({
   msg,
   dropdown,
   setDropdown,
   setReplyingTo,
   isModal,
 }: Props) => {
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  // Sync dialog state with dropdown state
+  const handleDialogChange = (open: boolean) => {
+    setDialogOpen(open);
+    setDropdown(open);
+  };
+
+  // Sync dropdown state with dialog state
+  const handleDropdownClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setDialogOpen(true);
+    setDropdown(true);
+  };
+
   return (
     <div className="relative">
       <div className="flex">
@@ -46,66 +64,86 @@ const ChatMenu = ({
           <Reply className="h-5 w-5" />
         </button>
         {!isModal && (
-          <button
-            className={cn(
-              "hover:bg-jewel-200 group flex h-8 w-8 items-center justify-center rounded-full transition duration-200 ease-in-out",
-              {
-                "ring-jewel-300 ring-2": !!dropdown,
-              },
-            )}
-            onClick={(e) => {
-              e.stopPropagation();
-              setDropdown(true);
-            }}
-          >
-            <MoreVertical
-              className={cn(
-                "group-hover:text-jewel-500 h-5 w-5 text-gray-500 transition duration-200 ease-in-out",
-                {
-                  "text-white": !!dropdown,
-                },
-              )}
-            />
-          </button>
+          <>
+            {/* Desktop button - hidden on mobile */}
+            <div className="hidden md:block">
+              <button
+                className={cn(
+                  "hover:bg-jewel-200 group flex h-8 w-8 items-center justify-center rounded-full transition duration-200 ease-in-out",
+                  {
+                    "ring-jewel-300 ring-2": !!dropdown,
+                  },
+                )}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setDropdown(true);
+                }}
+              >
+                <MoreVertical
+                  className={cn(
+                    "group-hover:text-jewel-500 h-5 w-5 text-gray-500 transition duration-200 ease-in-out",
+                    {
+                      "text-white": !!dropdown,
+                    },
+                  )}
+                />
+              </button>
+            </div>
+
+            {/* Mobile button with Dialog - shown only on mobile */}
+            <div className="block md:hidden">
+              <Dialog open={dialogOpen} onOpenChange={handleDialogChange}>
+                <DialogTrigger asChild>
+                  <button
+                    className={cn(
+                      "hover:bg-jewel-200 group flex h-8 w-8 items-center justify-center rounded-full transition duration-200 ease-in-out",
+                      {
+                        "ring-jewel-300 ring-2": !!dropdown,
+                      },
+                    )}
+                    onClick={handleDropdownClick}
+                  >
+                    <MoreVertical
+                      className={cn(
+                        "group-hover:text-jewel-500 h-5 w-5 text-gray-500 transition duration-200 ease-in-out",
+                        {
+                          "text-white": !!dropdown,
+                        },
+                      )}
+                    />
+                  </button>
+                </DialogTrigger>
+                <DialogContent
+                  className="border-0 bg-transparent p-0 shadow-none"
+                  data-testid="ChatMenuContainer"
+                >
+                  <ChatMenuMobile
+                    setIsOpen={setDropdown}
+                    msg={msg}
+                    setReplyingTo={setReplyingTo}
+                  />
+                </DialogContent>
+              </Dialog>
+            </div>
+          </>
         )}
       </div>
 
-      {/* Desktop dropdown - hidden on mobile */}
       <div className="hidden md:block">
-        <AnimatePresence>
-          {dropdown && (
-            <ChatDropdownMenu
-              key={msg?.id}
-              handleReply={() => {
-                setReplyingTo?.(msg?.id);
-                setDropdown(false);
-              }}
-              handleClose={() => setDropdown(false)}
-              msg={msg}
-            />
-          )}
-        </AnimatePresence>
-      </div>
-
-      {/* Mobile modal - shown only on mobile */}
-      <div className="block md:hidden">
-        <AnimatePresence>
-          {dropdown && (
-            <ModalContainer data-testid="ChatMenuContainer">
-              <ChatMenuMobile
-                setIsOpen={setDropdown}
-                msg={msg}
-                setReplyingTo={setReplyingTo}
-              />
-            </ModalContainer>
-          )}
-        </AnimatePresence>
+        {dropdown && (
+          <ChatDropdownMenu
+            handleReply={() => {
+              setReplyingTo?.(msg?.id);
+              setDropdown(false);
+            }}
+            handleClose={() => setDropdown(false)}
+            msg={msg}
+          />
+        )}
       </div>
     </div>
   );
 };
-
-export default ChatMenu;
 
 interface ChatDropdownMenuProps {
   handleClose: () => void;
@@ -116,73 +154,71 @@ interface ChatDropdownMenuProps {
 const ChatDropdownMenu: React.FC<ChatDropdownMenuProps> = ({
   handleClose,
   handleReply,
-  msg,
+  // msg,
 }) => {
-  const ref = useRef<HTMLDivElement>(null);
-  useOnClickOutside(ref, handleClose);
-
   return (
-    <motion.div
-      initial={{ opacity: 0, y: -30, x: 40, scale: 0.6 }}
-      animate={{ opacity: 1, y: 0, x: 0, scale: 1 }}
-      exit={{ opacity: 0, y: -20, x: 50, scale: 0.7 }}
-      transition={{ duration: 0.15, ease: "easeInOut" }}
-      ref={ref}
-      className="bg-athens-100 border-ghost-300 absolute right-0 top-10 z-10 flex w-[260px] flex-col rounded-lg border p-2 md:left-0"
-      style={{
-        boxShadow: "0px 30px 40px rgba(0, 0, 0, 0.7)",
-      }}
-    >
-      <DropdownOption
-        icon={<Reply className="h-4 w-4" />}
-        label="Reply"
-        onClick={() => {
-          handleReply();
-          document.querySelector<HTMLDivElement>(".ProseMirror")?.focus();
-        }}
-      />
-      {/* !!router.pathname.startsWith("/train") && (
-        <DropdownOption
-          icon={<Reply className="h-4 w-4" />}
-          label="Take to Chat"
+    <DropdownMenu open={true} onOpenChange={handleClose}>
+      <DropdownMenuContent
+        align="start"
+        className="w-[260px] md:left-0"
+        sideOffset={5}
+      >
+        <DropdownMenuItem
           onClick={() => {
-            router.push(`/chat/${msg?.thread?.id}?messageId=${msg?.id}`);
+            handleReply();
+            // document.querySelector<HTMLDivElement>(".ProseMirror")?.focus();
           }}
-        />
-      )*/}
-      <DropdownOption
-        icon={<ThumbsUp className="h-4 w-4" />}
-        label="Like"
-        disabled
-      />
-      <DropdownOption
-        icon={<ThumbsDown className="h-4 w-4" />}
-        label="Dislike"
-        disabled
-      />
-      <hr className="border-t-ghost-300" />
-      <DropdownOption
-        icon={<Check className="h-4 w-4" />}
-        label="Select"
-        disabled
-      />
-      <DropdownOption
-        icon={<Copy className="h-4 w-4" />}
-        label="Copy Text"
-        disabled
-      />
-      <DropdownOption
-        icon={<Share className="h-4 w-4" />}
-        label="Share"
-        disabled
-      />
-      <hr className="border-t-ghost-300" />
-      <DropdownOption
-        icon={<AlertTriangle className="h-4 w-4" />}
-        label={"Report"}
-        disabled
-      />
-    </motion.div>
+        >
+          <Reply className="mr-2 h-4 w-4" />
+          <span>Reply</span>
+        </DropdownMenuItem>
+
+        {/* {!!router.pathname.startsWith("/train") && (
+          <DropdownMenuItem
+            onClick={() => {
+              router.push(`/chat/${msg?.thread?.id}?messageId=${msg?.id}`);
+            }}
+          >
+            <Reply className="mr-2 h-4 w-4" />
+            <span>Take to Chat</span>
+          </DropdownMenuItem>
+        )} */}
+
+        <DropdownMenuItem disabled>
+          <ThumbsUp className="mr-2 h-4 w-4" />
+          <span>Like</span>
+        </DropdownMenuItem>
+
+        <DropdownMenuItem disabled>
+          <ThumbsDown className="mr-2 h-4 w-4" />
+          <span>Dislike</span>
+        </DropdownMenuItem>
+
+        <DropdownMenuSeparator />
+
+        <DropdownMenuItem disabled>
+          <Check className="mr-2 h-4 w-4" />
+          <span>Select</span>
+        </DropdownMenuItem>
+
+        <DropdownMenuItem disabled>
+          <Copy className="mr-2 h-4 w-4" />
+          <span>Copy Text</span>
+        </DropdownMenuItem>
+
+        <DropdownMenuItem disabled>
+          <Share className="mr-2 h-4 w-4" />
+          <span>Share</span>
+        </DropdownMenuItem>
+
+        <DropdownMenuSeparator />
+
+        <DropdownMenuItem disabled>
+          <AlertTriangle className="mr-2 h-4 w-4" />
+          <span>Report</span>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 
@@ -193,87 +229,57 @@ type MobileProps = {
 };
 
 const ChatMenuMobile = ({ setIsOpen, msg, setReplyingTo }: MobileProps) => {
-  // const handleReply = () => {
-  //   setReplyingTo?.(msg?.id);
-  // };
-
   const options: Option[] = [
-    // {
-    //   icon: "/icons/chat-reply.svg",
-    //   label: "Reply",
-    //   onClick: () => {
-    //     handleReply();
-    //     // @ts-ignore -- we use a contenteditable div instead of input
-    //     document.querySelector(".ProseMirror")?.focus();
-    //   },
-    // },
     {
-      icon: "/icons/thumps-up.svg",
+      icon: <ThumbsUp className="h-5 w-5" />,
       label: "Like",
       disabled: true,
     },
     {
-      icon: "/icons/thumps-down.svg",
+      icon: <ThumbsDown className="h-5 w-5" />,
       label: "Dislike",
       hr: true,
       disabled: true,
     },
     {
-      icon: "/icons/checkmark.svg",
+      icon: <Check className="h-5 w-5" />,
       label: "Select",
       disabled: true,
     },
     {
-      icon: "/icons/copy.svg",
+      icon: <Copy className="h-5 w-5" />,
       label: "Copy Text",
       disabled: true,
     },
     {
-      icon: "/icons/share.svg",
+      icon: <Share className="h-5 w-5" />,
       label: "Share",
       hr: true,
       disabled: true,
     },
     {
-      icon: "/icons/warning.svg",
+      icon: <AlertTriangle className="h-5 w-5" />,
       label: "Report",
       disabled: true,
     },
   ];
 
   const handleClose = () => setIsOpen(false);
-  const ref = useRef<HTMLDivElement>(null);
 
   return (
-    <>
-      <div onClick={handleClose} className="fixed inset-0" />
-      <motion.div
-        className="bg-midnight-900 fixed bottom-0 z-10 flex w-full flex-col items-center justify-center rounded-t-[20px]"
-        ref={ref}
-        initial={{ y: "100%" }}
-        animate={{ y: 0 }}
-        exit={{ y: "100%" }}
-        transition={{ type: "spring", damping: 20, stiffness: 100 }}
-      >
-        <div className="flex w-full flex-col px-2 py-4">
-          {options.map((option) => {
-            return (
-              <Option
-                key={option.label}
-                {...option}
-                handleClose={handleClose}
-              />
-            );
-          })}
-        </div>
-        <div className="bg-ghost-300 h-[1px] w-[90%]" />
-      </motion.div>
-    </>
+    <div className="bg-midnight-900 fixed bottom-0 left-0 right-0 z-10 flex w-full flex-col items-center justify-center rounded-t-[20px]">
+      <div className="flex w-full flex-col px-2 py-4">
+        {options.map((option) => (
+          <Option key={option.label} {...option} handleClose={handleClose} />
+        ))}
+      </div>
+      <div className="bg-ghost-300 h-[1px] w-[90%]" />
+    </div>
   );
 };
 
 type Option = {
-  icon: string;
+  icon: React.ReactNode;
   label: string;
   onClick?: () => void;
   disabled?: boolean;
@@ -309,7 +315,7 @@ const Option: React.FC<OptionProps> = ({
         onClick={clickHandler}
         disabled={disabled}
       >
-        <img src={icon} alt={label} className="h-5 w-5" />
+        {icon}
         <span>{label}</span>
       </button>
       {hr ? <div className="bg-ghost-300 my-1 h-[1px] w-full" /> : null}
