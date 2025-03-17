@@ -1,9 +1,8 @@
 import { useRef } from "react";
-import { Message } from "@/server";
+import type { Message } from "@/server";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { ModalContainer } from "@/components/Modal/ModalContainer";
-import { ChatMenuMobile } from "./ChatMenuMobile";
 import { DropdownOption } from "@/components/Dropdown/DropdownOption";
 import {
   Reply,
@@ -21,7 +20,7 @@ interface Props {
   msg: Message;
   dropdown: boolean;
   setDropdown: (isOpen: boolean) => void;
-  setReplyingTo?: (id: string) => void;
+  setReplyingTo?: (id?: string) => void;
   isModal?: boolean;
 }
 
@@ -111,7 +110,7 @@ export default ChatMenu;
 interface ChatDropdownMenuProps {
   handleClose: () => void;
   handleReply: () => void;
-  msg: PartialMessage;
+  msg: Message;
 }
 
 const ChatDropdownMenu: React.FC<ChatDropdownMenuProps> = ({
@@ -184,5 +183,136 @@ const ChatDropdownMenu: React.FC<ChatDropdownMenuProps> = ({
         disabled
       />
     </motion.div>
+  );
+};
+
+type MobileProps = {
+  setIsOpen: (isOpen: boolean) => void;
+  msg: Message;
+  setReplyingTo?: (id?: string) => void;
+};
+
+const ChatMenuMobile = ({ setIsOpen, msg, setReplyingTo }: MobileProps) => {
+  // const handleReply = () => {
+  //   setReplyingTo?.(msg?.id);
+  // };
+
+  const options: Option[] = [
+    // {
+    //   icon: "/icons/chat-reply.svg",
+    //   label: "Reply",
+    //   onClick: () => {
+    //     handleReply();
+    //     // @ts-ignore -- we use a contenteditable div instead of input
+    //     document.querySelector(".ProseMirror")?.focus();
+    //   },
+    // },
+    {
+      icon: "/icons/thumps-up.svg",
+      label: "Like",
+      disabled: true,
+    },
+    {
+      icon: "/icons/thumps-down.svg",
+      label: "Dislike",
+      hr: true,
+      disabled: true,
+    },
+    {
+      icon: "/icons/checkmark.svg",
+      label: "Select",
+      disabled: true,
+    },
+    {
+      icon: "/icons/copy.svg",
+      label: "Copy Text",
+      disabled: true,
+    },
+    {
+      icon: "/icons/share.svg",
+      label: "Share",
+      hr: true,
+      disabled: true,
+    },
+    {
+      icon: "/icons/warning.svg",
+      label: "Report",
+      disabled: true,
+    },
+  ];
+
+  const handleClose = () => setIsOpen(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  return (
+    <>
+      <div onClick={handleClose} className="fixed inset-0" />
+      <motion.div
+        className="bg-midnight-900 fixed bottom-0 z-10 flex w-full flex-col items-center justify-center rounded-t-[20px]"
+        ref={ref}
+        initial={{ y: "100%" }}
+        animate={{ y: 0 }}
+        exit={{ y: "100%" }}
+        transition={{ type: "spring", damping: 20, stiffness: 100 }}
+      >
+        <div className="flex w-full flex-col px-2 py-4">
+          {options.map((option) => {
+            return (
+              <Option
+                key={option.label}
+                {...option}
+                handleClose={handleClose}
+              />
+            );
+          })}
+        </div>
+        <div className="bg-ghost-300 h-[1px] w-[90%]" />
+      </motion.div>
+    </>
+  );
+};
+
+type Option = {
+  icon: string;
+  label: string;
+  onClick?: () => void;
+  disabled?: boolean;
+  hr?: boolean; // divider after option
+};
+
+type OptionProps = Option & {
+  handleClose: () => void;
+};
+
+const Option: React.FC<OptionProps> = ({
+  label,
+  icon,
+  onClick,
+  disabled,
+  handleClose,
+  hr,
+}) => {
+  const clickHandler = () => {
+    onClick?.();
+    handleClose();
+  };
+
+  return (
+    <>
+      <button
+        className={cn(
+          "hover:bg-ghost-300 flex w-full items-center gap-x-3 rounded-md px-4 py-3 text-white transition-colors duration-100 ease-out",
+          {
+            "text-lynch-600 pointer-events-none opacity-20": disabled,
+          },
+        )}
+        onClick={clickHandler}
+        disabled={disabled}
+      >
+        <img src={icon} alt={label} className="h-5 w-5" />
+        <span>{label}</span>
+      </button>
+      {hr ? <div className="bg-ghost-300 my-1 h-[1px] w-full" /> : null}
+    </>
   );
 };
