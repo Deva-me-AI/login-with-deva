@@ -18,10 +18,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { FullDbPost, Post, ReactPostInput } from "@/server";
-import { relativeTimeFrom, useFormattedText } from "./utils";
+import { useFormattedText } from "./utils";
 import { type Envs, envToUrl } from "@/config";
 import { cn } from "@/lib/utils";
 import { useDevaContext } from "@/DevaContext";
+import { relativeTimeFrom } from "@/lib/time";
 
 // Define proper types for markdown component props
 interface MarkdownComponentProps {
