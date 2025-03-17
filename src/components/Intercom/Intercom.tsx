@@ -89,7 +89,7 @@ const useDevaMessages = ({ threadId }: { threadId?: string }) => {
 };
 
 export const Intercom = () => {
-  const { isAuthenticated } = useDevaContext();
+  const { user, isAuthenticated } = useDevaContext();
   const [isOpen, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isInitializing, setIsInitializing] = useState(false);
@@ -205,7 +205,11 @@ export const Intercom = () => {
               <div id="support-messages-container" className="flex-grow">
                 <ScrollArea className="h-full">
                   {messages.map((message) => (
-                    <Message key={message.id} message={message} />
+                    <Message
+                      key={message.id}
+                      message={message}
+                      isMyMessage={message.persona_id === user?.persona?.id}
+                    />
                   ))}
                 </ScrollArea>
               </div>

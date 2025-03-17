@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { ContextIcon } from "@/components/ui/icons";
 import { ChatBubble } from "./Bubble";
 import { ChatMenu } from "./Menu";
-import { ContextPane } from "./ContextPane";
+// import { ContextPane } from "./ContextPane";
 import { AnimatePresence, motion } from "framer-motion";
 
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -22,7 +22,7 @@ export const Message = ({
   message,
   isMyMessage = false,
   isModal = false,
-  setReplyingTo,
+  // setReplyingTo,
 }: MessageProps) => {
   const [msgHovered, setMsgHovered] = useState(false);
   const [dropdown, setDropdown] = useState(false);
@@ -81,7 +81,7 @@ export const Message = ({
                     msg={message}
                     dropdown={dropdown}
                     setDropdown={setDropdown}
-                    setReplyingTo={setReplyingTo}
+                    // setReplyingTo={setReplyingTo}
                     isModal={isModal}
                   />
                 </motion.div>
@@ -147,7 +147,7 @@ export const Message = ({
                     msg={message}
                     dropdown={dropdown}
                     setDropdown={setDropdown}
-                    setReplyingTo={setReplyingTo}
+                    // setReplyingTo={setReplyingTo}
                     isModal={isModal}
                   />
                 </motion.div>
@@ -171,11 +171,13 @@ export const Message = ({
               transition={{ duration: 0.3, ease: "easeInOut" }}
               className="bg-athens-100 flex w-full flex-col gap-6 rounded-[20px] px-6 py-5"
             >
+              {/*
               <ContextPane
                 retrievals={message.retrievals ?? []}
                 handleClose={() => setContextOpened(false)}
                 setHref={setHref}
               />
+              */}
             </motion.div>
           </div>
         ) : null}

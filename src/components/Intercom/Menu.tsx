@@ -50,7 +50,7 @@ export const ChatMenu = ({
   };
 
   return (
-    <div className="relative">
+    <div id="chat-menu" className="relative">
       <div className="flex">
         <button
           className={cn(
@@ -229,7 +229,7 @@ type MobileProps = {
 };
 
 const ChatMenuMobile = ({ setIsOpen, msg, setReplyingTo }: MobileProps) => {
-  const options: Option[] = [
+  const options: IOption[] = [
     {
       icon: <ThumbsUp className="h-5 w-5" />,
       label: "Like",
@@ -267,7 +267,10 @@ const ChatMenuMobile = ({ setIsOpen, msg, setReplyingTo }: MobileProps) => {
   const handleClose = () => setIsOpen(false);
 
   return (
-    <div className="bg-midnight-900 fixed bottom-0 left-0 right-0 z-10 flex w-full flex-col items-center justify-center rounded-t-[20px]">
+    <div
+      id="chat-menu-mobile"
+      className="bg-midnight-900 fixed bottom-0 left-0 right-0 z-10 flex w-full flex-col items-center justify-center rounded-t-[20px]"
+    >
       <div className="flex w-full flex-col px-2 py-4">
         {options.map((option) => (
           <Option key={option.label} {...option} handleClose={handleClose} />
@@ -278,7 +281,7 @@ const ChatMenuMobile = ({ setIsOpen, msg, setReplyingTo }: MobileProps) => {
   );
 };
 
-type Option = {
+type IOption = {
   icon: React.ReactNode;
   label: string;
   onClick?: () => void;
@@ -286,18 +289,18 @@ type Option = {
   hr?: boolean; // divider after option
 };
 
-type OptionProps = Option & {
+type OptionProps = IOption & {
   handleClose: () => void;
 };
 
-const Option: React.FC<OptionProps> = ({
+const Option = ({
   label,
   icon,
   onClick,
   disabled,
   handleClose,
   hr,
-}) => {
+}: OptionProps) => {
   const clickHandler = () => {
     onClick?.();
     handleClose();
