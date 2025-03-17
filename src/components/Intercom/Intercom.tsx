@@ -203,12 +203,13 @@ export const Intercom = () => {
               </div>
 
               <div id="support-messages-container" className="flex-grow">
-                <ScrollArea className="h-full">
+                <ScrollArea className="h-full md:px-5">
                   {messages.map((message) => (
                     <Message
                       key={message.id}
                       message={message}
                       isMyMessage={message.persona_id === user?.persona?.id}
+                      isModal={true}
                     />
                   ))}
                 </ScrollArea>

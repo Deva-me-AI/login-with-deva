@@ -35,7 +35,7 @@ export const Message = ({
 
   return (
     <div
-      className={cn("group w-full text-gray-100", className)}
+      className={cn("message-container group w-full text-gray-100", className)}
       data-timestamp={message.created_at}
       onClick={() => {
         setMsgHovered((h) => !h);
@@ -91,7 +91,7 @@ export const Message = ({
               className={cn(
                 "relative m-auto flex w-full max-w-[600px] flex-col rounded-[20px] px-4 pr-12",
                 isMyMessage
-                  ? "bg-sea-700 mr-0 py-[7px]"
+                  ? "mr-0 bg-sea-700 py-[7px]"
                   : "ml-0 bg-catskill-200 py-[10px]",
               )}
             >

@@ -50,7 +50,7 @@ export const ChatMenu = ({
   };
 
   return (
-    <div id="chat-menu" className="relative">
+    <div className="chat-menu-container relative">
       <div className="flex">
         <button
           className={cn(

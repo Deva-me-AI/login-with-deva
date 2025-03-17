@@ -184,7 +184,7 @@ export const ChatBubble = ({
 
       <div
         data-testid="ChatMessageText"
-        className="flex min-h-[20px] flex-col items-start gap-4 pr-1 [overflow-wrap:anywhere]"
+        className="flex min-h-[20px] flex-col items-start gap-4 mr-2 [overflow-wrap:anywhere]"
       >
         <ReactMarkdown
           rehypePlugins={[rehypeRaw, remarkGfm]}
