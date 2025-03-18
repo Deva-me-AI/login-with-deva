@@ -71,7 +71,9 @@ const useDevaMessages = ({ threadId }: { threadId?: string }) => {
     isLoading: isMessagesLoading,
     error: messagesFetchError,
   } = useSWRFetcher<PaginatedMessages, Error>(
-    threadId && accessToken ? `${url}/api/sdk/chat/${threadId}/messages` : null,
+    threadId && accessToken
+      ? `${url}/api/sdk/chat/${threadId}/messages?{n}`
+      : null,
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -80,7 +82,7 @@ const useDevaMessages = ({ threadId }: { threadId?: string }) => {
   );
 
   return {
-    messages: messages?.items ?? [],
+    messages: messages?.items.reverse() ?? [],
     isMessagesLoading,
     messagesFetchError,
   };
