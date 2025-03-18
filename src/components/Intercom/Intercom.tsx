@@ -4,16 +4,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { HelpCircle, CircleX, MoveUpRight } from "lucide-react";
+import { HelpCircle, CircleX } from "lucide-react";
 import { useSWRFetcher } from "@/lib/fetcher";
 import { useDevaContext } from "@/DevaContext";
 import type { PaginatedMessages, PagintedPersonas, Thread } from "@/server";
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
 import { ScrollArea } from "../ui/scroll-area";
-import { cn } from "@/lib/utils";
-import { Spinner } from "../ui/spinner";
-import { PostInput } from "../PostEditor/PostInput";
 import { Message } from "./Message";
+import { Input } from "./Input";
 
 const useDevaSupport = () => {
   const { url, accessToken } = useDevaContext();
@@ -98,7 +96,6 @@ export const Intercom = () => {
   const { messages, isMessagesLoading, messagesFetchError } = useDevaMessages({
     threadId: thread?.id,
   });
-  const [text, setText] = useState("");
 
   console.log("support", support);
   console.log("thread", thread, isThreadLoading, threadFetchError);
@@ -215,61 +212,7 @@ export const Intercom = () => {
                 </ScrollArea>
               </div>
 
-              <div
-                id="support-input-container"
-                className={"bg-gradient-to-t to-transparent"}
-              >
-                <form
-                  className={cn(
-                    "flex w-full flex-row px-5 pt-2 last:mb-2 md:last:mb-[18px] lg:mx-auto lg:max-w-3xl",
-                    {
-                      "lg:pt-6": !false, // is replying to specfic message
-                    },
-                  )}
-                >
-                  <div className="relative flex h-full flex-1 md:flex-col">
-                    <div className="relative flex w-full flex-grow items-center rounded-[36px] bg-catskill-200 py-2 pl-3 text-white shadow-[0_0_15px_rgba(0,0,0,0.10)] md:py-2 md:pl-4">
-                      <div
-                        id="support-input"
-                        className="w-full overflow-hidden bg-catskill-200 [&>div>div]:overflow-hidden" // Removes scroll in the chat input
-                        style={{ gridColumn: "2", gridRow: "1" }}
-                      >
-                        {thread && (
-                          <PostInput
-                            id="support-input"
-                            postId={thread.id}
-                            onSubmit={() => {
-                              console.log("submit", text);
-                            }}
-                            value={text}
-                            placeholder="Type a message..."
-                            onChange={setText}
-                          />
-                        )}
-                      </div>
-
-                      <button
-                        type="submit"
-                        className={cn(
-                          {
-                            "bg-blue-500 text-gray-100": !false, // is sending,
-                          },
-                          "disabled:bg-ghost-300 bottom-1.5 right-1 mr-3 flex h-8 w-9 items-center justify-center self-end rounded-full bg-lime-300 text-black disabled:cursor-not-allowed disabled:text-gray-500 md:bottom-2.5 md:right-2",
-                        )}
-                        disabled={
-                          !text.trim().length || false // is sending
-                        }
-                      >
-                        {isInitializing ? ( // is sending
-                          <Spinner />
-                        ) : (
-                          <MoveUpRight />
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                </form>
-              </div>
+              <Input threadId={thread?.id} showLoading={isInitializing} />
             </div>
           )}
         </div>

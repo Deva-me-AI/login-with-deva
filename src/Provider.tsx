@@ -9,7 +9,7 @@ import {
 } from "./lib/crypto";
 import { useStorage } from "./hooks/use-storage";
 import useSWR from "swr";
-import { fetcher } from "./lib/fetcher";
+import { fetcher, useSWRFetcher } from "./lib/fetcher";
 import type { OidcAccessTokenJWT, UserInfo } from "./server";
 import { jwtDecode } from "jwt-decode";
 import { useInterval } from "./hooks/use-timeout";
@@ -43,14 +43,13 @@ const useUserInfo = (
   userInfoUrl: string | undefined,
   authToken: string | null,
 ) => {
-  const { data, error, isLoading } = useSWR<UserInfo, Error>(
+  const { data, error, isLoading } = useSWRFetcher<UserInfo, Error>(
     authToken ? userInfoUrl : false,
-    () =>
-      fetcher<UserInfo>(userInfoUrl!, {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      }),
+    {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    },
   );
 
   return {

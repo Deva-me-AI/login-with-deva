@@ -23,3 +23,4 @@ export type Message = components["schemas"]["FullChatMessageDBModel"];
 export type PaginatedMessages =
   components["schemas"]["PaginatedFullChatMessages"];
 export type ChatMessageAuthor = components["schemas"]["MessageAuthorType"];
+export type PostChatInput = components["schemas"]["CreateUserChatMessage"];
