@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import {
   Popover,
   PopoverContent,
@@ -17,6 +17,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
 import { ScrollArea } from "../ui/scroll-area";
 import { Message } from "./Message";
 import { Input } from "./Input";
+import { StreamResponse } from "./StreamResponse";
 
 const useDevaSupport = () => {
   const { url, accessToken } = useDevaContext();
@@ -70,6 +71,9 @@ const useDevaThread = () => {
 const useDevaMessages = ({ threadId }: { threadId?: string }) => {
   const { url, accessToken } = useDevaContext();
   const [cursor, setCursor] = useState(0);
+  const [streamingMessageId, setStreamingMessageId] = useState<string | null>(
+    null,
+  );
 
   // TODO: add pagination
   const {
@@ -90,8 +94,14 @@ const useDevaMessages = ({ threadId }: { threadId?: string }) => {
       },
     },
   );
+
   const mutate = useCallback(
     async (mes: IMessage) => {
+      // Set the streaming message ID when a new message is submitted
+      if (mes.id) {
+        setStreamingMessageId(mes.id);
+      }
+
       await internalMutate({
         ...res,
         items: [...(res?.items ?? []), mes],
@@ -100,6 +110,11 @@ const useDevaMessages = ({ threadId }: { threadId?: string }) => {
     [internalMutate, res],
   );
 
+  // Clear streaming message ID when streaming is complete
+  const clearStreamingMessageId = useCallback(() => {
+    setStreamingMessageId(null);
+  }, []);
+
   return {
     messages: res?.items.reverse() ?? [],
     isMessagesLoading,
@@ -107,6 +122,8 @@ const useDevaMessages = ({ threadId }: { threadId?: string }) => {
     fetchNext: () => setCursor((prev) => prev + 10),
     mutate,
     messagesFetchError,
+    streamingMessageId,
+    clearStreamingMessageId,
   };
 };
 
@@ -115,12 +132,19 @@ export const Intercom = () => {
   const [isOpen, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isInitializing, setIsInitializing] = useState(false);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { support, isSupportLoading, personaFetchError } = useDevaSupport();
   const { thread, isThreadLoading, threadFetchError } = useDevaThread();
-  const { messages, isMessagesLoading, messagesFetchError, mutate } =
-    useDevaMessages({
-      threadId: thread?.id,
-    });
+  const {
+    messages,
+    isMessagesLoading,
+    messagesFetchError,
+    mutate,
+    streamingMessageId,
+    clearStreamingMessageId,
+  } = useDevaMessages({
+    threadId: thread?.id,
+  });
 
   const handleOpenChange = (isOpen: boolean) => {
     setOpen(isOpen);
@@ -162,7 +186,7 @@ export const Intercom = () => {
           id="intercom-container"
           className="absolute bottom-28 right-4 z-10 md:bottom-10 md:right-10"
         >
-          <button className="bg-midnight-900 m-3 flex items-center justify-center rounded-full">
+          <button className="m-3 flex items-center justify-center rounded-full bg-midnight-900">
             {isOpen ? (
               <CircleX className="h-[50px] w-[50px] p-2 text-white" />
             ) : (
@@ -178,7 +202,7 @@ export const Intercom = () => {
         side="top"
         sideOffset={16}
       >
-        <div className="bg-midnight-900 h-[90vh] max-h-[530px] w-[90vw] max-w-[400px] rounded-[20px] border border-[#22252A]">
+        <div className="h-[90vh] max-h-[530px] w-[90vw] max-w-[400px] rounded-[20px] border border-[#22252A] bg-midnight-900">
           {error ? (
             <div className="flex h-full items-center justify-center p-4 text-center text-red-500">
               {error}
@@ -220,23 +244,36 @@ export const Intercom = () => {
                 </div>
               </div>
 
-              <div id="support-messages-container" className="flex-grow">
-                <ScrollArea className="h-full md:px-5">
-                  {messages.map((message) => (
-                    <Message
-                      key={message.id}
-                      message={message}
-                      isMyMessage={message.persona_id === user?.persona?.id}
-                      isModal={true}
-                    />
-                  ))}
-                </ScrollArea>
-              </div>
+              <ScrollArea className="h-full md:px-5" ref={scrollAreaRef}>
+                {messages.map((message) => (
+                  <Message
+                    key={message.id}
+                    message={message}
+                    isMyMessage={message.persona_id === user?.persona?.id}
+                    isModal={true}
+                  />
+                ))}
+
+                {streamingMessageId && support && (
+                  <StreamResponse
+                    messageId={streamingMessageId}
+                    threadId={thread?.id}
+                    persona={{
+                      username: support.username,
+                      id: support.id,
+                      avatar: support.avatar,
+                      display_name: support.display_name,
+                      user_id: support.user_id,
+                    }}
+                  />
+                )}
+              </ScrollArea>
 
               <Input
                 threadId={thread?.id}
                 showLoading={isInitializing}
                 onSubmit={mutate}
+                onStreamComplete={clearStreamingMessageId}
               />
             </div>
           )}
