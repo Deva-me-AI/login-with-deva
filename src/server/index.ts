@@ -24,3 +24,20 @@ export type PaginatedMessages =
   components["schemas"]["PaginatedFullChatMessages"];
 export type ChatMessageAuthor = components["schemas"]["MessageAuthorType"];
 export type PostChatInput = components["schemas"]["CreateUserChatMessage"];
+
+export type ChatLLMQueryStreamMessage =
+  | {
+      type: "completion" | "llm_response"; // ?
+    }
+  | {
+      type: "content";
+      data: string;
+    }
+  | {
+      type: "error";
+      data: Error;
+    }
+  | {
+      type: "response_message";
+      data: Message;
+    };
