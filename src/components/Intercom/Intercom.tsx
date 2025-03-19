@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Popover,
   PopoverContent,
@@ -7,7 +7,12 @@ import {
 import { HelpCircle, CircleX } from "lucide-react";
 import { useSWRFetcher } from "@/lib/fetcher";
 import { useDevaContext } from "@/DevaContext";
-import type { PaginatedMessages, PagintedPersonas, Thread } from "@/server";
+import type {
+  Message as IMessage,
+  PaginatedMessages,
+  PagintedPersonas,
+  Thread,
+} from "@/server";
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
 import { ScrollArea } from "../ui/scroll-area";
 import { Message } from "./Message";
@@ -64,15 +69,20 @@ const useDevaThread = () => {
 
 const useDevaMessages = ({ threadId }: { threadId?: string }) => {
   const { url, accessToken } = useDevaContext();
+  const [cursor, setCursor] = useState(0);
 
   // TODO: add pagination
   const {
-    data: messages,
+    data: res,
     isLoading: isMessagesLoading,
     error: messagesFetchError,
+    mutate: internalMutate,
   } = useSWRFetcher<PaginatedMessages, Error>(
     threadId && accessToken
-      ? `${url}/api/sdk/chat/${threadId}/messages?{n}`
+      ? `${url}/api/sdk/chat/${threadId}/messages?${new URLSearchParams({
+          cursor: cursor.toString(),
+          limit: "10",
+        })}`
       : null,
     {
       headers: {
@@ -80,10 +90,22 @@ const useDevaMessages = ({ threadId }: { threadId?: string }) => {
       },
     },
   );
+  const mutate = useCallback(
+    async (mes: IMessage) => {
+      await internalMutate({
+        ...res,
+        items: [...(res?.items ?? []), mes],
+      } as PaginatedMessages);
+    },
+    [internalMutate, res],
+  );
 
   return {
-    messages: messages?.items.reverse() ?? [],
+    messages: res?.items.reverse() ?? [],
     isMessagesLoading,
+    hasNext: res?.total ?? 0 > cursor + 10,
+    fetchNext: () => setCursor((prev) => prev + 10),
+    mutate,
     messagesFetchError,
   };
 };
@@ -95,9 +117,10 @@ export const Intercom = () => {
   const [isInitializing, setIsInitializing] = useState(false);
   const { support, isSupportLoading, personaFetchError } = useDevaSupport();
   const { thread, isThreadLoading, threadFetchError } = useDevaThread();
-  const { messages, isMessagesLoading, messagesFetchError } = useDevaMessages({
-    threadId: thread?.id,
-  });
+  const { messages, isMessagesLoading, messagesFetchError, mutate } =
+    useDevaMessages({
+      threadId: thread?.id,
+    });
 
   const handleOpenChange = (isOpen: boolean) => {
     setOpen(isOpen);
@@ -210,7 +233,11 @@ export const Intercom = () => {
                 </ScrollArea>
               </div>
 
-              <Input threadId={thread?.id} showLoading={isInitializing} />
+              <Input
+                threadId={thread?.id}
+                showLoading={isInitializing}
+                onSubmit={mutate}
+              />
             </div>
           )}
         </div>
