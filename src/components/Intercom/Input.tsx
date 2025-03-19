@@ -18,33 +18,42 @@ export const Input = ({
 }) => {
   const [text, setText] = useState("");
   const [messageId, setMessageId] = useState(crypto.randomUUID());
+  const [isSending, setIsSending] = useState(false);
   const { url, accessToken } = useDevaContext();
 
   const submitPost = useCallback(async () => {
     if (!text.trim().length || !threadId) {
       return;
     }
+
+    setIsSending(true);
     const input: PostChatInput = { text, thread_id: threadId };
 
-    const res = await fetcher<Message>(
-      `${url}/api/sdk/chat/${threadId}/messages`,
-      {
-        method: "POST",
-        body: JSON.stringify(input),
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-          Accept: "application/json",
+    try {
+      const res = await fetcher<Message>(
+        `${url}/api/sdk/chat/${threadId}/messages`,
+        {
+          method: "POST",
+          body: JSON.stringify(input),
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
         },
-      },
-    );
+      );
 
-    // Reset the input
-    setMessageId(crypto.randomUUID());
+      // Reset the input
+      setMessageId(crypto.randomUUID());
 
-    // Call the onSubmit callback with the response if it exists
-    if (onSubmit && res) {
-      onSubmit(res);
+      // Call the onSubmit callback with the response if it exists
+      if (onSubmit && res) {
+        onSubmit(res);
+      }
+    } catch (error) {
+      console.error("Failed to send message:", error);
+    } finally {
+      setIsSending(false);
     }
   }, [url, threadId, text, accessToken, onSubmit]);
 
@@ -84,19 +93,15 @@ export const Input = ({
               type="submit"
               className={cn(
                 {
-                  "bg-blue-500 text-gray-100": !false, // is sending,
+                  "bg-blue-500 text-gray-100": isSending, // is sending,
                 },
                 "disabled:bg-ghost-300 bottom-1.5 right-1 mr-3 flex h-8 w-9 items-center justify-center self-end rounded-full bg-lime-300 text-black disabled:cursor-not-allowed disabled:text-gray-500 md:bottom-2.5 md:right-2",
               )}
               disabled={
-                !text.trim().length || false // is sending
+                !text.trim().length || isSending // is sending
               }
             >
-              {showLoading ? ( // is sending
-                <Spinner />
-              ) : (
-                <MoveUpRight />
-              )}
+              {showLoading || isSending ? <Spinner /> : <MoveUpRight />}
             </button>
           </div>
         </div>
