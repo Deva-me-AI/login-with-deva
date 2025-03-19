@@ -1,9 +1,6 @@
 import { useDevaContext } from "@/DevaContext";
 import type { ChatMessageAuthor, Persona } from "@/server";
 import { cn } from "@/lib/utils";
-import ReactMarkdown from "react-markdown";
-import rehypeRaw from "rehype-raw";
-import remarkGfm from "remark-gfm";
 
 import {
   Tooltip,
@@ -13,23 +10,23 @@ import {
 } from "@/components/ui/tooltip";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { dateToTime } from "@/lib/time";
+import { Markdown } from "../Markdown";
 
 // Constants
 const URL_REGEX =
   /(?:https?:\/\/)?(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&//=]*)/g;
 const HIGHLIGHT_REGEX = /\s([@#][a-zA-Z0-9_-]+)/g;
-const NOTE_REGEX = /\[\[([^\]]+)\]\]/g;
-
-// Define markdown components
-const MD_COMPONENTS = {
-  // Add your markdown components here
-};
+// const NOTE_REGEX = /\[\[([^\]]+)\]\]/g;
 
 interface Props {
   author_type: ChatMessageAuthor;
-  persona?: Persona;
+  persona?: {
+    id: string;
+    username: string;
+    display_name?: string;
+    user_id?: string;
+  };
   response: string;
   createdAt: Date;
   reply?: { text?: string; persona?: Persona } | null;
@@ -130,7 +127,7 @@ export const ChatBubble = ({
         <div
           className={cn({
             "": userPersona?.id === persona?.id,
-            "text-sea-700 w-[180px] overflow-hidden overflow-ellipsis whitespace-nowrap md:w-full":
+            "w-[180px] overflow-hidden overflow-ellipsis whitespace-nowrap text-sea-700 md:w-full":
               userPersona?.id !== persona?.id,
           })}
         >
@@ -167,7 +164,7 @@ export const ChatBubble = ({
             </div>
 
             <div className="line-clamp-1">
-              <ReactMarkdown rehypePlugins={[rehypeRaw, remarkGfm]}>
+              <Markdown>
                 {highlightURLs(
                   reply.text
                     ?.trim()
@@ -176,7 +173,7 @@ export const ChatBubble = ({
                       ` <a href="/$1$2" class="text-[#CEF049]">$1$2</a>`,
                     ),
                 )}
-              </ReactMarkdown>
+              </Markdown>
             </div>
           </CardContent>
         </Card>
@@ -184,12 +181,9 @@ export const ChatBubble = ({
 
       <div
         data-testid="ChatMessageText"
-        className="flex min-h-[20px] flex-col items-start gap-4 mr-2 [overflow-wrap:anywhere]"
+        className="mr-2 flex min-h-[20px] flex-col items-start gap-4 [overflow-wrap:anywhere]"
       >
-        <ReactMarkdown
-          rehypePlugins={[rehypeRaw, remarkGfm]}
-          components={MD_COMPONENTS}
-        >
+        <Markdown>
           {highlightURLs(
             response
               .toString()
@@ -204,7 +198,7 @@ export const ChatBubble = ({
             //     `<a href="/notes/${encodeURIComponent(noteContent)}" class="text-[#CEF049]">[[${noteContent}]]</a>`
             // )
           )}
-        </ReactMarkdown>
+        </Markdown>
       </div>
 
       <span
