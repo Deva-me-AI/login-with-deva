@@ -99,10 +99,6 @@ export const Intercom = () => {
     threadId: thread?.id,
   });
 
-  console.log("support", support);
-  console.log("thread", thread, isThreadLoading, threadFetchError);
-  console.log("messages", messages, isMessagesLoading, messagesFetchError);
-
   const handleOpenChange = (isOpen: boolean) => {
     setOpen(isOpen);
   };

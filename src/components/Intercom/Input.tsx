@@ -5,14 +5,16 @@ import { useCallback, useState } from "react";
 import { MoveUpRight } from "lucide-react";
 import { fetcher } from "@/lib/fetcher";
 import { useDevaContext } from "@/DevaContext";
-import type { PostChatInput } from "@/server";
+import type { Message, PostChatInput } from "@/server";
 
 export const Input = ({
   showLoading,
   threadId,
+  onSubmit,
 }: {
   showLoading: boolean;
   threadId?: string;
+  onSubmit?: (message: Message) => void;
 }) => {
   const [text, setText] = useState("");
   const [messageId, setMessageId] = useState(crypto.randomUUID());
@@ -24,21 +26,27 @@ export const Input = ({
     }
     const input: PostChatInput = { text, thread_id: threadId };
 
-    const res = await fetcher(`${url}/api/sdk/chat/${threadId}/messages`, {
-      method: "POST",
-      body: JSON.stringify(input),
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-        Accept: "application/json",
+    const res = await fetcher<Message>(
+      `${url}/api/sdk/chat/${threadId}/messages`,
+      {
+        method: "POST",
+        body: JSON.stringify(input),
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
       },
-    });
+    );
 
     // Reset the input
     setMessageId(crypto.randomUUID());
 
-    console.log("res: ", res);
-  }, [url, threadId, text, accessToken]);
+    // Call the onSubmit callback with the response if it exists
+    if (onSubmit && res) {
+      onSubmit(res);
+    }
+  }, [url, threadId, text, accessToken, onSubmit]);
 
   return (
     <div
