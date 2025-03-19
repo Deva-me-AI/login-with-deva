@@ -1263,8 +1263,21 @@ export interface paths {
      * @description Get a paginated list of messages for a thread, ordered by latest first
      */
     get: operations["list_messages_sdk_chat__thread_id__messages_get"];
+    /**
+     * Create User Message
+     * @description Create a chat message
+     */
+    post: operations["create_user_message_sdk_chat__thread_id__messages_post"];
     /** Chat Dm Options */
     options: operations["chat_dm_options_sdk_chat__thread_id__messages_options"];
+  };
+  "/sdk/chat/{thread_id}/messages/{_id}/query/stream": {
+    /**
+     * Query Message Stream
+     * @description Prompt the LLM to respond to a specific chat message. Return an event
+     * stream as the LLM responds
+     */
+    post: operations["query_message_stream_sdk_chat__thread_id__messages___id__query_stream_post"];
   };
   "/persona": {
     /** Get Persona */
@@ -14827,6 +14840,41 @@ export interface operations {
       };
     };
   };
+  /**
+   * Create User Message
+   * @description Create a chat message
+   */
+  create_user_message_sdk_chat__thread_id__messages_post: {
+    parameters: {
+      header?: {
+        origin?: string | null;
+        "x-forwarded-host"?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreateUserChatMessage"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        content: {
+          "application/json": components["schemas"]["ChatMessageDBModel"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
   /** Chat Dm Options */
   chat_dm_options_sdk_chat__thread_id__messages_options: {
     responses: {
@@ -14839,6 +14887,36 @@ export interface operations {
       /** @description Not found */
       404: {
         content: never;
+      };
+    };
+  };
+  /**
+   * Query Message Stream
+   * @description Prompt the LLM to respond to a specific chat message. Return an event
+   * stream as the LLM responds
+   */
+  query_message_stream_sdk_chat__thread_id__messages___id__query_stream_post: {
+    parameters: {
+      path: {
+        _id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["FullChatMessageDBModel"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
       };
     };
   };
