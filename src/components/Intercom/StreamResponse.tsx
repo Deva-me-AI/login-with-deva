@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { ChatBubble } from "./Bubble";
+import { fetchEventSource } from "@microsoft/fetch-event-source";
 
 /**
  * Hook for fetching a streaming response from the AI.
@@ -36,88 +37,115 @@ export const useStreamResponse = ({
       return;
     }
 
-    let eventSource: EventSource | null = null;
+    let controller: AbortController | null = null;
     let accumulatedContent = "";
 
-    const startStreaming = () => {
+    const startStreaming = async () => {
       try {
         setIsStreaming(true);
         setError(null);
         setIsDone(false);
 
-        // Create the EventSource for SSE
+        controller = new AbortController();
         const streamUrl = `${url}/api/sdk/chat/${threadId}/messages/${messageId}/stream`;
-        eventSource = new EventSource(streamUrl, {
-          withCredentials: true,
-        });
 
-        // Set up event handlers
-        eventSource.onopen = () => {
-          console.log("Stream connection opened");
-        };
+        await fetchEventSource(streamUrl, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+            Accept: "text/event-stream",
+          },
+          signal: controller.signal,
+          openWhenHidden: true, // Keep connection open even when page is hidden
 
-        eventSource.onerror = (event) => {
-          console.error("Stream error:", event);
-          setError(new Error("Error streaming message"));
-          setIsStreaming(false);
-          eventSource?.close();
-        };
-
-        // Handle the message chunks
-        eventSource.addEventListener("message", (event) => {
-          try {
-            const data = event.data as ChatLLMQueryStreamMessage;
-
-            if (data.type === "content") {
-              // Accumulate the content
-              accumulatedContent += data.data || "";
-
-              // Update the message with the accumulated content
-              setMessage((prevMessage) => {
-                if (!prevMessage) {
-                  return {
-                    id: `${messageId}-response`,
-                    text: accumulatedContent,
-                  } as Message;
-                }
-
-                return {
-                  ...prevMessage,
-                  content: accumulatedContent,
-                };
-              });
-            } else if (data.type === "response_message") {
-              // We received the persisted message object
-              setMessage(data.data);
-
-              // If the message has complete content, we're done
-              setIsDone(true);
-              setIsStreaming(false);
-              eventSource?.close();
-            } else if (data.type === "completion") {
-              // Stream is complete
-              setIsDone(true);
-              setIsStreaming(false);
-              eventSource?.close();
+          onopen: async (response) => {
+            if (response.ok) {
+              console.log("Stream connection opened");
+            } else {
+              console.error("Stream connection failed:", response.status);
+              throw new Error(
+                `Failed to open stream: ${response.status} ${response.statusText}`,
+              );
             }
-          } catch (err) {
-            console.error("Error parsing stream data:", err);
-            setError(err instanceof Error ? err : new Error("Unknown error"));
-          }
+          },
+
+          onmessage: (event) => {
+            try {
+              // Parse the data from the event
+              const data = JSON.parse(event.data) as ChatLLMQueryStreamMessage;
+
+              if (data.type === "content") {
+                // Accumulate the content
+                accumulatedContent += data.data || "";
+
+                // Update the message with the accumulated content
+                setMessage((prevMessage) => {
+                  if (!prevMessage) {
+                    return {
+                      id: `${messageId}-response`,
+                      text: accumulatedContent,
+                    } as Message;
+                  }
+
+                  return {
+                    ...prevMessage,
+                    content: accumulatedContent,
+                  };
+                });
+              } else if (data.type === "response_message") {
+                // We received the persisted message object
+                setMessage(data.data);
+
+                // If the message has complete content, we're done
+                setIsDone(true);
+                setIsStreaming(false);
+                controller?.abort();
+              } else if (data.type === "completion") {
+                // Stream is complete
+                setIsDone(true);
+                setIsStreaming(false);
+                controller?.abort();
+              }
+            } catch (err) {
+              console.error("Error parsing stream data:", err);
+              setError(
+                err instanceof Error
+                  ? err
+                  : new Error("Error parsing stream data"),
+              );
+            }
+          },
+
+          onerror: (err: Error) => {
+            console.error("Stream error:", err);
+            setError(new Error(err.message || "Error streaming message"));
+            setIsStreaming(false);
+          },
+
+          onclose: () => {
+            console.log("Stream connection closed");
+            setIsStreaming(false);
+            setIsDone(true);
+          },
         });
       } catch (err) {
         console.error("Error setting up stream:", err);
-        setError(err instanceof Error ? err : new Error("Unknown error"));
+        setError(
+          err instanceof Error
+            ? err
+            : new Error("Failed to set up stream connection"),
+        );
         setIsStreaming(false);
       }
     };
 
-    startStreaming();
+    void startStreaming();
 
     // Cleanup function
     return () => {
-      if (eventSource) {
-        eventSource.close();
+      if (controller) {
+        controller.abort();
       }
       setIsStreaming(false);
     };
