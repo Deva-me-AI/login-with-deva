@@ -261,9 +261,9 @@ export const Intercom = () => {
                     persona={{
                       username: support.username,
                       id: support.id,
-                      avatar: support.avatar,
-                      display_name: support.display_name,
-                      user_id: support.user_id,
+                      avatar: support.avatar ?? undefined,
+                      display_name: support.display_name ?? undefined,
+                      user_id: support.user_id ?? "",
                     }}
                   />
                 )}
@@ -273,7 +273,6 @@ export const Intercom = () => {
                 threadId={thread?.id}
                 showLoading={isInitializing}
                 onSubmit={mutate}
-                onStreamComplete={clearStreamingMessageId}
               />
             </div>
           )}
