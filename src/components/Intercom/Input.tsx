@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 import { Spinner } from "../ui/spinner";
 import { PostInput } from "../PostEditor/PostInput";
-import { useCallback, useState } from "react";
+import { type FormEvent, useCallback, useState } from "react";
 import { MoveUpRight } from "lucide-react";
 import { fetcher } from "@/lib/fetcher";
 import { useDevaContext } from "@/DevaContext";
@@ -21,41 +21,48 @@ export const Input = ({
   const [isSending, setIsSending] = useState(false);
   const { url, accessToken } = useDevaContext();
 
-  const submitPost = useCallback(async () => {
-    if (!text.trim().length || !threadId) {
-      return;
-    }
-
-    setIsSending(true);
-    const input: PostChatInput = { text, thread_id: threadId };
-
-    try {
-      const res = await fetcher<Message>(
-        `${url}/api/sdk/chat/${threadId}/messages`,
-        {
-          method: "POST",
-          body: JSON.stringify(input),
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-        },
-      );
-
-      // Reset the input
-      setMessageId(crypto.randomUUID());
-
-      // Call the onSubmit callback with the response if it exists
-      if (onSubmit && res) {
-        onSubmit(res);
+  const submitPost = useCallback(
+    async (e?: FormEvent<HTMLFormElement>) => {
+      if (e) {
+        e.preventDefault();
       }
-    } catch (error) {
-      console.error("Failed to send message:", error);
-    } finally {
-      setIsSending(false);
-    }
-  }, [url, threadId, text, accessToken, onSubmit]);
+
+      if (!text.trim().length || !threadId) {
+        return;
+      }
+
+      setIsSending(true);
+      const input: PostChatInput = { text, thread_id: threadId };
+
+      try {
+        const res = await fetcher<Message>(
+          `${url}/api/sdk/chat/${threadId}/messages`,
+          {
+            method: "POST",
+            body: JSON.stringify(input),
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+          },
+        );
+
+        // Reset the input
+        setMessageId(crypto.randomUUID());
+
+        // Call the onSubmit callback with the response if it exists
+        if (onSubmit && res) {
+          onSubmit(res);
+        }
+      } catch (error) {
+        console.error("Failed to send message:", error);
+      } finally {
+        setIsSending(false);
+      }
+    },
+    [url, threadId, text, accessToken, onSubmit],
+  );
 
   return (
     <div
@@ -69,6 +76,7 @@ export const Input = ({
             "lg:pt-6": !false, // is replying to specfic message
           },
         )}
+        onSubmit={submitPost}
       >
         <div className="relative flex h-full flex-1 md:flex-col">
           <div className="relative flex w-full flex-grow items-center rounded-[36px] bg-catskill-200 py-2 pl-3 text-white shadow-[0_0_15px_rgba(0,0,0,0.10)] md:py-2 md:pl-4">
