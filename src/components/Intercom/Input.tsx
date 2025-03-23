@@ -1,119 +1,85 @@
-import { cn } from "@/lib/utils";
-import { Spinner } from "../ui/spinner";
-import { PostInput } from "../PostEditor/PostInput";
-import { type FormEvent, useCallback, useState } from "react";
-import { MoveUpRight } from "lucide-react";
-import { fetcher } from "@/lib/fetcher";
+import { useState, FormEvent } from "react";
 import { useDevaContext } from "@/DevaContext";
-import type { Message, PostChatInput } from "@/server";
+import type { Message as IMessage } from "@/server";
+import { useIntercom } from "./IntercomContext";
+
+interface InputProps {
+  threadId?: string;
+  showLoading?: boolean;
+  onSubmit: (message: IMessage) => Promise<void>;
+}
 
 export const Input = ({
-  showLoading,
   threadId,
+  showLoading = false,
   onSubmit,
-}: {
-  showLoading: boolean;
-  threadId?: string;
-  onSubmit?: (message: Message) => void;
-}) => {
+}: InputProps) => {
+  const { url, accessToken, user } = useDevaContext();
   const [text, setText] = useState("");
-  const [messageId, setMessageId] = useState(crypto.randomUUID());
-  const [isSending, setIsSending] = useState(false);
-  const { url, accessToken } = useDevaContext();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { scrollToBottom } = useIntercom();
 
-  const submitPost = useCallback(
-    async (e?: FormEvent<HTMLFormElement>) => {
-      if (e) {
-        e.preventDefault();
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+
+    if (!text.trim() || !threadId || !accessToken || isSubmitting) {
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch(`${url}/api/sdk/chat/${threadId}/messages`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({
+          content: text,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to send message: ${response.statusText}`);
       }
 
-      if (!text.trim().length || !threadId) {
-        return;
-      }
+      const message = await response.json();
 
-      setIsSending(true);
-      const input: PostChatInput = { text, thread_id: threadId };
+      // Clear input
+      setText("");
 
-      try {
-        const res = await fetcher<Message>(
-          `${url}/api/sdk/chat/${threadId}/messages`,
-          {
-            method: "POST",
-            body: JSON.stringify(input),
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-          },
-        );
+      // Submit message to parent
+      await onSubmit(message);
 
-        // Reset the input
-        setMessageId(crypto.randomUUID());
-
-        // Call the onSubmit callback with the response if it exists
-        if (onSubmit && res) {
-          onSubmit(res);
-        }
-      } catch (error) {
-        console.error("Failed to send message:", error);
-      } finally {
-        setIsSending(false);
-      }
-    },
-    [url, threadId, text, accessToken, onSubmit],
-  );
+      // Scroll to bottom
+      scrollToBottom();
+    } catch (error) {
+      console.error("Error sending message:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
-    <div
-      id="support-input-container"
-      className="bg-gradient-to-t to-transparent"
-    >
-      <form
-        className={cn(
-          "flex w-full flex-row px-5 pt-2 last:mb-2 md:last:mb-[18px] lg:mx-auto lg:max-w-3xl",
-          {
-            "lg:pt-6": !false, // is replying to specfic message
-          },
-        )}
-        onSubmit={submitPost}
-      >
-        <div className="relative flex h-full flex-1 md:flex-col">
-          <div className="relative flex w-full flex-grow items-center rounded-[36px] bg-catskill-200 py-2 pl-3 text-white shadow-[0_0_15px_rgba(0,0,0,0.10)] md:py-2 md:pl-4">
-            <div
-              id="support-input"
-              className="h-8 w-full overflow-hidden bg-catskill-200 [&>div>div]:overflow-hidden" // Removes scroll in the chat input
-              style={{ gridColumn: "2", gridRow: "1" }}
-            >
-              {threadId && (
-                <PostInput
-                  id="support-input-editor"
-                  postId={messageId}
-                  onSubmit={submitPost}
-                  value={text}
-                  placeholder="Type a message..."
-                  onChange={setText}
-                />
-              )}
-            </div>
-
-            <button
-              type="submit"
-              className={cn(
-                {
-                  "bg-blue-500 text-gray-100": isSending, // is sending,
-                },
-                "disabled:bg-ghost-300 bottom-1.5 right-1 mr-3 flex h-8 w-9 items-center justify-center self-end rounded-full bg-lime-300 text-black disabled:cursor-not-allowed disabled:text-gray-500 md:bottom-2.5 md:right-2",
-              )}
-              disabled={
-                !text.trim().length || isSending // is sending
-              }
-            >
-              {showLoading || isSending ? <Spinner /> : <MoveUpRight />}
-            </button>
-          </div>
-        </div>
-      </form>
-    </div>
+    <form onSubmit={handleSubmit} className="border-t border-gray-700 p-4">
+      <div className="flex items-center space-x-2">
+        <input
+          type="text"
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder="Type a message..."
+          disabled={showLoading || isSubmitting}
+          className="flex-1 rounded-md border border-gray-600 bg-midnight-800 px-4 py-2 text-white focus:border-blue-500 focus:outline-none"
+        />
+        <button
+          type="submit"
+          disabled={!text.trim() || showLoading || isSubmitting}
+          className="rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:bg-gray-600"
+        >
+          {isSubmitting ? "Sending..." : "Send"}
+        </button>
+      </div>
+    </form>
   );
 };

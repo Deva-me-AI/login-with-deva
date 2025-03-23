@@ -17,11 +17,9 @@ import { fetchEventSource } from "@microsoft/fetch-event-source";
 export const useStreamResponse = ({
   messageId,
   threadId,
-  onStreamComplete,
 }: {
   messageId?: string;
   threadId?: string;
-  onStreamComplete?: (msg: Message) => void;
 }): {
   message: Message | null;
   isStreaming: boolean;
@@ -33,14 +31,8 @@ export const useStreamResponse = ({
   const [isStreaming, setIsStreaming] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
   const [isDone, setIsDone] = useState<boolean>(false);
-  const handleCompletion = useCallback(
-    (msg: Message) => {
-      if (onStreamComplete) {
-        onStreamComplete(msg);
-      }
-    },
-    [onStreamComplete],
-  );
+
+  const { notifyStreamingUpdate, handleStreamComplete } = useIntercom();
 
   useEffect(() => {
     if (!messageId || !threadId || !accessToken) {
@@ -103,6 +95,7 @@ export const useStreamResponse = ({
                     content: accumulatedContent,
                   };
                 });
+                console.log("Stream content", data);
               } else if (data.type === "response_message") {
                 // We received the persisted message object
                 setMessage(data.data);
@@ -111,12 +104,14 @@ export const useStreamResponse = ({
                 setIsDone(true);
                 setIsStreaming(false);
                 handleCompletion(data.data);
+                console.log("Stream complete", data);
                 controller?.abort();
               } else if (data.type === "completion") {
                 // Stream is complete
                 setIsDone(true);
                 setIsStreaming(false);
                 controller?.abort();
+                console.log("Stream complete2", data);
               }
             } catch (err) {
               console.error("Error parsing stream data:", err);
@@ -340,7 +335,6 @@ export const StreamResponse = ({
   messageId,
   threadId,
   persona,
-  onStreamComplete,
 }: {
   messageId?: string;
   threadId?: string;
@@ -356,7 +350,6 @@ export const StreamResponse = ({
   const { message, isStreaming, error, isDone } = useStreamResponse({
     messageId,
     threadId,
-    onStreamComplete,
   });
 
   // If there's an error, show the error message
