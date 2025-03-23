@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { ChatLLMQueryStreamMessage, Message, Persona } from "../../server";
 import { useDevaContext } from "@/DevaContext";
 import { cn } from "@/lib/utils";
@@ -17,9 +17,11 @@ import { fetchEventSource } from "@microsoft/fetch-event-source";
 export const useStreamResponse = ({
   messageId,
   threadId,
+  onStreamComplete,
 }: {
   messageId?: string;
   threadId?: string;
+  onStreamComplete?: (msg: Message) => void;
 }): {
   message: Message | null;
   isStreaming: boolean;
@@ -31,6 +33,14 @@ export const useStreamResponse = ({
   const [isStreaming, setIsStreaming] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
   const [isDone, setIsDone] = useState<boolean>(false);
+  const handleCompletion = useCallback(
+    (msg: Message) => {
+      if (onStreamComplete) {
+        onStreamComplete(msg);
+      }
+    },
+    [onStreamComplete],
+  );
 
   useEffect(() => {
     if (!messageId || !threadId || !accessToken) {
@@ -47,10 +57,10 @@ export const useStreamResponse = ({
         setIsDone(false);
 
         controller = new AbortController();
-        const streamUrl = `${url}/api/sdk/chat/${threadId}/messages/${messageId}/stream`;
+        const streamUrl = `${url}/api/sdk/chat/${threadId}/messages/${messageId}/query/stream`;
 
         await fetchEventSource(streamUrl, {
-          method: "GET",
+          method: "POST",
           headers: {
             Authorization: `Bearer ${accessToken}`,
             "Content-Type": "application/json",
@@ -100,6 +110,7 @@ export const useStreamResponse = ({
                 // If the message has complete content, we're done
                 setIsDone(true);
                 setIsStreaming(false);
+                handleCompletion(data.data);
                 controller?.abort();
               } else if (data.type === "completion") {
                 // Stream is complete
@@ -149,7 +160,7 @@ export const useStreamResponse = ({
       }
       setIsStreaming(false);
     };
-  }, [messageId, threadId, url, accessToken]);
+  }, [messageId, threadId, url, accessToken, handleCompletion]);
 
   return {
     message,
@@ -329,6 +340,7 @@ export const StreamResponse = ({
   messageId,
   threadId,
   persona,
+  onStreamComplete,
 }: {
   messageId?: string;
   threadId?: string;
@@ -339,10 +351,12 @@ export const StreamResponse = ({
     display_name?: string;
     user_id: string;
   };
+  onStreamComplete?: (msg: Message) => void;
 }) => {
   const { message, isStreaming, error, isDone } = useStreamResponse({
     messageId,
     threadId,
+    onStreamComplete,
   });
 
   // If there's an error, show the error message

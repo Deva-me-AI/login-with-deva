@@ -101,19 +101,29 @@ const useDevaMessages = ({ threadId }: { threadId?: string }) => {
       if (mes.id) {
         setStreamingMessageId(mes.id);
       }
-
-      await internalMutate({
+      const updated = await internalMutate({
         ...res,
-        items: [...(res?.items ?? []), mes],
+        items: [mes, ...(res?.items ?? [])],
       } as PaginatedMessages);
+
+      console.log("Message sent", mes, updated);
     },
     [internalMutate, res],
   );
 
   // Clear streaming message ID when streaming is complete
-  const clearStreamingMessageId = useCallback(() => {
-    setStreamingMessageId(null);
-  }, []);
+  const clearStreamingMessageId = useCallback(
+    async (message: IMessage) => {
+      setStreamingMessageId(null);
+      const updated = await internalMutate({
+        ...res,
+        items: [message, ...(res?.items ?? [])],
+      } as PaginatedMessages);
+
+      console.log("Message received", message, updated);
+    },
+    [res, internalMutate],
+  );
 
   return {
     messages: res?.items.reverse() ?? [],
@@ -265,6 +275,7 @@ export const Intercom = () => {
                       display_name: support.display_name ?? undefined,
                       user_id: support.user_id ?? "",
                     }}
+                    onStreamComplete={clearStreamingMessageId}
                   />
                 )}
               </ScrollArea>
