@@ -1,33 +1,46 @@
-import React, { createContext, useContext, useRef, useCallback, useState, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useRef,
+  useCallback,
+  useState,
+  type ReactNode,
+} from "react";
 import type { Message as IMessage } from "@/server";
 
 interface IntercomContextType {
   // Scroll management
   scrollToBottom: () => void;
   scrollAreaRef: React.RefObject<HTMLDivElement>;
-  
+
   // Streaming state management
   streamingMessageId: string | null;
   setStreamingMessageId: (id: string | null) => void;
   notifyStreamingUpdate: () => void;
-  
+
   // Message handling
   handleStreamComplete: (message: IMessage) => Promise<void>;
 }
 
-const IntercomContext = createContext<IntercomContextType | undefined>(undefined);
+const IntercomContext = createContext<IntercomContextType | undefined>(
+  undefined,
+);
 
 export const IntercomProvider: React.FC<{
   children: ReactNode;
   onStreamComplete?: (message: IMessage) => Promise<void>;
 }> = ({ children, onStreamComplete }) => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
-  const [streamingMessageId, setStreamingMessageId] = useState<string | null>(null);
+  const [streamingMessageId, setStreamingMessageId] = useState<string | null>(
+    null,
+  );
 
   // Scroll to bottom of messages
   const scrollToBottom = useCallback(() => {
     if (scrollAreaRef.current) {
-      const scrollContainer = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
+      const scrollContainer = scrollAreaRef.current.querySelector(
+        "[data-radix-scroll-area-viewport]",
+      );
       if (scrollContainer) {
         setTimeout(() => {
           scrollContainer.scrollTop = scrollContainer.scrollHeight;
@@ -50,7 +63,7 @@ export const IntercomProvider: React.FC<{
       }
       scrollToBottom();
     },
-    [onStreamComplete, scrollToBottom]
+    [onStreamComplete, scrollToBottom],
   );
 
   return (
@@ -72,8 +85,7 @@ export const IntercomProvider: React.FC<{
 export const useIntercom = (): IntercomContextType => {
   const context = useContext(IntercomContext);
   if (context === undefined) {
-    throw new Error('useIntercom must be used within an IntercomProvider');
+    throw new Error("useIntercom must be used within an IntercomProvider");
   }
   return context;
 };
-

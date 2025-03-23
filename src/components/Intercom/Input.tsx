@@ -1,7 +1,8 @@
-import { useState, FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import { useDevaContext } from "@/DevaContext";
 import type { Message as IMessage } from "@/server";
 import { useIntercom } from "./IntercomContext";
+import { fetcher } from "@/lib/fetcher";
 
 interface InputProps {
   threadId?: string;
@@ -14,7 +15,7 @@ export const Input = ({
   showLoading = false,
   onSubmit,
 }: InputProps) => {
-  const { url, accessToken, user } = useDevaContext();
+  const { url, accessToken } = useDevaContext();
   const [text, setText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { scrollToBottom } = useIntercom();
@@ -29,22 +30,19 @@ export const Input = ({
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(`${url}/api/sdk/chat/${threadId}/messages`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
+      const message = await fetcher<IMessage>(
+        `${url}/api/sdk/chat/${threadId}/messages`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({
+            content: text,
+          }),
         },
-        body: JSON.stringify({
-          content: text,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to send message: ${response.statusText}`);
-      }
-
-      const message = await response.json();
+      );
 
       // Clear input
       setText("");

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import type { ChatLLMQueryStreamMessage, Message, Persona } from "../../server";
 import { useDevaContext } from "@/DevaContext";
 import { cn } from "@/lib/utils";
@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { ChatBubble } from "./Bubble";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
+import { useIntercom } from "./IntercomContext";
 
 /**
  * Hook for fetching a streaming response from the AI.
@@ -96,6 +97,7 @@ export const useStreamResponse = ({
                   };
                 });
                 console.log("Stream content", data);
+                notifyStreamingUpdate();
               } else if (data.type === "response_message") {
                 // We received the persisted message object
                 setMessage(data.data);
@@ -103,7 +105,7 @@ export const useStreamResponse = ({
                 // If the message has complete content, we're done
                 setIsDone(true);
                 setIsStreaming(false);
-                handleCompletion(data.data);
+                void handleStreamComplete(data.data);
                 console.log("Stream complete", data);
                 controller?.abort();
               } else if (data.type === "completion") {
@@ -155,7 +157,14 @@ export const useStreamResponse = ({
       }
       setIsStreaming(false);
     };
-  }, [messageId, threadId, url, accessToken, handleCompletion]);
+  }, [
+    messageId,
+    threadId,
+    url,
+    accessToken,
+    handleStreamComplete,
+    notifyStreamingUpdate,
+  ]);
 
   return {
     message,

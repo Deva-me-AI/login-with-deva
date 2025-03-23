@@ -11,9 +11,10 @@ import type {
   Message as IMessage,
   PaginatedMessages,
   PagintedPersonas,
+  Persona,
   Thread,
 } from "@/server";
-import { IntercomProvider } from "./IntercomContext";
+import { IntercomProvider, useIntercom } from "./IntercomContext";
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
 import { ScrollArea } from "../ui/scroll-area";
 import { Message } from "./Message";
@@ -130,32 +131,30 @@ const useDevaMessages = ({ threadId }: { threadId?: string }) => {
 };
 
 const IntercomContent = ({
-  support,
   thread,
   messages,
-  user,
   isInitializing,
   mutate,
+  persona,
 }: {
-  support: any;
   thread: Thread | undefined;
   messages: IMessage[];
-  user: any;
   isInitializing: boolean;
   mutate: (message: IMessage) => Promise<void>;
+  persona?: Persona;
 }) => {
+  const { user } = useDevaContext();
   const {
     scrollAreaRef,
     streamingMessageId,
     setStreamingMessageId,
-    handleStreamComplete,
+    scrollToBottom,
   } = useIntercom();
 
   // Set up effect to scroll to bottom when messages change
   useEffect(() => {
-    const { scrollToBottom } = useIntercom();
     scrollToBottom();
-  }, [messages]);
+  }, [messages, scrollToBottom]);
 
   // Handle message submission
   const handleSubmit = useCallback(
@@ -181,20 +180,20 @@ const IntercomContent = ({
           <div className="flex-none">
             <Avatar className="h-10 w-10 rounded-full">
               <AvatarImage
-                src={support?.avatar ?? "/placeholder.svg"}
-                alt={support?.display_name ?? support?.username ?? "User"}
+                src={persona?.avatar ?? "/placeholder.svg"}
+                alt={persona?.display_name ?? persona?.username ?? "User"}
               />
               <AvatarFallback className="text-black">
-                {support?.display_name?.charAt(0) ?? "U"}
+                {persona?.display_name?.charAt(0) ?? "U"}
               </AvatarFallback>
             </Avatar>
           </div>
           <div className="xs:max-w-[150px] min-w-0 max-w-[100px] overflow-hidden sm:max-w-[400px] md:max-w-[500px]">
             <h1
-              aria-label={support?.display_name ?? support?.username}
+              aria-label={persona?.display_name ?? persona?.username}
               className="block max-w-xl overflow-hidden text-ellipsis whitespace-nowrap"
             >
-              {support?.display_name ?? support?.username}
+              {persona?.display_name ?? persona?.username}
             </h1>
             <ul className="text-lynch-600 flex text-sm">
               <li>{thread?.members?.length ?? 0} members</li>
@@ -214,16 +213,16 @@ const IntercomContent = ({
             />
           ))}
 
-          {streamingMessageId && support && (
+          {streamingMessageId && persona && (
             <StreamResponse
               messageId={streamingMessageId}
               threadId={thread?.id}
               persona={{
-                username: support.username,
-                id: support.id,
-                avatar: support.avatar ?? undefined,
-                display_name: support.display_name ?? undefined,
-                user_id: support.user_id ?? "",
+                username: persona?.username ?? "",
+                id: persona?.id ?? "",
+                avatar: persona?.avatar ?? undefined,
+                display_name: persona?.display_name ?? undefined,
+                user_id: persona?.user_id ?? "",
               }}
             />
           )}
@@ -243,7 +242,7 @@ const IntercomContent = ({
 };
 
 export const Intercom = () => {
-  const { user, isAuthenticated } = useDevaContext();
+  const { isAuthenticated } = useDevaContext();
   const [isOpen, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isInitializing, setIsInitializing] = useState(false);
@@ -324,10 +323,9 @@ export const Intercom = () => {
           ) : (
             <IntercomProvider onStreamComplete={handleStreamComplete}>
               <IntercomContent
-                support={support}
+                persona={support}
                 thread={thread}
                 messages={messages}
-                user={user}
                 isInitializing={isInitializing}
                 mutate={mutate}
               />
