@@ -5,6 +5,7 @@ import React, {
   useCallback,
   useState,
   type ReactNode,
+  useEffect,
 } from "react";
 import type { Message as IMessage } from "@/server";
 
@@ -26,10 +27,15 @@ const IntercomContext = createContext<IntercomContextType | undefined>(
   undefined,
 );
 
-export const IntercomProvider: React.FC<{
+export const IntercomProvider = ({
+  children,
+  onStreamComplete,
+  isIntercomOpen,
+}: {
   children: ReactNode;
+  isIntercomOpen: boolean;
   onStreamComplete?: (message: IMessage) => Promise<void>;
-}> = ({ children, onStreamComplete }) => {
+}) => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const [streamingMessageId, setStreamingMessageId] = useState<string | null>(
     null,
@@ -65,6 +71,13 @@ export const IntercomProvider: React.FC<{
     },
     [onStreamComplete, scrollToBottom],
   );
+
+  // clear streaming message id when intercom is closed
+  useEffect(() => {
+    if (isIntercomOpen) {
+      setStreamingMessageId(null);
+    }
+  }, [isIntercomOpen]);
 
   return (
     <IntercomContext.Provider

@@ -321,7 +321,10 @@ export const Intercom = () => {
               {error}
             </div>
           ) : (
-            <IntercomProvider onStreamComplete={handleStreamComplete}>
+            <IntercomProvider
+              isIntercomOpen={isOpen}
+              onStreamComplete={handleStreamComplete}
+            >
               <IntercomContent
                 persona={support}
                 thread={thread}
