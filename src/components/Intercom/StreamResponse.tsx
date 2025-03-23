@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { ChatLLMQueryStreamMessage, Message, Persona } from "../../server";
 import { useDevaContext } from "@/DevaContext";
 import { cn } from "@/lib/utils";
@@ -32,24 +32,42 @@ export const useStreamResponse = ({
   const [isStreaming, setIsStreaming] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
   const [isDone, setIsDone] = useState<boolean>(false);
+  const controllerRef = useRef<AbortController | null>(null);
 
   const { notifyStreamingUpdate, handleStreamComplete } = useIntercom();
 
   useEffect(() => {
-    if (!messageId || !threadId || !accessToken) {
+    // If messageId becomes undefined, abort any existing stream
+    if (!messageId) {
+      if (controllerRef.current) {
+        controllerRef.current.abort();
+        controllerRef.current = null;
+      }
+      setIsStreaming(false);
+      setIsDone(true);
       return;
     }
 
-    let controller: AbortController | null = null;
+    // Return if other required params are missing
+    if (!threadId || !accessToken) {
+      return;
+    }
+
+    // Reset accumulated content when starting a new stream
     let accumulatedContent = "";
 
     const startStreaming = async () => {
       try {
+        // Abort any existing stream before starting a new one
+        if (controllerRef.current) {
+          controllerRef.current.abort();
+        }
+
         setIsStreaming(true);
         setError(null);
         setIsDone(false);
 
-        controller = new AbortController();
+        controllerRef.current = new AbortController();
         const streamUrl = `${url}/api/sdk/chat/${threadId}/messages/${messageId}/query/stream`;
 
         await fetchEventSource(streamUrl, {
@@ -59,7 +77,7 @@ export const useStreamResponse = ({
             "Content-Type": "application/json",
             Accept: "text/event-stream",
           },
-          signal: controller.signal,
+          signal: controllerRef.current.signal,
           openWhenHidden: true, // Keep connection open even when page is hidden
 
           onopen: async (response) => {
@@ -107,12 +125,12 @@ export const useStreamResponse = ({
                 setIsStreaming(false);
                 void handleStreamComplete(data.data);
                 console.log("Stream complete", data);
-                controller?.abort();
+                controllerRef.current?.abort();
               } else if (data.type === "completion") {
                 // Stream is complete
                 setIsDone(true);
                 setIsStreaming(false);
-                controller?.abort();
+                controllerRef.current?.abort();
                 console.log("Stream complete2", data);
               }
             } catch (err) {
@@ -152,8 +170,9 @@ export const useStreamResponse = ({
 
     // Cleanup function
     return () => {
-      if (controller) {
-        controller.abort();
+      if (controllerRef.current) {
+        controllerRef.current.abort();
+        controllerRef.current = null;
       }
       setIsStreaming(false);
     };
