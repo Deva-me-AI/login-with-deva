@@ -20,7 +20,7 @@ interface IntercomContextType {
   notifyStreamingUpdate: () => void;
 
   // Message handling
-  handleStreamComplete: (message: IMessage) => Promise<void>;
+  handleStreamComplete: (message?: IMessage) => Promise<void>;
 }
 
 const IntercomContext = createContext<IntercomContextType | undefined>(

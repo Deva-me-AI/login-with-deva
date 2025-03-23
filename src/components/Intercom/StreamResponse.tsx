@@ -151,6 +151,7 @@ export const useStreamResponse = ({
 
           onclose: () => {
             console.log("Stream connection closed");
+            void handleStreamComplete();
             setIsStreaming(false);
             setIsDone(true);
           },

@@ -108,7 +108,11 @@ const useDevaMessages = ({ threadId }: { threadId?: string }) => {
 
   // Handle stream completion
   const handleStreamComplete = useCallback(
-    async (message: IMessage) => {
+    async (message?: IMessage) => {
+      if (!message) {
+        console.error("stream complete: No message received");
+        return;
+      }
       const updated = await internalMutate({
         ...res,
         items: [message, ...(res?.items ?? [])],
