@@ -25,19 +25,9 @@ export type PaginatedMessages =
 export type ChatMessageAuthor = components["schemas"]["MessageAuthorType"];
 export type PostChatInput = components["schemas"]["CreateUserChatMessage"];
 
-export type ChatLLMQueryStreamMessage =
-  | {
-      type: "completion" | "llm_response"; // ?
-    }
-  | {
-      type: "content";
-      data: string;
-    }
-  | {
-      type: "error";
-      data: Error;
-    }
-  | {
-      type: "response_message";
-      data: Message;
-    };
+export type ChatLLMQueryStreamTypes =
+  | "completion"
+  | "llm_response"
+  | "content"
+  | "error"
+  | "response_message";

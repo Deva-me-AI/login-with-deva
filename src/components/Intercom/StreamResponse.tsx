@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import type { ChatLLMQueryStreamMessage, Message, Persona } from "../../server";
+import type { ChatLLMQueryStreamTypes, Message, Persona } from "../../server";
 import { useDevaContext } from "@/DevaContext";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
@@ -91,14 +91,16 @@ export const useStreamResponse = ({
             }
           },
 
-          onmessage: (event) => {
+          onmessage: (msg) => {
+            console.log("Stream message:", msg);
+            const type = msg.event as ChatLLMQueryStreamTypes;
             try {
               // Parse the data from the event
-              const data = JSON.parse(event.data) as ChatLLMQueryStreamMessage;
 
-              if (data.type === "content") {
+              if (type === "content") {
+                const g = JSON.parse(msg.data) as string;
                 // Accumulate the content
-                accumulatedContent += data.data || "";
+                accumulatedContent += g || "";
 
                 // Update the message with the accumulated content
                 setMessage((prevMessage) => {
@@ -114,24 +116,25 @@ export const useStreamResponse = ({
                     content: accumulatedContent,
                   };
                 });
-                console.log("Stream content", data);
+                console.log("Stream content", g);
                 notifyStreamingUpdate();
-              } else if (data.type === "response_message") {
+              } else if (type === "response_message") {
+                const message = JSON.parse(msg.data) as Message;
                 // We received the persisted message object
-                setMessage(data.data);
+                setMessage(message);
 
                 // If the message has complete content, we're done
                 setIsDone(true);
                 setIsStreaming(false);
-                void handleStreamComplete(data.data);
-                console.log("Stream complete", data);
+                void handleStreamComplete(message);
+                console.log("Stream complete", message);
                 controllerRef.current?.abort();
-              } else if (data.type === "completion") {
+              } else if (type === "completion") {
                 // Stream is complete
                 setIsDone(true);
                 setIsStreaming(false);
                 controllerRef.current?.abort();
-                console.log("Stream complete2", data);
+                console.log("Stream complete2", msg);
               }
             } catch (err) {
               console.error("Error parsing stream data:", err);
