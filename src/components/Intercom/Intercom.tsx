@@ -123,8 +123,9 @@ const useDevaMessages = ({ threadId }: { threadId?: string }) => {
     [res, internalMutate],
   );
 
+  const items = res?.items ?? [];
   return {
-    messages: res?.items.reverse() ?? [],
+    messages: items.reverse(),
     isMessagesLoading,
     hasNext: res?.total ?? 0 > cursor + 10,
     fetchNext: () => setCursor((prev) => prev + 10),
