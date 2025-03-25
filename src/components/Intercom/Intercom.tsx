@@ -96,14 +96,16 @@ const useDevaMessages = ({ threadId }: { threadId?: string }) => {
 
   const mutate = useCallback(
     async (mes: IMessage) => {
-      const updated = await internalMutate({
-        ...res,
-        items: [mes, ...(res?.items ?? [])],
-      } as PaginatedMessages);
+      const updated = await internalMutate(async (res) => {
+        return {
+          ...(res ?? ({} as PaginatedMessages)),
+          items: [mes, ...(res?.items ?? [])],
+        } as PaginatedMessages;
+      });
 
       console.log("Message sent", mes, updated);
     },
-    [internalMutate, res],
+    [internalMutate],
   );
 
   // Handle stream completion
@@ -113,14 +115,16 @@ const useDevaMessages = ({ threadId }: { threadId?: string }) => {
         console.error("stream complete: No message received");
         return;
       }
-      const updated = await internalMutate({
-        ...res,
-        items: [message, ...(res?.items ?? [])],
-      } as PaginatedMessages);
+      const updated = await internalMutate(async (res) => {
+        return {
+          ...(res ?? ({} as PaginatedMessages)),
+          items: [message, ...(res?.items ?? [])],
+        } as PaginatedMessages;
+      });
 
       console.log("Message received", message, updated);
     },
-    [res, internalMutate],
+    [internalMutate],
   );
 
   const items = res?.items ?? [];
