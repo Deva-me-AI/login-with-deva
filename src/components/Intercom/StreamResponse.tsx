@@ -56,124 +56,125 @@ export const useStreamResponse = ({
     // Reset accumulated content when starting a new stream
     let accumulatedContent = "";
 
-    const startStreaming = async () => {
-      try {
-        // Abort any existing stream before starting a new one
-        if (controllerRef.current) {
-          controllerRef.current.abort();
+    // Abort any existing stream before starting a new one
+    if (controllerRef.current) {
+      controllerRef.current.abort();
+    }
+
+    setIsStreaming(true);
+    setError(null);
+    setIsDone(false);
+
+    controllerRef.current = new AbortController();
+    const streamUrl = `${url}/api/sdk/chat/${threadId}/messages/${messageId}/query/stream`;
+    // const streamUrl = `http://localhost:8000/sdk/chat/${threadId}/messages/${messageId}/query/stream`;
+
+    fetchEventSource(streamUrl, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+        Accept: "text/event-stream",
+      },
+      signal: controllerRef.current.signal,
+      openWhenHidden: true, // Keep connection open even when page is hidden
+
+      onopen: async (response) => {
+        if (response.ok) {
+          console.log("Stream connection opened");
+        } else {
+          console.error("Stream connection failed:", response.status);
+          throw new Error(
+            `Failed to open stream: ${response.status} ${response.statusText}`,
+          );
         }
+      },
 
-        setIsStreaming(true);
-        setError(null);
-        setIsDone(false);
+      onmessage: (msg) => {
+        console.log("Stream message:", msg);
+        const type = msg.event as ChatLLMQueryStreamTypes;
+        try {
+          // Parse the data from the event
 
-        controllerRef.current = new AbortController();
-        const streamUrl = `${url}/api/sdk/chat/${threadId}/messages/${messageId}/query/stream`;
+          if (type === "content") {
+            const g = JSON.parse(msg.data) as string;
+            // Accumulate the content
+            accumulatedContent += g || "";
 
-        await fetchEventSource(streamUrl, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-            Accept: "text/event-stream",
-          },
-          signal: controllerRef.current.signal,
-          openWhenHidden: true, // Keep connection open even when page is hidden
-
-          onopen: async (response) => {
-            if (response.ok) {
-              console.log("Stream connection opened");
-            } else {
-              console.error("Stream connection failed:", response.status);
-              throw new Error(
-                `Failed to open stream: ${response.status} ${response.statusText}`,
-              );
-            }
-          },
-
-          onmessage: (msg) => {
-            console.log("Stream message:", msg);
-            const type = msg.event as ChatLLMQueryStreamTypes;
-            try {
-              // Parse the data from the event
-
-              if (type === "content") {
-                const g = JSON.parse(msg.data) as string;
-                // Accumulate the content
-                accumulatedContent += g || "";
-
-                // Update the message with the accumulated content
-                setMessage((prevMessage) => {
-                  if (!prevMessage) {
-                    return {
-                      id: `${messageId}-response`,
-                      text: accumulatedContent,
-                    } as Message;
-                  }
-
-                  return {
-                    ...prevMessage,
-                    content: accumulatedContent,
-                  };
-                });
-                console.log("Stream content", g);
-                notifyStreamingUpdate();
-              } else if (type === "response_message") {
-                const message = JSON.parse(msg.data) as Message;
-                // We received the persisted message object
-                setMessage(message);
-
-                // If the message has complete content, we're done
-                setIsDone(true);
-                setIsStreaming(false);
-                void handleStreamComplete(message);
-                console.log("Stream complete", message);
-                controllerRef.current?.abort();
-              } else if (type === "completion") {
-                // Stream is complete
-                setIsDone(true);
-                setIsStreaming(false);
-                controllerRef.current?.abort();
-                console.log("Stream complete2", msg);
+            // Update the message with the accumulated content
+            setMessage((prevMessage) => {
+              if (!prevMessage) {
+                return {
+                  id: `${messageId}-response`,
+                  text: accumulatedContent,
+                } as Message;
               }
-            } catch (err) {
-              console.error("Error parsing stream data:", err);
-              setError(
-                err instanceof Error
-                  ? err
-                  : new Error("Error parsing stream data"),
-              );
-            }
-          },
 
-          onerror: (err: Error) => {
-            console.error("Stream error:", err);
-            setError(new Error(err.message || "Error streaming message"));
-            setIsStreaming(false);
-          },
+              return {
+                ...prevMessage,
+                content: accumulatedContent,
+              };
+            });
+            console.log("Stream content", g);
+            notifyStreamingUpdate();
+          } else if (type === "response_message") {
+            const message = JSON.parse(msg.data) as Message;
+            // We received the persisted message object
+            setMessage(message);
 
-          onclose: () => {
-            console.log("Stream connection closed");
-            void handleStreamComplete();
-            setIsStreaming(false);
+            // If the message has complete content, we're done
             setIsDone(true);
-          },
-        });
-      } catch (err) {
+            setIsStreaming(false);
+            void handleStreamComplete(message);
+            console.log("Stream complete", message);
+            controllerRef.current?.abort();
+          } else if (type === "completion") {
+            // Stream is complete
+            setIsDone(true);
+            setIsStreaming(false);
+            controllerRef.current?.abort();
+            console.log("Stream complete2", msg);
+          }
+        } catch (err) {
+          console.error("Error parsing stream data:", err);
+          setError(
+            err instanceof Error ? err : new Error("Error parsing stream data"),
+          );
+        }
+      },
+
+      onerror: (err: Error) => {
+        console.error("Stream error:", err);
+        setError(new Error(err.message || "Error streaming message"));
+        setIsStreaming(false);
+      },
+
+      onclose: () => {
+        console.log("Stream connection closed");
+        void handleStreamComplete();
+        setIsStreaming(false);
+        setIsDone(true);
+      },
+    })
+      .catch((err) => {
         console.error("Error setting up stream:", err);
         setError(
           err instanceof Error
             ? err
             : new Error("Failed to set up stream connection"),
         );
+      })
+      .finally(() => {
         setIsStreaming(false);
-      }
-    };
-
-    void startStreaming();
+        if (controllerRef.current) {
+          controllerRef.current.abort();
+          controllerRef.current = null;
+        }
+      });
 
     // Cleanup function
     return () => {
+      console.log("Cleaning up stream");
       if (controllerRef.current) {
         controllerRef.current.abort();
         controllerRef.current = null;
@@ -188,6 +189,27 @@ export const useStreamResponse = ({
     handleStreamComplete,
     notifyStreamingUpdate,
   ]);
+
+  useEffect(
+    () => () => console.log("messageId changed: ", messageId),
+    [messageId],
+  );
+  useEffect(
+    () => () => console.log("threadId changed: ", threadId),
+    [threadId],
+  );
+  useEffect(
+    () => () => console.log("accessToken changed: ", accessToken),
+    [accessToken],
+  );
+  useEffect(
+    () => () => console.log("handleStreamComplete changed"),
+    [handleStreamComplete],
+  );
+  useEffect(
+    () => console.log("notifyStreamingUpdate"),
+    [notifyStreamingUpdate],
+  );
 
   return {
     message,
@@ -390,7 +412,9 @@ export const StreamResponse = ({
   }
 
   // If streaming is in progress and we have a message, show the in-progress message
+  console.log("streaming", isStreaming, !!message);
   if (isStreaming && message) {
+    console.log("streaming message", message);
     return (
       <InProgressMessage
         msg={{
