@@ -62,9 +62,9 @@ export const IntercomProvider = ({
 
   // Handle stream completion
   const handleStreamComplete = useCallback(
-    async (message: IMessage) => {
+    async (message?: IMessage) => {
       setStreamingMessageId(null);
-      if (onStreamComplete) {
+      if (onStreamComplete && message) {
         await onStreamComplete(message);
       }
       scrollToBottom();

@@ -24,8 +24,8 @@ interface Props {
   persona?: {
     id: string;
     username: string;
-    display_name?: string;
-    user_id?: string;
+    display_name?: string | null;
+    user_id?: string | null;
   };
   response: string;
   createdAt: Date;
