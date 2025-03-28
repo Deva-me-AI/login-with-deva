@@ -21,10 +21,10 @@ import { Message } from "./Message";
 import { StreamResponse } from "./StreamResponse";
 import { Input } from "./Input";
 
-const useDevaSupport = () => {
+const useDevaPersona = ({ username }: { username: string }) => {
   const { url, accessToken } = useDevaContext();
 
-  const params = new URLSearchParams({ usernames: "deva_support" });
+  const params = new URLSearchParams({ usernames: username });
   const {
     data: support,
     isLoading: isSupportLoading,
@@ -250,13 +250,15 @@ const IntercomContent = ({
   );
 };
 
-export const Intercom = () => {
+export const Intercom = ({ username }: { username: string }) => {
   const { isAuthenticated } = useDevaContext();
   const [isOpen, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isInitializing, setIsInitializing] = useState(false);
 
-  const { support, isSupportLoading, personaFetchError } = useDevaSupport();
+  const { support, isSupportLoading, personaFetchError } = useDevaPersona({
+    username,
+  });
   const { thread, isThreadLoading, threadFetchError } = useDevaThread();
   const {
     messages,

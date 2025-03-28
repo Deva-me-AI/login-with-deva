@@ -104,7 +104,7 @@ function Content() {
           </div>
         </Card>
       </div>
-      <Intercom />
+      <Intercom username="deva_support" />
     </>
   );
 }
