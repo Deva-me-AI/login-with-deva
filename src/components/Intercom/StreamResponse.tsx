@@ -109,7 +109,7 @@ export const useStreamResponse = ({
             accumulatedContent += g || "";
 
             // Update the message with the accumulated content
-            setMessage((prevMessage) => {
+            setMessage((prevMessage): Message => {
               if (!prevMessage) {
                 return {
                   id: `${messageId}-response`,
@@ -119,7 +119,7 @@ export const useStreamResponse = ({
 
               return {
                 ...prevMessage,
-                content: accumulatedContent,
+                text: accumulatedContent,
               };
             });
             log("Stream content", g);
