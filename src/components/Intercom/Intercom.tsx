@@ -20,7 +20,6 @@ import { ScrollArea } from "../ui/scroll-area";
 import { Message } from "./Message";
 import { StreamResponse } from "./StreamResponse";
 import { Input } from "./Input";
-import { OrderedSet } from "@/lib/OrderedSet";
 
 const useDevaPersona = ({ username }: { username: string }) => {
   const { url, accessToken } = useDevaContext();
@@ -74,8 +73,8 @@ const useDevaThread = () => {
 const useDevaMessages = ({ threadId }: { threadId?: string }) => {
   const { url, accessToken } = useDevaContext();
   const [cursor, setCursor] = useState(0);
-  const [messageSet, setMessageSet] = useState<OrderedSet<IMessage>>(
-    new OrderedSet<IMessage>(),
+  const [messageMap, setMessageMap] = useState<Map<string, IMessage>>(
+    new Map<string, IMessage>(),
   );
 
   // TODO: add pagination
@@ -101,7 +100,11 @@ const useDevaMessages = ({ threadId }: { threadId?: string }) => {
   // Update messageSet when new data is fetched
   useEffect(() => {
     if (res?.items) {
-      setMessageSet((prevSet) => prevSet.addAll(res.items));
+      setMessageMap((prevMap) => {
+        const newMap = new Map<string, IMessage>(prevMap);
+        res.items.forEach((item) => newMap.set(item.id, item));
+        return newMap;
+      });
     }
   }, [res?.items]);
 
@@ -109,21 +112,22 @@ const useDevaMessages = ({ threadId }: { threadId?: string }) => {
   const mutate = useCallback(
     async (mes: IMessage) => {
       // Update local state immediately for better UX
-      setMessageSet((prevSet) => {
-        const newSet = new OrderedSet<IMessage>(prevSet);
-        newSet.add(mes); // Add to the end (most recent)
-        return newSet;
+      setMessageMap((prevMap) => {
+        const newMap = new Map(prevMap);
+        newMap.set(mes.id, mes); // Add to the end (most recent)
+        return newMap;
       });
 
       // Update remote state
-      const updated = await internalMutate(async (res) => {
+      await internalMutate(async (res) => {
+        const existingItems = res?.items ?? [];
         return {
           ...(res ?? ({} as PaginatedMessages)),
-          items: [mes, ...(res?.items ?? [])],
+          items: [mes, ...existingItems],
         } as PaginatedMessages;
       });
 
-      console.log("Message sent", mes, updated);
+      console.log("Message sent", mes);
     },
     [internalMutate],
   );
@@ -137,27 +141,19 @@ const useDevaMessages = ({ threadId }: { threadId?: string }) => {
       }
 
       // Update local state immediately
-      setMessageSet((prevSet) => {
-        const newSet = new OrderedSet<IMessage>(prevSet);
-
+      setMessageMap((prevMap) => {
         // Replace the streaming message if it exists, otherwise add the new message
-        const existingMsgIndex = prevSet
-          .values()
-          .findIndex((msg) => msg.id === message.id);
-        if (existingMsgIndex >= 0) {
+        const existingMsgIndex = prevMap.has(message.id);
+        if (existingMsgIndex) {
           // Create a new set without the existing message
-          const filteredSet = new OrderedSet<IMessage>();
-          prevSet.values().forEach((msg) => {
-            if (msg.id !== message.id) {
-              filteredSet.add(msg);
-            }
-          });
+          const newMap = new Map(prevMap);
+          newMap.delete(message.id);
 
           // Add the completed message
-          return filteredSet.add(message);
+          return newMap;
         } else {
           // Just add the new message
-          return newSet.add(message);
+          return new Map(prevMap).set(message.id, message);
         }
       });
 
@@ -188,11 +184,12 @@ const useDevaMessages = ({ threadId }: { threadId?: string }) => {
     [internalMutate],
   );
 
-  // Get messages in chronological order (oldest to newest)
+  // Get messages in chronological order (newest to oldest)
   const messages = useMemo(() => {
-    // Convert to array and reverse to get chronological order
-    return messageSet.values().reverse();
-  }, [messageSet]);
+    return Array.from(messageMap.values())
+      .sort((a, b) => ((a.created_at ?? 0) < (b.created_at ?? 0) ? 1 : -1))
+      .reverse();
+  }, [messageMap]);
 
   return {
     messages,
