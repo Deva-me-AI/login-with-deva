@@ -274,8 +274,8 @@ const IntercomContent = ({
         </div>
       </div>
 
-      <ScrollArea className="h-full md:px-5" ref={scrollAreaRef}>
-        <div className="flex flex-col space-y-4">
+      <ScrollArea className="h-full" ref={scrollAreaRef}>
+        <div className="flex flex-col space-y-4 md:px-5">
           {messages.map((message) => (
             <Message
               key={message.id}
