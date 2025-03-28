@@ -132,15 +132,12 @@ export const useStreamResponse = ({
             // If the message has complete content, we're done
             setIsDone(true);
             setIsStreaming(false);
-            void handleStreamComplete(message);
             log("Stream complete", message);
+            void handleStreamComplete(message);
             controllerRef.current?.abort();
           } else if (type === "completion") {
-            // Stream is complete
-            setIsDone(true);
-            setIsStreaming(false);
-            controllerRef.current?.abort();
-            log("Stream complete2", msg);
+            // happens when query completes, but stream is still open
+            log("Stream complete", msg);
           }
         } catch (err) {
           console.error("Error parsing stream data:", err);
@@ -164,7 +161,7 @@ export const useStreamResponse = ({
       },
     })
       .catch((err) => {
-        error("Error setting up stream:", err);
+        console.error("Error setting up stream:", err);
         setError(
           err instanceof Error
             ? err
