@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Popover,
   PopoverContent,
@@ -20,6 +20,7 @@ import { ScrollArea } from "../ui/scroll-area";
 import { Message } from "./Message";
 import { StreamResponse } from "./StreamResponse";
 import { Input } from "./Input";
+import { OrderedSet } from "@/lib/OrderedSet";
 
 const useDevaPersona = ({ username }: { username: string }) => {
   const { url, accessToken } = useDevaContext();
@@ -73,6 +74,9 @@ const useDevaThread = () => {
 const useDevaMessages = ({ threadId }: { threadId?: string }) => {
   const { url, accessToken } = useDevaContext();
   const [cursor, setCursor] = useState(0);
+  const [messageSet, setMessageSet] = useState<OrderedSet<IMessage>>(
+    new OrderedSet<IMessage>(),
+  );
 
   // TODO: add pagination
   const {
@@ -94,8 +98,24 @@ const useDevaMessages = ({ threadId }: { threadId?: string }) => {
     },
   );
 
+  // Update messageSet when new data is fetched
+  useEffect(() => {
+    if (res?.items) {
+      setMessageSet((prevSet) => prevSet.addAll(res.items));
+    }
+  }, [res?.items]);
+
+  // Add a new message to the set
   const mutate = useCallback(
     async (mes: IMessage) => {
+      // Update local state immediately for better UX
+      setMessageSet((prevSet) => {
+        const newSet = new OrderedSet<IMessage>(prevSet);
+        newSet.add(mes); // Add to the end (most recent)
+        return newSet;
+      });
+
+      // Update remote state
       const updated = await internalMutate(async (res) => {
         return {
           ...(res ?? ({} as PaginatedMessages)),
@@ -115,10 +135,51 @@ const useDevaMessages = ({ threadId }: { threadId?: string }) => {
         console.error("stream complete: No message received");
         return;
       }
+
+      // Update local state immediately
+      setMessageSet((prevSet) => {
+        const newSet = new OrderedSet<IMessage>(prevSet);
+
+        // Replace the streaming message if it exists, otherwise add the new message
+        const existingMsgIndex = prevSet
+          .values()
+          .findIndex((msg) => msg.id === message.id);
+        if (existingMsgIndex >= 0) {
+          // Create a new set without the existing message
+          const filteredSet = new OrderedSet<IMessage>();
+          prevSet.values().forEach((msg) => {
+            if (msg.id !== message.id) {
+              filteredSet.add(msg);
+            }
+          });
+
+          // Add the completed message
+          return filteredSet.add(message);
+        } else {
+          // Just add the new message
+          return newSet.add(message);
+        }
+      });
+
+      // Update remote state
       const updated = await internalMutate(async (res) => {
+        // Find and replace the message if it exists, otherwise add it
+        const existingItems = res?.items ?? [];
+        const existingIndex = existingItems.findIndex(
+          (item) => item.id === message.id,
+        );
+
+        let newItems;
+        if (existingIndex >= 0) {
+          newItems = [...existingItems];
+          newItems[existingIndex] = message;
+        } else {
+          newItems = [message, ...existingItems];
+        }
+
         return {
           ...(res ?? ({} as PaginatedMessages)),
-          items: [message, ...(res?.items ?? [])],
+          items: newItems,
         } as PaginatedMessages;
       });
 
@@ -127,9 +188,14 @@ const useDevaMessages = ({ threadId }: { threadId?: string }) => {
     [internalMutate],
   );
 
-  const items = res?.items ?? [];
+  // Get messages in chronological order (oldest to newest)
+  const messages = useMemo(() => {
+    // Convert to array and reverse to get chronological order
+    return messageSet.values().reverse();
+  }, [messageSet]);
+
   return {
-    messages: items.reverse(),
+    messages,
     isMessagesLoading,
     hasNext: res?.total ?? 0 > cursor + 10,
     fetchNext: () => setCursor((prev) => prev + 10),
