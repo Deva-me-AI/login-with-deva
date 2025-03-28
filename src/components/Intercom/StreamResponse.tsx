@@ -8,6 +8,13 @@ import { ChatBubble } from "./Bubble";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { useIntercom } from "./IntercomContext";
 
+const debug = false;
+const log = (...args: Parameters<typeof console.log>) => {
+  if (debug) {
+    console.log(...args);
+  }
+};
+
 /**
  * Hook for fetching a streaming response from the AI.
  * @param {Object} params - The parameters for the hook.
@@ -81,7 +88,7 @@ export const useStreamResponse = ({
 
       onopen: async (response) => {
         if (response.ok) {
-          console.log("Stream connection opened");
+          log("Stream connection opened");
         } else {
           console.error("Stream connection failed:", response.status);
           throw new Error(
@@ -91,7 +98,7 @@ export const useStreamResponse = ({
       },
 
       onmessage: (msg) => {
-        console.log("Stream message:", msg);
+        log("Stream message:", msg);
         const type = msg.event as ChatLLMQueryStreamTypes;
         try {
           // Parse the data from the event
@@ -115,7 +122,7 @@ export const useStreamResponse = ({
                 content: accumulatedContent,
               };
             });
-            console.log("Stream content", g);
+            log("Stream content", g);
             notifyStreamingUpdate();
           } else if (type === "response_message") {
             const message = JSON.parse(msg.data) as Message;
@@ -126,14 +133,14 @@ export const useStreamResponse = ({
             setIsDone(true);
             setIsStreaming(false);
             void handleStreamComplete(message);
-            console.log("Stream complete", message);
+            log("Stream complete", message);
             controllerRef.current?.abort();
           } else if (type === "completion") {
             // Stream is complete
             setIsDone(true);
             setIsStreaming(false);
             controllerRef.current?.abort();
-            console.log("Stream complete2", msg);
+            log("Stream complete2", msg);
           }
         } catch (err) {
           console.error("Error parsing stream data:", err);
@@ -150,14 +157,14 @@ export const useStreamResponse = ({
       },
 
       onclose: () => {
-        console.log("Stream connection closed");
+        log("Stream connection closed");
         void handleStreamComplete();
         setIsStreaming(false);
         setIsDone(true);
       },
     })
       .catch((err) => {
-        console.error("Error setting up stream:", err);
+        error("Error setting up stream:", err);
         setError(
           err instanceof Error
             ? err
@@ -174,7 +181,6 @@ export const useStreamResponse = ({
 
     // Cleanup function
     return () => {
-      console.log("Cleaning up stream");
       if (controllerRef.current) {
         controllerRef.current.abort();
         controllerRef.current = null;
@@ -189,27 +195,6 @@ export const useStreamResponse = ({
     handleStreamComplete,
     notifyStreamingUpdate,
   ]);
-
-  useEffect(
-    () => () => console.log("messageId changed: ", messageId),
-    [messageId],
-  );
-  useEffect(
-    () => () => console.log("threadId changed: ", threadId),
-    [threadId],
-  );
-  useEffect(
-    () => () => console.log("accessToken changed: ", accessToken),
-    [accessToken],
-  );
-  useEffect(
-    () => () => console.log("handleStreamComplete changed"),
-    [handleStreamComplete],
-  );
-  useEffect(
-    () => console.log("notifyStreamingUpdate"),
-    [notifyStreamingUpdate],
-  );
 
   return {
     message,
@@ -412,9 +397,7 @@ export const StreamResponse = ({
   }
 
   // If streaming is in progress and we have a message, show the in-progress message
-  console.log("streaming", isStreaming, !!message);
   if (isStreaming && message) {
-    console.log("streaming message", message);
     return (
       <InProgressMessage
         msg={{
