@@ -242,7 +242,7 @@ const IntercomContent = ({
   return (
     <div
       id="intercom-container"
-      className="relative flex h-[100dvh-65px] w-full flex-col md:h-full"
+      className="relative flex w-full h-full flex-col"
     >
       <div
         id="support-header"
