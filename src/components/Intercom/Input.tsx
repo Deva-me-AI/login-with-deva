@@ -51,6 +51,7 @@ export const Input = ({
 
       // updating the message id clears the input
       setMessageId(crypto.randomUUID());
+      setText("");
 
       // Submit message to parent
       await onSubmit(message);
