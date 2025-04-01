@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Popover,
   PopoverContent,
@@ -20,6 +20,7 @@ import { ScrollArea } from "../ui/scroll-area";
 import { Message } from "./Message";
 import { StreamResponse } from "./StreamResponse";
 import { Input } from "./Input";
+import useDebouncedCallback from "@/hooks/use-debounced-callback";
 
 const useDevaPersona = ({ username }: { username: string }) => {
   const { url, accessToken } = useDevaContext();
@@ -191,11 +192,19 @@ const useDevaMessages = ({ threadId }: { threadId?: string }) => {
       .reverse();
   }, [messageMap]);
 
+  const fetchNext = useDebouncedCallback(
+    () => {
+      setCursor((prev) => prev + 10);
+    },
+    200,
+    [],
+  );
+
   return {
     messages,
     isMessagesLoading,
-    hasNext: res?.total ?? 0 > cursor + 10,
-    fetchNext: () => setCursor((prev) => prev + 10),
+    hasNext: (res?.total ?? 0) > cursor + 10,
+    fetchNext,
     mutate,
     messagesFetchError,
     handleStreamComplete,
@@ -206,14 +215,20 @@ const IntercomContent = ({
   thread,
   messages,
   isInitializing,
+  isMessagesLoading,
   mutate,
   persona,
+  fetchNext,
+  hasNext,
 }: {
   thread: Thread | undefined;
   messages: IMessage[];
   isInitializing: boolean;
+  isMessagesLoading: boolean;
   mutate: (message: IMessage) => Promise<void>;
   persona?: Persona;
+  fetchNext: () => void;
+  hasNext: boolean;
 }) => {
   const { user } = useDevaContext();
   const {
@@ -222,11 +237,15 @@ const IntercomContent = ({
     setStreamingMessageId,
     scrollToBottom,
   } = useIntercom();
+  const [scrollPosition, setScrollPosition] = useState(0);
+  const loadingRef = useRef<HTMLDivElement>(null);
+  const isMessagesEmpty = messages.length === 0;
 
   // Set up effect to scroll to bottom when messages change
   useEffect(() => {
+    console.log("Scrolling to bottom");
     scrollToBottom();
-  }, [messages, scrollToBottom]);
+  }, [isMessagesEmpty, scrollToBottom]);
 
   // Handle message submission
   const handleSubmit = useCallback(
@@ -235,14 +254,88 @@ const IntercomContent = ({
         setStreamingMessageId(message.id);
       }
       await mutate(message);
+      scrollToBottom();
     },
-    [mutate, setStreamingMessageId],
+    [mutate, setStreamingMessageId, scrollToBottom],
   );
+
+  // Set up intersection observer for infinite scrolling
+  useEffect(() => {
+    if (!hasNext || isMessagesLoading) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        if (entry?.isIntersecting && hasNext) {
+          console.log("Fetching next messages");
+          fetchNext();
+        }
+      },
+      { threshold: 0.5 },
+    );
+
+    const loadingElement = loadingRef.current;
+    if (loadingElement) {
+      observer.observe(loadingElement);
+    }
+
+    return () => {
+      if (loadingElement) {
+        observer.unobserve(loadingElement);
+      }
+    };
+  }, [hasNext, fetchNext, isMessagesLoading]);
+
+  // Track scroll position to maintain position when new messages are loaded
+  useEffect(() => {
+    const handleScroll = () => {
+      if (scrollAreaRef.current) {
+        const scrollContainer = scrollAreaRef.current.querySelector(
+          "[data-radix-scroll-area-viewport]",
+        );
+        if (scrollContainer) {
+          setScrollPosition(scrollContainer.scrollTop);
+        }
+      }
+    };
+
+    const scrollContainer = scrollAreaRef.current?.querySelector(
+      "[data-radix-scroll-area-viewport]",
+    );
+
+    if (scrollContainer) {
+      scrollContainer.addEventListener("scroll", handleScroll);
+      return () => scrollContainer.removeEventListener("scroll", handleScroll);
+    }
+  }, [scrollAreaRef]);
+
+  // Maintain scroll position when new messages are loaded at the top
+  useEffect(() => {
+    if (!isMessagesEmpty && isMessagesLoading && messages.length > 0) {
+      const scrollContainer = scrollAreaRef.current?.querySelector(
+        "[data-radix-scroll-area-viewport]",
+      );
+      if (scrollContainer) {
+        // We need to wait for the DOM to update with new messages
+        requestAnimationFrame(() => {
+          // Add some offset to account for the new messages
+          console.log("Scrolling to", scrollPosition + 100);
+          scrollContainer.scrollTop = scrollPosition + 100;
+        });
+      }
+    }
+  }, [
+    messages.length,
+    isMessagesLoading,
+    isMessagesEmpty,
+    scrollPosition,
+    scrollAreaRef,
+  ]);
 
   return (
     <div
       id="intercom-container"
-      className="relative flex w-full h-full flex-col"
+      className="relative flex h-full w-full flex-col"
     >
       <div
         id="support-header"
@@ -276,6 +369,14 @@ const IntercomContent = ({
 
       <ScrollArea className="h-full" ref={scrollAreaRef}>
         <div className="flex flex-col space-y-4 md:px-5">
+          {/* Loading indicator at the top for infinite scroll */}
+          {hasNext && (
+            <div
+              ref={loadingRef}
+              className="py-2 text-center text-sm text-gray-400"
+            ></div>
+          )}
+
           {messages.map((message) => (
             <Message
               key={message.id}
@@ -329,6 +430,8 @@ export const Intercom = ({ username }: { username: string }) => {
     messagesFetchError,
     mutate,
     handleStreamComplete,
+    hasNext,
+    fetchNext,
   } = useDevaMessages({
     threadId: thread?.id,
   });
@@ -404,7 +507,10 @@ export const Intercom = ({ username }: { username: string }) => {
                 thread={thread}
                 messages={messages}
                 isInitializing={isInitializing}
+                isMessagesLoading={isMessagesLoading}
                 mutate={mutate}
+                hasNext={hasNext}
+                fetchNext={fetchNext}
               />
             </IntercomProvider>
           )}
