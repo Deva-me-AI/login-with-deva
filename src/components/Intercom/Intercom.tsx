@@ -100,7 +100,6 @@ const useDevaMessages = ({ threadId }: { threadId?: string }) => {
 
   // Update messageSet when new data is fetched
   useEffect(() => {
-    console.log("Fetched messages", res?.items);
     if (res?.items) {
       setMessageMap((prevMap) => {
         const newMap = new Map<string, IMessage>(prevMap);
@@ -128,8 +127,6 @@ const useDevaMessages = ({ threadId }: { threadId?: string }) => {
           items: [mes, ...existingItems],
         } as PaginatedMessages;
       });
-
-      console.log("Message sent", mes);
     },
     [internalMutate],
   );
@@ -160,7 +157,7 @@ const useDevaMessages = ({ threadId }: { threadId?: string }) => {
       });
 
       // Update remote state
-      const updated = await internalMutate(async (res) => {
+      await internalMutate(async (res) => {
         // Find and replace the message if it exists, otherwise add it
         const existingItems = res?.items ?? [];
         const existingIndex = existingItems.findIndex(
@@ -181,7 +178,6 @@ const useDevaMessages = ({ threadId }: { threadId?: string }) => {
         } as PaginatedMessages;
       });
 
-      console.log("Message received", message, updated);
     },
     [internalMutate],
   );
@@ -244,7 +240,6 @@ const IntercomContent = ({
 
   // Set up effect to scroll to bottom when messages change
   useEffect(() => {
-    console.log("Scrolling to bottom");
     scrollToBottom();
   }, [isMessagesEmpty, scrollToBottom]);
 
@@ -268,7 +263,6 @@ const IntercomContent = ({
       (entries) => {
         const [entry] = entries;
         if (entry?.isIntersecting && hasNext) {
-          console.log("Fetching next messages");
           fetchNext();
         }
       },
@@ -294,7 +288,7 @@ const IntercomContent = ({
         const scrollContainer = scrollAreaRef.current.querySelector(
           "[data-radix-scroll-area-viewport]",
         );
-        if (scrollContainer) {
+        if (scrollContainer && !isMessagesLoading) {
           setScrollPosition(scrollContainer.scrollTop);
         }
       }
@@ -308,11 +302,11 @@ const IntercomContent = ({
       scrollContainer.addEventListener("scroll", handleScroll);
       return () => scrollContainer.removeEventListener("scroll", handleScroll);
     }
-  }, [scrollAreaRef]);
+  }, [scrollAreaRef, isMessagesLoading]);
 
   // Maintain scroll position when new messages are loaded at the top
   useEffect(() => {
-    if (!isMessagesEmpty && isMessagesLoading && messages.length > 0) {
+    if (!isMessagesEmpty && isMessagesLoading) {
       const scrollContainer = scrollAreaRef.current?.querySelector(
         "[data-radix-scroll-area-viewport]",
       );
@@ -320,13 +314,11 @@ const IntercomContent = ({
         // We need to wait for the DOM to update with new messages
         requestAnimationFrame(() => {
           // Add some offset to account for the new messages
-          console.log("Scrolling to", scrollPosition + 100);
           scrollContainer.scrollTop = scrollPosition + 100;
         });
       }
     }
   }, [
-    messages.length,
     isMessagesLoading,
     isMessagesEmpty,
     scrollPosition,
