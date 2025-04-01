@@ -82,7 +82,7 @@ export const Input = ({
           <div className="relative flex w-full flex-grow items-center rounded-[36px] bg-catskill-200 py-2 pl-3 text-white shadow-[0_0_15px_rgba(0,0,0,0.10)] md:py-2 md:pl-4">
             <div
               id="support-input"
-              className="h-8 w-full overflow-hidden bg-catskill-200 [&>div>div]:overflow-hidden" // Removes scroll in the chat input
+              className="w-full overflow-hidden bg-catskill-200 [&>div>div]:overflow-hidden" // Removes scroll in the chat input
               style={{ gridColumn: "2", gridRow: "1" }}
             >
               {threadId && (
@@ -93,6 +93,7 @@ export const Input = ({
                   value={text}
                   placeholder="Type a message..."
                   onChange={setText}
+                  className="!min-h-min"
                 />
               )}
             </div>
