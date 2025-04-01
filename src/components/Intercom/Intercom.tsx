@@ -87,7 +87,7 @@ const useDevaMessages = ({ threadId }: { threadId?: string }) => {
   } = useSWRFetcher<PaginatedMessages, Error>(
     threadId && accessToken
       ? `${url}/api/sdk/chat/${threadId}/messages?${new URLSearchParams({
-          cursor: cursor.toString(),
+          skip: cursor.toString(),
           limit: "10",
         })}`
       : null,
@@ -100,6 +100,7 @@ const useDevaMessages = ({ threadId }: { threadId?: string }) => {
 
   // Update messageSet when new data is fetched
   useEffect(() => {
+    console.log("Fetched messages", res?.items);
     if (res?.items) {
       setMessageMap((prevMap) => {
         const newMap = new Map<string, IMessage>(prevMap);
@@ -261,7 +262,7 @@ const IntercomContent = ({
 
   // Set up intersection observer for infinite scrolling
   useEffect(() => {
-    if (!hasNext || isMessagesLoading) return;
+    if (!hasNext || isMessagesLoading || isMessagesEmpty) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -284,7 +285,7 @@ const IntercomContent = ({
         observer.unobserve(loadingElement);
       }
     };
-  }, [hasNext, fetchNext, isMessagesLoading]);
+  }, [hasNext, fetchNext, isMessagesLoading, isMessagesEmpty]);
 
   // Track scroll position to maintain position when new messages are loaded
   useEffect(() => {
