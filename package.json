@@ -1,7 +1,11 @@
 {
-  "name": "deva-sdk",
+  "name": "@10Planet-L1/deva-sdk",
   "version": "0.1.0",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/10Planet-L1/deva-sdk.git"
+  },
   "scripts": {
     "build": "vite build",
     "dev:install": "pnpm install --frozen-lockfile && cd example && pnpm install --frozen-lockfile",
