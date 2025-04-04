@@ -407,7 +407,7 @@ const IntercomContent = ({
   );
 };
 
-export const Intercom = ({ username }: { username: string }) => {
+export const Intercom = ({ username, fetchOnMount = false }: { username: string, fetchOnMount?: boolean }) => {
   const { isAuthenticated } = useDevaContext();
   const [isOpen, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -428,7 +428,7 @@ export const Intercom = ({ username }: { username: string }) => {
     hasNext,
     fetchNext,
   } = useDevaMessages({
-    threadId: thread?.id,
+    threadId: fetchOnMount ? thread?.id : isOpen ? thread?.id : undefined,
   });
 
   const handleOpenChange = (isOpen: boolean) => {
