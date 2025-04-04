@@ -42,7 +42,7 @@ const useDevaPersona = ({ username }: { username: string }) => {
   );
 
   return {
-    support: support?.items[0],
+    persona: support?.items[0],
     isSupportLoading,
     personaFetchError,
   };
@@ -412,8 +412,9 @@ export const Intercom = ({ username, fetchOnMount = false }: { username: string,
   const [isOpen, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isInitializing, setIsInitializing] = useState(false);
+  const [isPersonaNotFound, setIsPersonaNotFound] = useState(false);
 
-  const { support, isSupportLoading, personaFetchError } = useDevaPersona({
+  const { persona, isSupportLoading, personaFetchError } = useDevaPersona({
     username,
   });
   const { thread, isThreadLoading, threadFetchError } = useDevaThread({
@@ -488,7 +489,20 @@ export const Intercom = ({ username, fetchOnMount = false }: { username: string,
         sideOffset={16}
       >
         <div className="h-[90vh] max-h-[530px] w-[90vw] max-w-[400px] rounded-[20px] border border-[#22252A] bg-midnight-900">
-          {error ? (
+          {isPersonaNotFound ? (
+            <div className="flex h-full flex-col items-center justify-center p-6 text-center text-white">
+              <div className="mb-4 rounded-full bg-midnight-800 p-4">
+                <HelpCircle className="h-10 w-10 text-red-400" />
+              </div>
+              <h3 className="mb-2 text-xl font-semibold">Persona Not Found</h3>
+              <p className="mb-4 text-lynch-400">
+                The persona &apos;{username}&apos; doesn&apos;t exist or is not available.
+              </p>
+              <p className="text-sm text-lynch-500">
+                Please check the username and try again.
+              </p>
+            </div>
+          ) : error ? (
             <div className="flex h-full items-center justify-center p-4 text-center text-red-500">
               {error}
             </div>
@@ -498,7 +512,7 @@ export const Intercom = ({ username, fetchOnMount = false }: { username: string,
               onStreamComplete={handleStreamComplete}
             >
               <IntercomContent
-                persona={support}
+                persona={persona}
                 thread={thread}
                 messages={messages}
                 isInitializing={isInitializing}
