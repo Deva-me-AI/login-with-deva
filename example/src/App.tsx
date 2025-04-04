@@ -29,19 +29,28 @@ function Content() {
       : "eliza";
   };
 
+  // Get initial persona from URL or default to "deva_support"
+  const getInitialPersona = (): PersonaOption => {
+    const params = new URLSearchParams(window.location.search);
+    const persona = params.get("persona") as PersonaOption;
+    return persona && ["deva_support", "truejaian", "no-user"].includes(persona)
+      ? persona
+      : "deva_support";
+  };
+
   const [selectedChannel, setSelectedChannel] =
     useState<Channel>(getInitialChannel());
 
-  // Default persona is deva_support
   const [selectedPersona, setSelectedPersona] =
-    useState<PersonaOption>("deva_support");
+    useState<PersonaOption>(getInitialPersona());
 
-  // Update URL when channel changes
+  // Update URL when channel or persona changes
   useEffect(() => {
     const url = new URL(window.location.href);
     url.searchParams.set("channel", selectedChannel);
+    url.searchParams.set("persona", selectedPersona);
     window.history.replaceState({}, "", url);
-  }, [selectedChannel]);
+  }, [selectedChannel, selectedPersona]);
 
   const handleChannelChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedChannel(event.target.value as Channel);
