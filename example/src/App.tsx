@@ -15,6 +15,7 @@ export function Card({
 }
 
 type Channel = "empty" | "eliza" | "null";
+type PersonaOption = "deva_support" | "truejaian" | "no-user";
 
 function Content() {
   const { user, login, logout } = useDeva();
@@ -31,6 +32,10 @@ function Content() {
   const [selectedChannel, setSelectedChannel] =
     useState<Channel>(getInitialChannel());
 
+  // Default persona is deva_support
+  const [selectedPersona, setSelectedPersona] =
+    useState<PersonaOption>("deva_support");
+
   // Update URL when channel changes
   useEffect(() => {
     const url = new URL(window.location.href);
@@ -40,6 +45,10 @@ function Content() {
 
   const handleChannelChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedChannel(event.target.value as Channel);
+  };
+
+  const handlePersonaChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedPersona(event.target.value as PersonaOption);
   };
 
   return (
@@ -103,8 +112,24 @@ function Content() {
             <ChannelFeed handle={selectedChannel} />
           </div>
         </Card>
+        <Card>
+          <div className="persona-select-container">
+            <h3 style={{ marginBottom: "1rem" }}>
+              Select Persona for Intercom Chat
+            </h3>
+            <select
+              value={selectedPersona}
+              onChange={handlePersonaChange}
+              className="channel-select"
+            >
+              <option value="deva_support">Deva Support</option>
+              <option value="truejaian">Mediche</option>
+              <option value="no-user">No User</option>
+            </select>
+          </div>
+        </Card>
       </div>
-      <Intercom username="deva_support" />
+      <Intercom username={selectedPersona} />
     </>
   );
 }
