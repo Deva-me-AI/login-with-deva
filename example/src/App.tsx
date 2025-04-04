@@ -26,7 +26,7 @@ function Content() {
     const channel = params.get("channel") as Channel;
     return channel && ["empty", "eliza", "null"].includes(channel)
       ? channel
-      : "empty";
+      : "eliza";
   };
 
   const [selectedChannel, setSelectedChannel] =
@@ -103,8 +103,8 @@ function Content() {
               onChange={handleChannelChange}
               className="channel-select"
             >
-              <option value="empty">Empty Channel</option>
               <option value="eliza">Eliza</option>
+              <option value="empty">Empty Channel</option>
               <option value="null">404</option>
             </select>
           </div>
@@ -113,20 +113,28 @@ function Content() {
           </div>
         </Card>
         <Card>
-          <div className="persona-select-container">
-            <h3 style={{ marginBottom: "1rem" }}>
-              Select Persona for Intercom Chat
-            </h3>
-            <select
-              value={selectedPersona}
-              onChange={handlePersonaChange}
-              className="channel-select"
-            >
-              <option value="deva_support">Deva Support</option>
-              <option value="truejaian">Mediche</option>
-              <option value="no-user">No User</option>
-            </select>
-          </div>
+          {user ? (
+            <div className="persona-select-container">
+              <h3 style={{ marginBottom: "1rem" }}>
+                Select Persona for Intercom Chat
+              </h3>
+              <select
+                value={selectedPersona}
+                onChange={handlePersonaChange}
+                className="channel-select"
+              >
+                <option value="deva_support">Deva Support</option>
+                <option value="truejaian">Mediche</option>
+                <option value="no-user">No User</option>
+              </select>
+            </div>
+          ) : (
+            <div style={{ marginBottom: "1rem" }}>
+              <h3 style={{ marginBottom: "1rem" }}>
+                Login to select a Deva to chat with
+              </h3>
+            </div>
+          )}
         </Card>
       </div>
       <Intercom username={selectedPersona} />
