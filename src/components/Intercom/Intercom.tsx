@@ -48,7 +48,7 @@ const useDevaPersona = ({ username }: { username: string }) => {
   };
 };
 
-const useDevaThread = () => {
+const useDevaThread = ({ username }: { username: string }) => {
   const { url, accessToken } = useDevaContext();
 
   const {
@@ -56,7 +56,7 @@ const useDevaThread = () => {
     isLoading: isThreadLoading,
     error: threadFetchError,
   } = useSWRFetcher<Thread, Error>(
-    accessToken ? `${url}/api/sdk/chat/dm/deva_support` : null,
+    accessToken ? `${url}/api/sdk/chat/dm/${username}` : null,
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -77,6 +77,12 @@ const useDevaMessages = ({ threadId }: { threadId?: string }) => {
   const [messageMap, setMessageMap] = useState<Map<string, IMessage>>(
     new Map<string, IMessage>(),
   );
+
+  // clear messages when threadId changes
+  useEffect(() => {
+    setMessageMap(new Map<string, IMessage>());
+    setCursor(0);
+  }, [threadId]);
 
   // TODO: add pagination
   const {
@@ -177,7 +183,6 @@ const useDevaMessages = ({ threadId }: { threadId?: string }) => {
           items: newItems,
         } as PaginatedMessages;
       });
-
     },
     [internalMutate],
   );
@@ -318,12 +323,7 @@ const IntercomContent = ({
         });
       }
     }
-  }, [
-    isMessagesLoading,
-    isMessagesEmpty,
-    scrollPosition,
-    scrollAreaRef,
-  ]);
+  }, [isMessagesLoading, isMessagesEmpty, scrollPosition, scrollAreaRef]);
 
   return (
     <div
@@ -416,7 +416,9 @@ export const Intercom = ({ username }: { username: string }) => {
   const { support, isSupportLoading, personaFetchError } = useDevaPersona({
     username,
   });
-  const { thread, isThreadLoading, threadFetchError } = useDevaThread();
+  const { thread, isThreadLoading, threadFetchError } = useDevaThread({
+    username,
+  });
   const {
     messages,
     isMessagesLoading,
