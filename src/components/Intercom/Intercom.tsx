@@ -28,7 +28,7 @@ const useDevaPersona = ({ username }: { username: string }) => {
   const params = new URLSearchParams({ usernames: username });
   const {
     data: support,
-    isLoading: isSupportLoading,
+    isLoading: isPersonaLoading,
     error: personaFetchError,
   } = useSWRFetcher<PagintedPersonas, Error>(
     accessToken ? `${url}/api/sdk/persona/public?${params}` : null,
@@ -43,12 +43,12 @@ const useDevaPersona = ({ username }: { username: string }) => {
 
   return {
     persona: support?.items[0],
-    isSupportLoading,
+    isPersonaLoading,
     personaFetchError,
   };
 };
 
-const useDevaThread = ({ username }: { username: string }) => {
+const useDevaThread = ({ username }: { username?: string }) => {
   const { url, accessToken } = useDevaContext();
 
   const {
@@ -56,7 +56,7 @@ const useDevaThread = ({ username }: { username: string }) => {
     isLoading: isThreadLoading,
     error: threadFetchError,
   } = useSWRFetcher<Thread, Error>(
-    accessToken ? `${url}/api/sdk/chat/dm/${username}` : null,
+    accessToken && username ? `${url}/api/sdk/chat/dm/${username}` : null,
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -407,19 +407,31 @@ const IntercomContent = ({
   );
 };
 
-export const Intercom = ({ username, fetchOnMount = false }: { username: string, fetchOnMount?: boolean }) => {
+export const Intercom = ({
+  username,
+  fetchOnMount = false,
+}: {
+  username: string;
+  fetchOnMount?: boolean;
+}) => {
   const { isAuthenticated } = useDevaContext();
   const [isOpen, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isInitializing, setIsInitializing] = useState(false);
   const [isPersonaNotFound, setIsPersonaNotFound] = useState(false);
 
-  const { persona, isSupportLoading, personaFetchError } = useDevaPersona({
+  const { persona, isPersonaLoading, personaFetchError } = useDevaPersona({
     username,
   });
+
+  useEffect(() => {
+    setIsPersonaNotFound(isOpen && !!username && !isPersonaLoading && !persona);
+  }, [isOpen, username, isPersonaLoading, persona]);
+
   const { thread, isThreadLoading, threadFetchError } = useDevaThread({
-    username,
+    username: persona ? username : undefined,
   });
+
   const {
     messages,
     isMessagesLoading,
@@ -437,7 +449,7 @@ export const Intercom = ({ username, fetchOnMount = false }: { username: string,
   };
 
   useEffect(() => {
-    if (isSupportLoading || isThreadLoading || isMessagesLoading) {
+    if (isPersonaLoading || isThreadLoading || isMessagesLoading) {
       setIsInitializing(true);
     } else {
       setIsInitializing(false);
@@ -453,7 +465,7 @@ export const Intercom = ({ username, fetchOnMount = false }: { username: string,
       setError(null);
     }
   }, [
-    isSupportLoading,
+    isPersonaLoading,
     isThreadLoading,
     isMessagesLoading,
     personaFetchError,
@@ -494,11 +506,12 @@ export const Intercom = ({ username, fetchOnMount = false }: { username: string,
               <div className="mb-4 rounded-full bg-midnight-800 p-4">
                 <HelpCircle className="h-10 w-10 text-red-400" />
               </div>
-              <h3 className="mb-2 text-xl font-semibold">Persona Not Found</h3>
-              <p className="mb-4 text-lynch-400">
-                The persona &apos;{username}&apos; doesn&apos;t exist or is not available.
+              <h3 className="mb-2 text-xl font-semibold">Deva Not Found</h3>
+              <p className="text-lynch-400 mb-4">
+                The Deva for &apos;{username}&apos; doesn&apos;t exist or is not
+                available.
               </p>
-              <p className="text-sm text-lynch-500">
+              <p className="text-lynch-500 text-sm">
                 Please check the username and try again.
               </p>
             </div>
