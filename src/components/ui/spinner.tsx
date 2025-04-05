@@ -17,14 +17,14 @@ interface SpinnerProps {
  */
 export function Spinner({ size = "md", className }: SpinnerProps) {
   const sizeClasses = {
-    sm: "h-4 w-4",
-    md: "h-6 w-6",
-    lg: "h-8 w-8",
+    sm: "deva-h-4 deva-w-4",
+    md: "deva-h-6 deva-w-6",
+    lg: "deva-h-8 deva-w-8",
   };
 
   return (
     <Loader
-      className={cn("animate-spin text-primary", sizeClasses[size], className)}
+      className={cn("deva-animate-spin deva-text-primary", sizeClasses[size], className)}
     />
   );
 }

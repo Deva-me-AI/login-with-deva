@@ -328,45 +328,45 @@ const IntercomContent = ({
   return (
     <div
       id="intercom-container"
-      className="relative flex h-full w-full flex-col"
+      className="deva-relative deva-flex deva-h-full deva-w-full deva-flex-col"
     >
       <div
         id="support-header"
-        className="flex h-20 w-full items-center justify-between px-6 text-white"
+        className="deva-flex deva-h-20 deva-w-full deva-items-center deva-justify-between deva-px-6 deva-text-white"
       >
-        <div className="flex flex-initial flex-row items-center justify-start gap-x-4">
-          <div className="flex-none">
-            <Avatar className="h-10 w-10 rounded-full">
+        <div className="deva-flex deva-flex-initial deva-flex-row deva-items-center deva-justify-start deva-gap-x-4">
+          <div className="deva-flex-none">
+            <Avatar className="deva-h-10 deva-w-10 deva-rounded-full">
               <AvatarImage
                 src={persona?.avatar ?? "/placeholder.svg"}
                 alt={persona?.display_name ?? persona?.username ?? "User"}
               />
-              <AvatarFallback className="text-black">
+              <AvatarFallback className="deva-text-black">
                 {persona?.display_name?.charAt(0) ?? "U"}
               </AvatarFallback>
             </Avatar>
           </div>
-          <div className="xs:max-w-[150px] min-w-0 max-w-[100px] overflow-hidden sm:max-w-[400px] md:max-w-[500px]">
+          <div className="xs:deva-max-w-[150px] deva-min-w-0 deva-max-w-[100px] deva-overflow-hidden sm:deva-max-w-[400px] md:deva-max-w-[500px]">
             <h1
               aria-label={persona?.display_name ?? persona?.username}
-              className="block max-w-xl overflow-hidden text-ellipsis whitespace-nowrap"
+              className="deva-block deva-max-w-xl deva-overflow-hidden deva-text-ellipsis deva-whitespace-nowrap"
             >
               {persona?.display_name ?? persona?.username}
             </h1>
-            <ul className="text-lynch-600 flex text-sm">
+            <ul className="deva-text-lynch-600 deva-flex deva-text-sm">
               <li>{thread?.members?.length ?? 0} members</li>
             </ul>
           </div>
         </div>
       </div>
 
-      <ScrollArea className="h-full" ref={scrollAreaRef}>
-        <div className="flex flex-col space-y-4 md:px-5">
+      <ScrollArea className="deva-h-full" ref={scrollAreaRef}>
+        <div className="deva-flex deva-flex-col deva-space-y-4 md:deva-px-5">
           {/* Loading indicator at the top for infinite scroll */}
           {hasNext && (
             <div
               ref={loadingRef}
-              className="py-2 text-center text-sm text-gray-400"
+              className="deva-py-2 deva-text-center deva-text-sm deva-text-gray-400"
             ></div>
           )}
 
@@ -482,41 +482,41 @@ export const Intercom = ({
       <PopoverTrigger asChild>
         <div
           id="intercom-container"
-          className="absolute bottom-28 right-4 z-10 md:bottom-10 md:right-10"
+          className="deva-absolute deva-bottom-28 deva-right-4 deva-z-10 md:deva-bottom-10 md:deva-right-10"
         >
-          <button className="m-3 flex items-center justify-center rounded-full bg-midnight-900">
+          <button className="deva-m-3 deva-flex deva-items-center deva-justify-center deva-rounded-full deva-bg-midnight-900">
             {isOpen ? (
-              <CircleX className="h-[50px] w-[50px] p-2 text-white" />
+              <CircleX className="deva-h-[50px] deva-w-[50px] deva-p-2 deva-text-white" />
             ) : (
-              <HelpCircle className="h-[50px] w-[50px] p-2 text-white" />
+              <HelpCircle className="deva-h-[50px] deva-w-[50px] deva-p-2 deva-text-white" />
             )}
           </button>
         </div>
       </PopoverTrigger>
 
       <PopoverContent
-        className="w-auto border-none bg-transparent p-0 shadow-none"
+        className="deva-w-auto deva-border-none deva-bg-transparent deva-p-0 deva-shadow-none"
         align="end"
         side="top"
         sideOffset={16}
       >
-        <div className="h-[90vh] max-h-[530px] w-[90vw] max-w-[400px] rounded-[20px] border border-[#22252A] bg-midnight-900">
+        <div className="deva-h-[90vh] deva-max-h-[530px] deva-w-[90vw] deva-max-w-[400px] deva-rounded-[20px] deva-border deva-border-[#22252A] deva-bg-midnight-900">
           {isPersonaNotFound ? (
-            <div className="flex h-full flex-col items-center justify-center p-6 text-center text-white">
-              <div className="mb-4 rounded-full bg-midnight-800 p-4">
-                <HelpCircle className="h-10 w-10 text-red-400" />
+            <div className="deva-flex deva-h-full deva-flex-col deva-items-center deva-justify-center deva-p-6 deva-text-center deva-text-white">
+              <div className="deva-mb-4 deva-rounded-full deva-bg-midnight-800 deva-p-4">
+                <HelpCircle className="deva-h-10 deva-w-10 deva-text-red-400" />
               </div>
-              <h3 className="mb-2 text-xl font-semibold">Deva Not Found</h3>
-              <p className="text-lynch-400 mb-4">
+              <h3 className="deva-mb-2 deva-text-xl deva-font-semibold">Deva Not Found</h3>
+              <p className="deva-text-lynch-400 deva-mb-4">
                 The Deva for &apos;{username}&apos; doesn&apos;t exist or is not
                 available.
               </p>
-              <p className="text-lynch-500 text-sm">
+              <p className="deva-text-lynch-500 deva-text-sm">
                 Please check the username and try again.
               </p>
             </div>
           ) : error ? (
-            <div className="flex h-full items-center justify-center p-4 text-center text-red-500">
+            <div className="deva-flex deva-h-full deva-items-center deva-justify-center deva-p-4 deva-text-center deva-text-red-500">
               {error}
             </div>
           ) : (

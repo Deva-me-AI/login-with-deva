@@ -213,12 +213,12 @@ export const IncomingMessageIndicator = ({
     <div
       data-testid="IncomingMessageIndicator"
       className={cn(
-        "m-auto mx-auto flex items-end gap-3 p-4 py-2 text-base md:max-w-2xl md:gap-3 lg:max-w-2xl lg:px-0 xl:max-w-3xl",
+        "deva-m-auto deva-mx-auto deva-flex deva-items-end deva-gap-3 deva-p-4 deva-py-2 deva-text-base md:deva-max-w-2xl md:deva-gap-3 lg:deva-max-w-2xl lg:deva-px-0 xl:deva-max-w-3xl",
         className,
       )}
     >
       {avatar && (
-        <Avatar className="h-8 w-8">
+        <Avatar className="deva-h-8 deva-w-8">
           <AvatarImage src={avatar} alt="Avatar" />
           <AvatarFallback>AI</AvatarFallback>
         </Avatar>
@@ -229,38 +229,38 @@ export const IncomingMessageIndicator = ({
         exit={{ opacity: 0, y: 10, scale: 0.8 }}
         onAnimationComplete={() => setInnerAnimate(true)}
         onAnimationStart={() => setInnerAnimate(false)}
-        className="table rounded-full bg-catskill-200 px-6 py-2"
+        className="deva-table deva-rounded-full deva-bg-catskill-200 deva-px-6 deva-py-2"
       >
-        <div className={cn({ "animate-pulse": innerAnimate }, "inline-block")}>
+        <div className={cn({ "deva-animate-pulse": innerAnimate }, "deva-inline-block")}>
           <div
             className={cn(
               {
-                "animate-bounce": innerAnimate,
+                "deva-animate-bounce": innerAnimate,
                 "[animation-delay:0.1s]": innerAnimate,
               },
-              "mr-2 inline-block h-2 w-2 rounded-full bg-current",
+              "deva-mr-2 deva-inline-block deva-h-2 deva-w-2 deva-rounded-full deva-bg-current",
             )}
           ></div>
         </div>
-        <div className="inline-block">
+        <div className="deva-inline-block">
           <div
             className={cn(
               {
-                "animate-bounce": innerAnimate,
+                "deva-animate-bounce": innerAnimate,
                 "[animation-delay:0.3s]": innerAnimate,
               },
-              "mr-2 inline-block h-2 w-2 rounded-full bg-current",
+              "deva-mr-2 deva-inline-block deva-h-2 deva-w-2 deva-rounded-full deva-bg-current",
             )}
           ></div>
         </div>
-        <div className={cn({ "animate-pulse": innerAnimate }, "inline-block")}>
+        <div className={cn({ "deva-animate-pulse": innerAnimate }, "deva-inline-block")}>
           <div
             className={cn(
               {
-                "animate-bounce": innerAnimate,
+                "deva-animate-bounce": innerAnimate,
                 "[animation-delay:0.5s]": innerAnimate,
               },
-              "mr-0 inline-block h-2 w-2 rounded-full bg-current",
+              "deva-mr-0 deva-inline-block deva-h-2 deva-w-2 deva-rounded-full deva-bg-current",
             )}
           ></div>
         </div>
@@ -301,19 +301,19 @@ export const InProgressMessage = ({
       )}
     >
       <div className="m-auto flex items-end gap-3 p-4 py-2 text-base md:max-w-2xl md:gap-3 lg:max-w-2xl lg:px-0 xl:max-w-3xl">
-        <Avatar className="h-8 w-8">
+        <Avatar className="deva-h-8 deva-w-8">
           <AvatarImage
             src={persona?.avatar ?? "/icons/profile.svg"}
             alt="Avatar"
           />
           <AvatarFallback>AI</AvatarFallback>
         </Avatar>
-        <div className={`flex flex-row items-center gap-2`}>
-          <div className={cn("flex w-fit items-center gap-2")}>
+        <div className={`deva-flex deva-flex-row deva-items-center deva-gap-2`}>
+          <div className={cn("deva-flex deva-w-fit deva-items-center deva-gap-2")}>
             <div
               className={cn(
-                `relative m-auto flex w-fit max-w-[600px] flex-col rounded-[20px] px-4 pr-12`,
-                "ml-0 bg-catskill-200 py-[10px]",
+                `deva-relative deva-m-auto deva-flex deva-w-fit deva-max-w-[600px] deva-flex-col deva-rounded-[20px] deva-px-4 deva-pr-12`,
+                "deva-ml-0 deva-bg-catskill-200 deva-py-[10px]",
               )}
             >
               {msg ? (
@@ -345,21 +345,21 @@ export const MessageStreamError = ({
       data-testid="MessageStreamError"
       className={cn(
         "ChatMessage",
-        "m-auto mx-auto flex items-end gap-3 p-4 py-2 text-base md:max-w-2xl md:gap-3 lg:max-w-2xl lg:px-0 xl:max-w-3xl",
+        "deva-m-auto deva-mx-auto deva-flex deva-items-end deva-gap-3 deva-p-4 deva-py-2 deva-text-base md:deva-max-w-2xl md:deva-gap-3 lg:deva-max-w-2xl lg:deva-px-0 xl:deva-max-w-3xl",
       )}
     >
-      <div className="Placeholder pl-2 pr-1">{"🚧"}</div>
+      <div className="Placeholder deva-pl-2 deva-pr-1">{"🚧"}</div>
       <div
-        className={`flex flex-row items-center gap-2 rounded-xl bg-red-500 p-2 text-white`}
+        className={`deva-flex deva-flex-row deva-items-center deva-gap-2 deva-rounded-xl deva-bg-red-500 deva-p-2 deva-text-white`}
       >
-        <div className={cn("flex w-fit items-center gap-2")}>
+        <div className={cn("deva-flex deva-w-fit deva-items-center deva-gap-2")}>
           <div
             className={cn(
-              `relative m-auto flex w-fit max-w-[600px] flex-col rounded-[20px] px-2 pr-12`,
+              `deva-relative deva-m-auto deva-flex deva-w-fit deva-max-w-[600px] deva-flex-col deva-rounded-[20px] deva-px-2 deva-pr-12`,
             )}
           >
-            <p className="font-bold tracking-widest">{title}</p>
-            <p className="font-mono text-sm">{text}</p>
+            <p className="deva-font-bold deva-tracking-widest">{title}</p>
+            <p className="deva-font-mono deva-text-sm">{text}</p>
           </div>
         </div>
       </div>

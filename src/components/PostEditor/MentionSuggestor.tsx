@@ -112,38 +112,38 @@ export const MentionSuggestor = ({
       positioner="cursor"
       enabled={true}
       placement="bottom-start"
-      containerClass="z-50"
+      containerClass="deva-z-50"
       renderOutsideEditor={true}
     >
       <div
         {...getMenuProps()}
-        className="min-w-[180px] rounded-md border border-zinc-800 bg-zinc-950 shadow-md"
+        className="deva-min-w-[180px] deva-rounded-md deva-border deva-border-zinc-800 deva-bg-zinc-950 deva-shadow-md"
       >
         {suggestions.length === 0 ? (
-          <div className="px-2 py-1.5 text-sm text-zinc-500 dark:text-zinc-400">
+          <div className="deva-px-2 deva-py-1.5 deva-text-sm deva-text-zinc-500 dark:deva-text-zinc-400">
             No results found
           </div>
         ) : (
-          <div className="py-1">
+          <div className="deva-py-1">
             {suggestions.map((item, index) => (
               <div
                 key={item.id}
                 {...getItemProps({ item, index })}
                 className={cn(
-                  "flex items-center gap-2 p-2 text-sm",
+                  "deva-flex deva-items-center deva-gap-2 deva-p-2 deva-text-sm",
                   (indexIsHovered(index) || indexIsSelected(index)) &&
-                    "cursor-pointer bg-zinc-800",
+                    "deva-cursor-pointer deva-bg-zinc-800",
                 )}
               >
                 <div className="">
-                  <Avatar className="h-10 w-10">
+                  <Avatar className="deva-h-10 deva-w-10">
                     <AvatarImage src={item.persona?.avatar ?? ""} alt="" />
-                    <AvatarFallback className="text-black">
+                    <AvatarFallback className="deva-text-black">
                       {item.label.slice(0, 1)?.slice(0, 2)}
                     </AvatarFallback>
                   </Avatar>
                 </div>
-                <div className="flex flex-col">
+                <div className="deva-flex deva-flex-col">
                   <div>
                     {item.persona.display_name ?? item.persona.username}
                   </div>

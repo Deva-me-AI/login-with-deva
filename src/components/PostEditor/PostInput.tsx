@@ -141,7 +141,7 @@ export function PostInput({
         manager={manager}
         state={state}
         onChange={handleChange}
-        classNames={["!p-1", className]}
+        classNames={["!deva-p-1", className]}
       >
         <CustomEditor isMentionOpen={isMentionOpen} onSubmit={onSubmit} />
         <MentionSuggestor onMentionOpen={setMentionOpen} />

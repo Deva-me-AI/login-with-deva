@@ -2,7 +2,7 @@ export const ContextIcon = ({ color = "#fff" }: { color?: string }) => {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width={18} height={18} fill="none">
       <path
-        className="transition duration-300 ease-in-out"
+        className="deva-transition deva-duration-300 deva-ease-in-out"
         stroke={color}
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -10,7 +10,7 @@ export const ContextIcon = ({ color = "#fff" }: { color?: string }) => {
         d="M7.402 15.4a1.6 1.6 0 1 0 3.2 0 1.6 1.6 0 0 0-3.2 0ZM13.8 15.4a1.6 1.6 0 1 0 3.2 0 1.6 1.6 0 0 0-3.2 0ZM1 15.4a1.6 1.6 0 1 0 3.2 0 1.6 1.6 0 0 0-3.2 0ZM7.402 2.6a1.6 1.6 0 1 0 3.2 0 1.6 1.6 0 0 0-3.2 0ZM9 4.2v9.6"
       />
       <path
-        className="transition duration-300 ease-in-out"
+        className="deva-transition deva-duration-300 deva-ease-in-out"
         stroke={color}
         strokeLinecap="round"
         strokeLinejoin="round"

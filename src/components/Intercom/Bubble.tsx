@@ -44,8 +44,8 @@ export const Highlight = ({ children }: IHighlight) => {
       variant="outline"
       className={cn(
         children.trim().startsWith("@") || children.trim().startsWith("#")
-          ? "border-[#CEF049]/20 text-[#CEF049]"
-          : "border-[#f0b733]/20 text-[#f0b733]",
+          ? "deva-border-[#CEF049]/20 deva-text-[#CEF049]"
+          : "deva-border-[#f0b733]/20 deva-text-[#f0b733]",
       )}
     >
       {children}
@@ -72,27 +72,27 @@ export const ChatBubble = ({
       if (!url.startsWith("http")) {
         url = "http://" + url;
       }
-      return `<a href="${url}" class="text-[#CEF049]">${match}</a>`;
+      return `<a href="${url}" class="deva-text-[#CEF049]">${match}</a>`;
     });
   }
 
   return (
     <div
-      className={cn("flex flex-grow flex-col whitespace-pre-wrap", className)}
+      className={cn("deva-flex deva-flex-grow deva-flex-col deva-whitespace-pre-wrap", className)}
     >
       {author_type === "BOT" ? (
         <div
-          className={cn("flex items-center whitespace-nowrap", {
-            "text-sea-700": persona?.id !== userPersona?.id,
+          className={cn("deva-flex deva-items-center deva-whitespace-nowrap", {
+            "deva-text-sea-700": persona?.id !== userPersona?.id,
           })}
         >
-          <div className="max-w-[6rem] overflow-hidden overflow-ellipsis md:max-w-[15rem]">
+          <div className="deva-max-w-[6rem] deva-overflow-hidden deva-overflow-ellipsis md:deva-max-w-[15rem]">
             {persona?.display_name ?? persona?.username}&nbsp;
           </div>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <span className="relative flex items-center pt-[2px]">
+                <span className="deva-relative deva-flex deva-items-center deva-pt-[2px]">
                   {!!persona?.user_id ? "🫶" : "🤖"}
                 </span>
               </TooltipTrigger>
@@ -104,11 +104,11 @@ export const ChatBubble = ({
             </Tooltip>
           </TooltipProvider>
           &nbsp;
-          <span className="max-w-[7rem] overflow-y-hidden overflow-x-scroll text-[#6B7584] md:max-w-[16rem]">
+          <span className="deva-max-w-[7rem] deva-overflow-y-hidden deva-overflow-x-scroll deva-text-[#6B7584] md:deva-max-w-[16rem]">
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="relative cursor-help">
+                  <div className="deva-relative deva-cursor-help">
                     <span>
                       {`${hasPublishedVariant ? "!" : "@"}${persona?.username}`}
                     </span>
@@ -127,13 +127,13 @@ export const ChatBubble = ({
         <div
           className={cn({
             "": userPersona?.id === persona?.id,
-            "w-[180px] overflow-hidden overflow-ellipsis whitespace-nowrap text-sea-700 md:w-full":
+            "deva-w-[180px] deva-overflow-hidden deva-overflow-ellipsis deva-whitespace-nowrap deva-text-sea-700 md:deva-w-full":
               userPersona?.id !== persona?.id,
           })}
         >
           {userPersona?.id !== persona?.id && persona?.username}
           {userPersona?.id !== persona?.id && (
-            <span className="text-[#6B7584]">
+            <span className="deva-text-[#6B7584]">
               &nbsp;{`!${persona?.username}`}
             </span>
           )}
@@ -144,18 +144,18 @@ export const ChatBubble = ({
         <Card
           data-testid="ChatMessageReplyQuote"
           className={cn(
-            "-mx-2 -mr-10 mb-2 flex min-h-[20px] flex-col items-start border-0 shadow-sm",
+            "-deva-mx-2 -deva-mr-10 deva-mb-2 deva-flex deva-min-h-[20px] deva-flex-col deva-items-start deva-border-0 deva-shadow-sm",
             {
-              "mt-1 bg-[#2e3238]": !(
+              "deva-mt-1 deva-bg-[#2e3238]": !(
                 userPersona?.id === persona?.id && author_type === "USER"
               ),
-              "bg-[#2e46c0]":
+              "deva-bg-[#2e46c0]":
                 userPersona?.id === persona?.id && author_type === "USER",
             },
           )}
         >
-          <CardContent className="p-4">
-            <div className="font-medium">
+          <CardContent className="deva-p-4">
+            <div className="deva-font-medium">
               {reply.persona?.id === userPersona?.id
                 ? "You"
                 : (reply?.persona?.display_name ?? reply?.persona?.username)}
@@ -163,14 +163,14 @@ export const ChatBubble = ({
               {!!reply?.persona?.user_id ? "🫶" : "🤖"}
             </div>
 
-            <div className="line-clamp-1">
+            <div className="deva-line-clamp-1">
               <Markdown>
                 {highlightURLs(
                   reply.text
                     ?.trim()
                     .replace(
                       HIGHLIGHT_REGEX,
-                      ` <a href="/$1$2" class="text-[#CEF049]">$1$2</a>`,
+                      ` <a href="/$1$2" class="deva-text-[#CEF049]">$1$2</a>`,
                     ),
                 )}
               </Markdown>
@@ -181,7 +181,7 @@ export const ChatBubble = ({
 
       <div
         data-testid="ChatMessageText"
-        className="mr-2 flex min-h-[20px] flex-col items-start gap-4 [overflow-wrap:anywhere]"
+        className="deva-mr-2 deva-flex deva-min-h-[20px] deva-flex-col deva-items-start deva-gap-4 [overflow-wrap:anywhere]"
       >
         <Markdown>
           {highlightURLs(
@@ -190,24 +190,24 @@ export const ChatBubble = ({
               .trim()
               .replace(
                 HIGHLIGHT_REGEX,
-                ` <a href="/$1$2" class="text-[#CEF049]">$1$2</a>`,
+                ` <a href="/$1$2" class="deva-text-[#CEF049]">$1$2</a>`,
               ),
             // .replace(
             //   NOTE_REGEX,
             //   (match, noteContent) =>
-            //     `<a href="/notes/${encodeURIComponent(noteContent)}" class="text-[#CEF049]">[[${noteContent}]]</a>`
+            //     `<a href="/notes/${encodeURIComponent(noteContent)}" class="deva-text-[#CEF049]">[[${noteContent}]]</a>`
             // )
           )}
         </Markdown>
       </div>
 
       <span
-        className={cn("absolute bottom-[0.6rem] right-4 h-5 text-[14px]", {
+        className={cn("deva-absolute deva-bottom-[0.6rem] deva-right-4 deva-h-5 deva-text-[14px]", {
           // message on left (bot other others)
-          "text-lynch-600":
+          "deva-text-lynch-600":
             persona?.id !== persona?.id || author_type === "BOT",
           // message on right (user)
-          "text-white opacity-60":
+          "deva-text-white deva-opacity-60":
             persona?.id === persona?.id && author_type === "USER",
         })}
       >

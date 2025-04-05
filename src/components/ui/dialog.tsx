@@ -19,7 +19,7 @@ const DialogOverlay = React.forwardRef<
   <DialogPrimitive.Overlay
     ref={ref}
     className={cn(
-      "fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+      "deva-fixed deva-inset-0 deva-z-50 deva-bg-black/80 data-[state=open]:deva-animate-in data-[state=closed]:deva-animate-out data-[state=closed]:deva-fade-out-0 data-[state=open]:deva-fade-in-0",
       className,
     )}
     {...props}
@@ -36,24 +36,24 @@ const DialogContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        "flex min-h-dvh w-dvw items-center justify-center p-4 sm:p-6",
-        "fixed inset-0 z-50",
+        "deva-flex deva-min-h-dvh deva-w-dvw deva-items-center deva-justify-center deva-p-4 sm:deva-p-6",
+        "deva-fixed deva-inset-0 deva-z-50",
       )}
       {...props}
     >
       <div 
         className={cn(
-          "w-full max-w-lg rounded-lg border bg-background p-6 shadow-lg",
-          "duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out",
-          "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
-          "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
+          "deva-w-full deva-max-w-lg deva-rounded-lg deva-border deva-bg-background deva-p-6 deva-shadow-lg",
+          "deva-duration-200 data-[state=open]:deva-animate-in data-[state=closed]:deva-animate-out",
+          "data-[state=closed]:deva-fade-out-0 data-[state=open]:deva-fade-in-0",
+          "data-[state=closed]:deva-zoom-out-95 data-[state=open]:deva-zoom-in-95",
           className,
         )}
       >
         {children}
-        <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
-          <X className="h-4 w-4" />
-          <span className="sr-only">Close</span>
+        <DialogPrimitive.Close className="deva-absolute deva-right-4 deva-top-4 deva-rounded-sm deva-opacity-70 deva-ring-offset-background deva-transition-opacity hover:deva-opacity-100 focus:deva-outline-none focus:deva-ring-2 focus:deva-ring-ring focus:deva-ring-offset-2 disabled:deva-pointer-events-none data-[state=open]:deva-bg-accent data-[state=open]:deva-text-muted-foreground">
+          <X className="deva-h-4 deva-w-4" />
+          <span className="deva-sr-only">Close</span>
         </DialogPrimitive.Close>
       </div>
     </DialogPrimitive.Content>
@@ -67,7 +67,7 @@ const DialogHeader = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn(
-      "flex flex-col space-y-1.5 text-center sm:text-left",
+      "deva-flex deva-flex-col deva-space-y-1.5 deva-text-center sm:deva-text-left",
       className,
     )}
     {...props}
@@ -81,7 +81,7 @@ const DialogFooter = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn(
-      "flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2",
+      "deva-flex deva-flex-col-reverse sm:deva-flex-row sm:deva-justify-end sm:deva-space-x-2",
       className,
     )}
     {...props}
@@ -96,7 +96,7 @@ const DialogTitle = React.forwardRef<
   <DialogPrimitive.Title
     ref={ref}
     className={cn(
-      "text-lg font-semibold leading-none tracking-tight",
+      "deva-text-lg deva-font-semibold deva-leading-none deva-tracking-tight",
       className,
     )}
     {...props}
@@ -110,7 +110,7 @@ const DialogDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Description
     ref={ref}
-    className={cn("text-sm text-muted-foreground", className)}
+    className={cn("deva-text-sm deva-text-muted-foreground", className)}
     {...props}
   />
 ));

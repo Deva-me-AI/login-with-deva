@@ -22,47 +22,47 @@ export const MD_COMPONENTS: MarkdownComponentsDict = {
   h1: function MDh1(props) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { node, ...rest } = props;
-    return <h1 className="text-3xl" {...rest} />;
+    return <h1 className="deva-text-3xl" {...rest} />;
   },
   h2: function MDh2(props) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { node, ...rest } = props;
-    return <h2 className="text-2xl" {...rest} />;
+    return <h2 className="deva-text-2xl" {...rest} />;
   },
   h3: function MDh3(props) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { node, ...rest } = props;
-    return <h3 className="text-xl" {...rest} />;
+    return <h3 className="deva-text-xl" {...rest} />;
   },
   h4: function MDh4(props) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { node, ...rest } = props;
-    return <h4 className="text-lg" {...rest} />;
+    return <h4 className="deva-text-lg" {...rest} />;
   },
   h5: function MDh5(props) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { node, ...rest } = props;
-    return <h4 className="text-lg" {...rest} />;
+    return <h4 className="deva-text-lg" {...rest} />;
   },
   h6: function MDh6(props) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { node, ...rest } = props;
-    return <h4 className="text-lg" {...rest} />;
+    return <h4 className="deva-text-lg" {...rest} />;
   },
   a: function MDa(props) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { node, ...rest } = props;
-    return <a className="text-[#cef049]" {...rest} />;
+    return <a className="deva-text-[#cef049]" {...rest} />;
   },
   ul: function MDul(props) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { node, ...rest } = props;
-    return <ul className="flex flex-col gap-2" {...rest} />;
+    return <ul className="deva-flex deva-flex-col deva-gap-2" {...rest} />;
   },
   ol: function MDol(props) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { node, ...rest } = props;
-    return <ol className="flex flex-col gap-2" {...rest} />;
+    return <ol className="deva-flex deva-flex-col deva-gap-2" {...rest} />;
   },
   li: function MDli(props: MarkdownComponentProps) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

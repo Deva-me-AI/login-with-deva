@@ -5,26 +5,26 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "deva-inline-flex deva-items-center deva-justify-center deva-gap-2 deva-whitespace-nowrap deva-rounded-md deva-text-sm deva-font-medium deva-transition-colors focus-visible:deva-outline-none focus-visible:deva-ring-1 focus-visible:deva-ring-ring disabled:deva-pointer-events-none disabled:deva-opacity-50 [&_svg]:deva-pointer-events-none [&_svg]:deva-size-4 [&_svg]:deva-shrink-0",
   {
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground shadow hover:bg-primary/90",
+          "deva-bg-primary deva-text-primary-foreground deva-shadow hover:deva-bg-primary/90",
         destructive:
-          "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
+          "deva-bg-destructive deva-text-destructive-foreground deva-shadow-sm hover:deva-bg-destructive/90",
         outline:
-          "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
+          "deva-border deva-border-input deva-bg-background deva-shadow-sm hover:deva-bg-accent hover:deva-text-accent-foreground",
         secondary:
-          "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
+          "deva-bg-secondary deva-text-secondary-foreground deva-shadow-sm hover:deva-bg-secondary/80",
+        ghost: "hover:deva-bg-accent hover:deva-text-accent-foreground",
+        link: "deva-text-primary deva-underline-offset-4 hover:deva-underline",
       },
       size: {
-        default: "h-9 px-4 py-2",
-        sm: "h-8 rounded-md px-3 text-xs",
-        lg: "h-10 rounded-md px-8",
-        icon: "h-9 w-9",
+        default: "deva-h-9 deva-px-4 deva-py-2",
+        sm: "deva-h-8 deva-rounded-md deva-px-3 deva-text-xs",
+        lg: "deva-h-10 deva-rounded-md deva-px-8",
+        icon: "deva-h-9 deva-w-9",
       },
     },
     defaultVariants: {

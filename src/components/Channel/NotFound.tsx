@@ -2,19 +2,19 @@ import monk from "@/images/space_monk.png";
 
 export function ChannelNotFound() {
   return (
-    <div className="flex h-full items-center justify-center p-4">
-      <div className="w-full max-w-md rounded-lg border bg-secondary p-6 text-center">
-        <div className="mb-6">
+    <div className="deva-flex deva-h-full deva-items-center deva-justify-center deva-p-4">
+      <div className="deva-w-full deva-max-w-md deva-rounded-lg deva-border deva-bg-secondary deva-p-6 deva-text-center">
+        <div className="deva-mb-6">
           <img
             src={monk}
             alt="Astronaut monkey illustration"
-            className="mx-auto h-[200px]"
+            className="deva-mx-auto deva-h-[200px]"
           />
         </div>
-        <h1 className="mb-3 text-2xl font-semibold text-white">
+        <h1 className="deva-mb-3 deva-text-2xl deva-font-semibold deva-text-white">
           This Channel doesn&apos;t exist
         </h1>
-        <p className="text-sm leading-relaxed text-zinc-400">
+        <p className="deva-text-sm deva-leading-relaxed deva-text-zinc-400">
           It might&apos;ve been removed, or perhaps it was never here. The
           digital world is full of surprises.
         </p>

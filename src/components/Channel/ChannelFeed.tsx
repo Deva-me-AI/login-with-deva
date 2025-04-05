@@ -236,30 +236,30 @@ export function ChannelFeed({ handle }: ChannelFeedProps) {
   };
 
   return (
-    <div className="flex h-full w-full max-w-2xl flex-col bg-black text-white">
-      <div className="flex flex-shrink-0 items-center justify-between border-b border-gray-800 p-4">
+    <div className="deva-flex deva-h-full deva-w-full deva-max-w-2xl deva-flex-col deva-bg-black deva-text-white">
+      <div className="deva-flex deva-flex-shrink-0 deva-items-center deva-justify-between deva-border-b deva-border-gray-800 deva-p-4">
         {isLoading ? (
-          <Skeleton className="h-7 w-32" />
+          <Skeleton className="deva-h-7 deva-w-32" />
         ) : (
-          <h1 className="text-lg font-bold">
+          <h1 className="deva-text-lg deva-font-bold">
             {channel?.name ?? channelError ?? "Channel"}
           </h1>
         )}
       </div>
 
       {isAuthenticated && user && !channelError && (
-        <div className="flex-shrink-0 border-b border-gray-800 p-4">
-          <div className="mb-2 flex flex-wrap gap-3">
-            <Avatar className="h-10 w-10">
+        <div className="deva-flex-shrink-0 deva-border-b deva-border-gray-800 deva-p-4">
+          <div className="deva-mb-2 deva-flex deva-flex-wrap deva-gap-3">
+            <Avatar className="deva-h-10 deva-w-10">
               <AvatarImage
                 src={user.persona?.avatar ?? user.picture ?? undefined}
                 alt="@deva_support"
               />
-              <AvatarFallback className="text-black">
+              <AvatarFallback className="deva-text-black">
                 {user?.preferred_username?.slice(0, 1)?.slice(0, 2)}
               </AvatarFallback>
             </Avatar>
-            <div className="flex-1 px-1">
+            <div className="deva-flex-1 deva-px-1">
               <PostInput
                 id="new-post"
                 postId={postId}
@@ -270,27 +270,29 @@ export function ChannelFeed({ handle }: ChannelFeedProps) {
               />
             </div>
           </div>
-          <div className="mb-2 flex flex-wrap justify-between">
-            <div className="flex items-end text-sm">
-              Use&nbsp;<span className="text-accent">@</span>&nbsp;to mention a
-              deva
+          <div className="deva-mb-2 deva-flex deva-flex-wrap deva-justify-between">
+            <div className="deva-flex deva-items-end deva-text-sm">
+              Use&nbsp;<span className="deva-text-accent">@</span>&nbsp;to
+              mention a deva
             </div>
             <Button
               variant="ghost"
-              className="text-gray-500 hover:bg-transparent hover:text-white"
+              className="deva-text-gray-500 hover:deva-bg-transparent hover:deva-text-white"
               disabled={!newPostText.trim() || isCreating}
               onClick={handleCreatePost}
             >
               {isCreating ? "Posting..." : "Post"}
             </Button>
             {error && (
-              <p className="mt-2 w-full text-sm text-red-500">{error}</p>
+              <p className="deva-mt-2 deva-w-full deva-text-sm deva-text-red-500">
+                {error}
+              </p>
             )}
           </div>
         </div>
       )}
 
-      <ScrollArea className="flex-grow">
+      <ScrollArea className="deva-flex-grow">
         {channelError ? (
           <ChannelNotFound />
         ) : isLoading && posts.length === 0 ? (
@@ -300,10 +302,12 @@ export function ChannelFeed({ handle }: ChannelFeedProps) {
             <SkeletonPost />
           </>
         ) : posts.length === 0 ? (
-          <div className="flex h-full flex-col items-center justify-center p-8 text-center">
-            <MessageCircle className="h-12 w-12 text-gray-500" />
-            <h3 className="mt-4 text-lg font-semibold">No posts yet</h3>
-            <p className="mt-2 text-sm text-gray-500">
+          <div className="deva-flex deva-h-full deva-flex-col deva-items-center deva-justify-center deva-p-8 deva-text-center">
+            <MessageCircle className="deva-h-12 deva-w-12 deva-text-gray-500" />
+            <h3 className="deva-mt-4 deva-text-lg deva-font-semibold">
+              No posts yet
+            </h3>
+            <p className="deva-mt-2 deva-text-sm deva-text-gray-500">
               Be the first to start a conversation in this channel!
             </p>
             {isAuthenticated && (
@@ -312,7 +316,7 @@ export function ChannelFeed({ handle }: ChannelFeedProps) {
                   inputRef.current?.focus();
                 }}
                 variant="outline"
-                className="mt-6 border-gray-800"
+                className="deva-mt-6 deva-border-gray-800"
               >
                 Create a post
               </Button>
@@ -345,7 +349,7 @@ export function ChannelFeed({ handle }: ChannelFeedProps) {
             })}
             {pagination.hasNext && (
               <div
-                className="p-4"
+                className="deva-p-4"
                 ref={(el) => {
                   if (!el) return;
 
@@ -362,11 +366,11 @@ export function ChannelFeed({ handle }: ChannelFeedProps) {
                   return () => observer.disconnect();
                 }}
               >
-                <div className="flex justify-center">
+                <div className="deva-flex deva-justify-center">
                   {isLoading ? (
                     <SkeletonPost />
                   ) : (
-                    <span className="text-sm text-gray-500">
+                    <span className="deva-text-sm deva-text-gray-500">
                       Loading more...
                     </span>
                   )}

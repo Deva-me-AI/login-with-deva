@@ -68,22 +68,22 @@ export const Input = ({
   return (
     <div
       id="support-input-container"
-      className="bg-gradient-to-t to-transparent"
+      className="deva-bg-gradient-to-t deva-to-transparent"
     >
       <form
         className={cn(
-          "flex w-full flex-row px-5 pt-2 last:mb-2 md:last:mb-[18px] lg:mx-auto lg:max-w-3xl",
+          "deva-flex deva-w-full deva-flex-row deva-px-5 deva-pt-2 last:deva-mb-2 md:last:deva-mb-[18px] lg:deva-mx-auto lg:deva-max-w-3xl",
           {
-            "lg:pt-6": !false, // is replying to specfic message
+            "lg:deva-pt-6": !false, // is replying to specfic message
           },
         )}
         onSubmit={handleSubmit}
       >
-        <div className="relative flex h-full flex-1 md:flex-col">
-          <div className="relative flex w-full flex-grow items-center rounded-[36px] bg-catskill-200 py-2 pl-3 text-white shadow-[0_0_15px_rgba(0,0,0,0.10)] md:py-2 md:pl-4">
+        <div className="deva-relative deva-flex deva-h-full deva-flex-1 md:deva-flex-col">
+          <div className="deva-relative deva-flex deva-w-full deva-flex-grow deva-items-center deva-rounded-[36px] deva-bg-catskill-200 deva-py-2 deva-pl-3 deva-text-white deva-shadow-[0_0_15px_rgba(0,0,0,0.10)] md:deva-py-2 md:deva-pl-4">
             <div
               id="support-input"
-              className="w-full overflow-hidden bg-catskill-200 [&>div>div]:overflow-hidden" // Removes scroll in the chat input
+              className="deva-w-full deva-overflow-hidden deva-bg-catskill-200 [&>div>div]:deva-overflow-hidden" // Removes scroll in the chat input
               style={{ gridColumn: "2", gridRow: "1" }}
             >
               {threadId && (
@@ -94,7 +94,7 @@ export const Input = ({
                   value={text}
                   placeholder="Type a message..."
                   onChange={setText}
-                  className="!min-h-min"
+                  className="!deva-min-h-min"
                 />
               )}
             </div>
@@ -103,9 +103,9 @@ export const Input = ({
               type="submit"
               className={cn(
                 {
-                  "bg-blue-500 text-gray-100": isSubmitting, // is sending,
+                  "deva-bg-blue-500 deva-text-gray-100": isSubmitting, // is sending,
                 },
-                "disabled:bg-ghost-300 bottom-1.5 right-1 mr-3 flex h-8 w-9 items-center justify-center self-end rounded-full bg-lime-300 text-black disabled:cursor-not-allowed disabled:text-gray-500 md:bottom-2.5 md:right-2",
+                "disabled:deva-bg-ghost-300 deva-bottom-1.5 deva-right-1 deva-mr-3 deva-flex deva-h-8 deva-w-9 deva-items-center deva-justify-center deva-self-end deva-rounded-full deva-bg-lime-300 deva-text-black disabled:deva-cursor-not-allowed disabled:deva-text-gray-500 md:deva-bottom-2.5 md:deva-right-2",
               )}
               disabled={
                 !text.trim().length || isSubmitting // is sending

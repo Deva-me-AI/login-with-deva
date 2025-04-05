@@ -19,7 +19,7 @@ export const replaceNoteLinks = (
   return text.replace(NOTE_REGEX, (_match, noteContent: string) => {
     const noteObject = notes.find((note) => note.title === noteContent);
     if (noteObject) {
-      return `<a href="${baseUrl}/notes/${noteObject.id}" class="text-accent">${noteContent}</a>`;
+      return `<a href="${baseUrl}/notes/${noteObject.id}" class="deva-text-accent">${noteContent}</a>`;
     }
     return noteContent;
   });
@@ -33,7 +33,7 @@ export const calcLongText = (
   replaceNoteLinks(
     text.replace(
       HIGHLIGHT_REGEX,
-      ` <a href="${baseUrl}/$1$2" class="text-accent">$1$2</a>`,
+      ` <a href="${baseUrl}/$1$2" class="deva-text-accent">$1$2</a>`,
     ),
     postNotes,
     baseUrl,
