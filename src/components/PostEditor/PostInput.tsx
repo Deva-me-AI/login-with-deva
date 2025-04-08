@@ -84,6 +84,7 @@ export function PostInput({
   value,
   placeholder,
   postId,
+  className,
   onChange: externalOnChange,
   onSubmit,
 }: {
@@ -91,6 +92,7 @@ export function PostInput({
   id: string;
   placeholder: string;
   postId: string;
+  className?: string;
   onChange: (text: string) => void;
   onSubmit: () => void;
 }) {
@@ -139,7 +141,7 @@ export function PostInput({
         manager={manager}
         state={state}
         onChange={handleChange}
-        classNames={["!p-1"]}
+        classNames={["!deva-p-1", className]}
       >
         <CustomEditor isMentionOpen={isMentionOpen} onSubmit={onSubmit} />
         <MentionSuggestor onMentionOpen={setMentionOpen} />

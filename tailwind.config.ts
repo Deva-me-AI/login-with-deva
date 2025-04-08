@@ -3,6 +3,7 @@ import { fontFamily } from "tailwindcss/defaultTheme";
 import animate from "tailwindcss-animate";
 
 export default {
+  prefix: "deva-",
   darkMode: ["class"],
   content: ["./src/**/*.tsx"],
   safelist: ["dark"],
@@ -56,6 +57,18 @@ export default {
           "3": "hsl(var(--chart-3))",
           "4": "hsl(var(--chart-4))",
           "5": "hsl(var(--chart-5))",
+        },
+        catskill: {
+          200: "#1C1F23",
+          400: "#494F59",
+        },
+        sea: {
+          700: "#3858FB",
+        },
+        midnight: {
+          700: "#27292F",
+          800: "#232329",
+          900: "#0F1012",
         },
       },
     },

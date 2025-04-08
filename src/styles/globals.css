@@ -59,10 +59,10 @@
 }
 @layer base {
   * {
-    @apply border-border;
+    @apply deva-border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply deva-bg-background deva-text-foreground;
   }
 }
 
@@ -81,4 +81,8 @@
   cursor: pointer;
   font-size: inherit;
   font-weight: 500;
+}
+.remirror-theme .ProseMirror:active,
+.remirror-theme .ProseMirror:focus {
+  box-shadow: none;
 }

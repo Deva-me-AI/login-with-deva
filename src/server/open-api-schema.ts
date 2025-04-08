@@ -717,12 +717,26 @@ export interface paths {
      */
     get: operations["get_personas_to_post_twitter_internal_persona_get_personas_to_post_twitter_get"];
   };
+  "/internal/persona/get_personas/to_analyze_tweets": {
+    /**
+     * Get Personas To Analyze Tweets
+     * @description Get personas to analyze tweets
+     */
+    get: operations["get_personas_to_analyze_tweets_internal_persona_get_personas_to_analyze_tweets_get"];
+  };
   "/internal/persona/{_id}/smart": {
     /**
      * Update Persona Is Smart
      * @description Update persona is smart if persona is from KOL intelligence list
      */
     put: operations["update_persona_is_smart_internal_persona___id__smart_put"];
+  };
+  "/internal/persona/{_id}/twitter-profile": {
+    /**
+     * Update Persona By Twitter Profile
+     * @description Update persona by twitter profile
+     */
+    put: operations["update_persona_by_twitter_profile_internal_persona___id__twitter_profile_put"];
   };
   "/internal/post": {
     /**
@@ -894,6 +908,25 @@ export interface paths {
     /** Populate Gem Holdings */
     post: operations["populate_gem_holdings_internal_web3_gem_holding_post"];
   };
+  "/internal/yapper/external-data": {
+    /**
+     * Update Yapper External Data
+     * @description Update yapper external data
+     */
+    put: operations["update_yapper_external_data_internal_yapper_external_data_put"];
+  };
+  "/internal/yapper/collect-follow-ids": {
+    /** Get Yappers To Collect Follow */
+    get: operations["get_yappers_to_collect_follow_internal_yapper_collect_follow_ids_get"];
+  };
+  "/internal/yapper/twitter-follow": {
+    /** Collect Twitter Follower */
+    post: operations["collect_twitter_follower_internal_yapper_twitter_follow_post"];
+  };
+  "/internal/yapper/smart-follow-count": {
+    /** Update Smart Follow Count */
+    put: operations["update_smart_follow_count_internal_yapper_smart_follow_count_put"];
+  };
   "/karma": {
     /**
      * List User Transactions
@@ -989,6 +1022,13 @@ export interface paths {
      * @description Get a list of top users by average nft and raffle holding
      */
     get: operations["gem_leaderboard_leaderboard_gem_get"];
+  };
+  "/leaderboard/yapper": {
+    /**
+     * Yapper Leaderboard
+     * @description Get a list of top users by yappers count (PUBLIC API)
+     */
+    get: operations["yapper_leaderboard_leaderboard_yapper_get"];
   };
   "/library/skipped": {
     /** Get Skipped Items */
@@ -1210,6 +1250,34 @@ export interface paths {
     get: operations["list_public_personas_sdk_persona_public_get"];
     /** Public Personas Options */
     options: operations["public_personas_options_sdk_persona_public_options"];
+  };
+  "/sdk/chat/dm/{username}": {
+    /** Get Or Create Dm Thread */
+    get: operations["get_or_create_dm_thread_sdk_chat_dm__username__get"];
+    /** Chat Dm Options */
+    options: operations["chat_dm_options_sdk_chat_dm__username__options"];
+  };
+  "/sdk/chat/{thread_id}/messages": {
+    /**
+     * List Messages
+     * @description Get a paginated list of messages for a thread, ordered by latest first
+     */
+    get: operations["list_messages_sdk_chat__thread_id__messages_get"];
+    /**
+     * Create User Message
+     * @description Create a chat message
+     */
+    post: operations["create_user_message_sdk_chat__thread_id__messages_post"];
+    /** Chat Dm Options */
+    options: operations["chat_dm_options_sdk_chat__thread_id__messages_options"];
+  };
+  "/sdk/chat/{thread_id}/messages/{_id}/query/stream": {
+    /**
+     * Query Message Stream
+     * @description Prompt the LLM to respond to a specific chat message. Return an event
+     * stream as the LLM responds
+     */
+    post: operations["query_message_stream_sdk_chat__thread_id__messages___id__query_stream_post"];
   };
   "/persona": {
     /** Get Persona */
@@ -1493,6 +1561,35 @@ export interface paths {
      */
     delete: operations["unlink_persona_from_user_secure_persona___id__unlink_user_delete"];
   };
+  "/secure/tweet/analyze": {
+    /**
+     * Analyze Tweets
+     * @description Analyze tweets for a persona
+     */
+    post: operations["analyze_tweets_secure_tweet_analyze_post"];
+  };
+  "/secure/tweet/aggregate": {
+    /** Aggregate Tweet */
+    post: operations["aggregate_tweet_secure_tweet_aggregate_post"];
+  };
+  "/secure/tweet/crypto-project-mapping/{_id}": {
+    /** Update Crypto Project Mapping */
+    put: operations["update_crypto_project_mapping_secure_tweet_crypto_project_mapping___id__put"];
+  };
+  "/secure/yapper/twitter-follow": {
+    /** Collect Twitter Follower */
+    post: operations["collect_twitter_follower_secure_yapper_twitter_follow_post"];
+  };
+  "/secure/yapper/project": {
+    /** Create Project */
+    post: operations["create_project_secure_yapper_project_post"];
+  };
+  "/secure/yapper/project/{project_id}": {
+    /** Update Project */
+    put: operations["update_project_secure_yapper_project__project_id__put"];
+    /** Delete Project */
+    delete: operations["delete_project_secure_yapper_project__project_id__delete"];
+  };
   "/tweet/persona/{_id}": {
     /**
      * Get Persona Tweets
@@ -1503,6 +1600,13 @@ export interface paths {
   "/tweet/top": {
     /** Get Top Tweets */
     get: operations["get_top_tweets_tweet_top_get"];
+  };
+  "/tweet": {
+    /**
+     * Get Tweets
+     * @description Retrieves a list of tweets for a persona.
+     */
+    get: operations["get_tweets_tweet_get"];
   };
   "/twitter_client/connected": {
     /** Get Connected Twitter Clients */
@@ -1815,6 +1919,34 @@ export interface paths {
      * @description Drain USDC from the payment manager contracts
      */
     post: operations["drain_usdc_web3_usdc_drain_post"];
+  };
+  "/yapper/projects": {
+    /**
+     * Get Projects
+     * @description Get all available crypto projects
+     */
+    get: operations["get_projects_yapper_projects_get"];
+  };
+  "/yapper/projects/{project_name}": {
+    /**
+     * Get Project
+     * @description Get a specific crypto project by ID
+     */
+    get: operations["get_project_yapper_projects__project_name__get"];
+  };
+  "/yapper/topics": {
+    /**
+     * Get Topics
+     * @description Get all available topics
+     */
+    get: operations["get_topics_yapper_topics_get"];
+  };
+  "/yapper/social-graph": {
+    /**
+     * Get Social Graph
+     * @description Get the social graph
+     */
+    get: operations["get_social_graph_yapper_social_graph_get"];
   };
 }
 
@@ -3060,6 +3192,11 @@ export interface components {
       email: string;
       /** Email Verified */
       email_verified?: string | null;
+      /**
+       * Welcomed
+       * @default false
+       */
+      welcomed?: boolean;
     };
     /** CreateUserChatMessage */
     CreateUserChatMessage: {
@@ -3166,6 +3303,31 @@ export interface components {
        */
       expires_at: string;
     };
+    /** CreateYapperProject */
+    CreateYapperProject: {
+      /** Name */
+      name: string;
+      /** Display Name */
+      display_name: string;
+      /** Twitter Handle */
+      twitter_handle: string;
+      /** Description */
+      description: string;
+      /**
+       * Logo Url
+       * Format: uri
+       */
+      logo_url: string;
+      /**
+       * Website Url
+       * Format: uri
+       */
+      website_url: string;
+      /** Keywords */
+      keywords: string[];
+      /** Tags */
+      tags?: string[];
+    };
     /** CreateYapsPersona */
     CreateYapsPersona: {
       /** Username */
@@ -3205,6 +3367,11 @@ export interface components {
        * @default true
        */
       from_yaps?: boolean;
+      /**
+       * Smart
+       * @default true
+       */
+      smart?: boolean;
     };
     /** CreatorLBItem */
     CreatorLBItem: {
@@ -3418,6 +3585,11 @@ export interface components {
       /** Username */
       username: string;
     };
+    /**
+     * FollowTypeRequest
+     * @enum {string}
+     */
+    FollowTypeRequest: "followers" | "following";
     /** FoomAiTokenDBModel */
     FoomAiTokenDBModel: {
       /**
@@ -3818,6 +3990,8 @@ export interface components {
       user_level: number;
       /** Tags */
       tags?: unknown[] | null;
+      /** Onboarded */
+      onboarded: boolean;
       /** Hashed Id */
       hashed_id?: string | null;
       /** Allow Multiple Airdrop Claims */
@@ -3865,10 +4039,22 @@ export interface components {
        * Format: date-time
        */
       yaps_last_indexed_at: string;
+      /** Twitter Follow Cursor */
+      twitter_follow_cursor?: Record<string, never> | null;
       /** Auto Post Twitter */
       auto_post_twitter: boolean;
       /** Smart */
       smart: boolean;
+      /** Twitter Id */
+      twitter_id?: string | null;
+      /** Twitter Follower Count */
+      twitter_follower_count?: number | null;
+      /** Twitter Following Count */
+      twitter_following_count?: number | null;
+      /** Smart Follower Count */
+      smart_follower_count?: number | null;
+      /** Smart Following Count */
+      smart_following_count?: number | null;
       /**
        * Created At
        * Format: date-time
@@ -4332,6 +4518,11 @@ export interface components {
        * @default false
        */
       use_archive?: boolean;
+      /**
+       * Process Artifact
+       * @default true
+       */
+      process_artifact?: boolean;
       [key: string]: unknown;
     };
     /**
@@ -4425,12 +4616,12 @@ export interface components {
      * LLM
      * @enum {string}
      */
-    LLM: "openai:gpt-3.5-turbo" | "openai:gpt-4-turbo" | "openai:gpt-4o" | "anthropic:claude-instant-1" | "anthropic:claude-2" | "anthropic:claude-3-opus-20240229" | "anthropic:claude-3-sonnet-20240229" | "anthropic:claude-3-haiku-20240307" | "together:meta-llama/Llama-2-13b-chat-hf" | "together:meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo" | "together:meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo" | "together:meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo" | "together:mistralai/Mistral-7B-Instruct-v0.3" | "together:mistralai/Mixtral-8x7B-Instruct-v0.1" | "google:gemini-1.5-pro-latest";
+    LLM: "openai:gpt-3.5-turbo" | "openai:gpt-4-turbo" | "openai:gpt-4o" | "anthropic:claude-instant-1" | "anthropic:claude-2" | "anthropic:claude-3-opus-20240229" | "anthropic:claude-3-sonnet-20240229" | "anthropic:claude-3-haiku-20240307" | "together:meta-llama/Llama-2-13b-chat-hf" | "together:meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo" | "together:meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo" | "together:meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo" | "together:mistralai/Mistral-7B-Instruct-v0.3" | "together:mistralai/Mixtral-8x7B-Instruct-v0.1" | "google:gemini-1.5-pro-latest" | "google:gemini-2.0-flash";
     /**
      * LLMName
      * @enum {string}
      */
-    LLMName: "claude-instant-1" | "claude-2" | "claude-3-opus-20240229" | "claude-3-sonnet-20240229" | "claude-3-haiku-20240307" | "gpt-3.5-turbo" | "gpt-4-turbo" | "gpt-4o" | "meta-llama/Llama-2-13b-chat-hf" | "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo" | "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo" | "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo" | "mistralai/Mistral-7B-Instruct-v0.3" | "mistralai/Mixtral-8x7B-Instruct-v0.1" | "gemini-1.5-pro-latest";
+    LLMName: "claude-instant-1" | "claude-2" | "claude-3-opus-20240229" | "claude-3-sonnet-20240229" | "claude-3-haiku-20240307" | "gpt-3.5-turbo" | "gpt-4-turbo" | "gpt-4o" | "meta-llama/Llama-2-13b-chat-hf" | "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo" | "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo" | "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo" | "mistralai/Mistral-7B-Instruct-v0.3" | "mistralai/Mixtral-8x7B-Instruct-v0.1" | "gemini-1.5-pro-latest" | "gemini-2.0-flash";
     /** LibraryItem */
     LibraryItem: {
       /** Variant Id */
@@ -5203,6 +5394,20 @@ export interface components {
       /** Items */
       items: components["schemas"]["VoucherPersonaDBModel"][];
     };
+    /** PaginatedYapperLBItems */
+    PaginatedYapperLBItems: {
+      /** Total */
+      total: number;
+      /** Items */
+      items: components["schemas"]["YapperLBItem"][];
+    };
+    /** PaginatedYapperProjects */
+    PaginatedYapperProjects: {
+      /** Total */
+      total: number;
+      /** Items */
+      items: components["schemas"]["YapperProjectDBModel"][];
+    };
     /** PasskeyDBModel */
     PasskeyDBModel: {
       /**
@@ -5283,6 +5488,8 @@ export interface components {
       user_level: number;
       /** Tags */
       tags?: unknown[] | null;
+      /** Onboarded */
+      onboarded: boolean;
       /** Allow Multiple Airdrop Claims */
       allow_multiple_airdrop_claims: boolean;
       /** Get Airdrop */
@@ -5304,10 +5511,22 @@ export interface components {
        * Format: date-time
        */
       yaps_last_indexed_at: string;
+      /** Twitter Follow Cursor */
+      twitter_follow_cursor?: Record<string, never> | null;
       /** Auto Post Twitter */
       auto_post_twitter: boolean;
       /** Smart */
       smart: boolean;
+      /** Twitter Id */
+      twitter_id?: string | null;
+      /** Twitter Follower Count */
+      twitter_follower_count?: number | null;
+      /** Twitter Following Count */
+      twitter_following_count?: number | null;
+      /** Smart Follower Count */
+      smart_follower_count?: number | null;
+      /** Smart Following Count */
+      smart_following_count?: number | null;
       /**
        * Created At
        * Format: date-time
@@ -5375,6 +5594,8 @@ export interface components {
       user_level: number;
       /** Tags */
       tags?: unknown[] | null;
+      /** Onboarded */
+      onboarded: boolean;
       /** Hashed Id */
       hashed_id?: string | null;
       /** Allow Multiple Airdrop Claims */
@@ -5422,10 +5643,22 @@ export interface components {
        * Format: date-time
        */
       yaps_last_indexed_at: string;
+      /** Twitter Follow Cursor */
+      twitter_follow_cursor?: Record<string, never> | null;
       /** Auto Post Twitter */
       auto_post_twitter: boolean;
       /** Smart */
       smart: boolean;
+      /** Twitter Id */
+      twitter_id?: string | null;
+      /** Twitter Follower Count */
+      twitter_follower_count?: number | null;
+      /** Twitter Following Count */
+      twitter_following_count?: number | null;
+      /** Smart Follower Count */
+      smart_follower_count?: number | null;
+      /** Smart Following Count */
+      smart_following_count?: number | null;
       /**
        * Created At
        * Format: date-time
@@ -5493,6 +5726,8 @@ export interface components {
       user_level: number;
       /** Tags */
       tags?: unknown[] | null;
+      /** Onboarded */
+      onboarded: boolean;
       /** Allow Multiple Airdrop Claims */
       allow_multiple_airdrop_claims: boolean;
       /** Get Airdrop */
@@ -5514,10 +5749,22 @@ export interface components {
        * Format: date-time
        */
       yaps_last_indexed_at: string;
+      /** Twitter Follow Cursor */
+      twitter_follow_cursor?: Record<string, never> | null;
       /** Auto Post Twitter */
       auto_post_twitter: boolean;
       /** Smart */
       smart: boolean;
+      /** Twitter Id */
+      twitter_id?: string | null;
+      /** Twitter Follower Count */
+      twitter_follower_count?: number | null;
+      /** Twitter Following Count */
+      twitter_following_count?: number | null;
+      /** Smart Follower Count */
+      smart_follower_count?: number | null;
+      /** Smart Following Count */
+      smart_following_count?: number | null;
       /**
        * Created At
        * Format: date-time
@@ -5591,6 +5838,8 @@ export interface components {
       user_level: number;
       /** Tags */
       tags?: unknown[] | null;
+      /** Onboarded */
+      onboarded: boolean;
       /** Hashed Id */
       hashed_id?: string | null;
       /** Allow Multiple Airdrop Claims */
@@ -5638,10 +5887,22 @@ export interface components {
        * Format: date-time
        */
       yaps_last_indexed_at: string;
+      /** Twitter Follow Cursor */
+      twitter_follow_cursor?: Record<string, never> | null;
       /** Auto Post Twitter */
       auto_post_twitter: boolean;
       /** Smart */
       smart: boolean;
+      /** Twitter Id */
+      twitter_id?: string | null;
+      /** Twitter Follower Count */
+      twitter_follower_count?: number | null;
+      /** Twitter Following Count */
+      twitter_following_count?: number | null;
+      /** Smart Follower Count */
+      smart_follower_count?: number | null;
+      /** Smart Following Count */
+      smart_following_count?: number | null;
       /**
        * Created At
        * Format: date-time
@@ -6131,6 +6392,8 @@ export interface components {
       user_level: number;
       /** Tags */
       tags?: unknown[] | null;
+      /** Onboarded */
+      onboarded: boolean;
       /** Allow Multiple Airdrop Claims */
       allow_multiple_airdrop_claims: boolean;
       /** Get Airdrop */
@@ -6152,10 +6415,22 @@ export interface components {
        * Format: date-time
        */
       yaps_last_indexed_at: string;
+      /** Twitter Follow Cursor */
+      twitter_follow_cursor?: Record<string, never> | null;
       /** Auto Post Twitter */
       auto_post_twitter: boolean;
       /** Smart */
       smart: boolean;
+      /** Twitter Id */
+      twitter_id?: string | null;
+      /** Twitter Follower Count */
+      twitter_follower_count?: number | null;
+      /** Twitter Following Count */
+      twitter_following_count?: number | null;
+      /** Smart Follower Count */
+      smart_follower_count?: number | null;
+      /** Smart Following Count */
+      smart_following_count?: number | null;
       /**
        * Created At
        * Format: date-time
@@ -6458,6 +6733,54 @@ export interface components {
       /** Skipped */
       skipped?: boolean | null;
     };
+    /** SocialGraph */
+    SocialGraph: {
+      /** Nodes */
+      nodes: components["schemas"]["SocialGraphNode"][];
+      /** Links */
+      links: components["schemas"]["SocialGraphLink"][];
+    };
+    /** SocialGraphLink */
+    SocialGraphLink: {
+      /**
+       * Source
+       * Format: uuid4
+       */
+      source: string;
+      /**
+       * Target
+       * Format: uuid4
+       */
+      target: string;
+    };
+    /** SocialGraphNode */
+    SocialGraphNode: {
+      /**
+       * Id
+       * Format: uuid4
+       */
+      id: string;
+      /** Username */
+      username: string;
+      /** Display Name */
+      display_name: string | null;
+      /** Avatar */
+      avatar?: string | null;
+      /** Description */
+      description?: string | null;
+      /** Following Count */
+      following_count: number;
+      /** Followers Count */
+      followers_count: number;
+      /** Smart Followers */
+      smart_followers: number;
+      /** Smart Following */
+      smart_following: number;
+      /** Rank */
+      rank: number;
+      /** Mindshare */
+      mindshare: string;
+    };
     /** StripeCreateAccount */
     StripeCreateAccount: {
       /** Refresh Url */
@@ -6597,6 +6920,26 @@ export interface components {
       source_url?: string | null;
       /** Tweet Metadata */
       tweet_metadata?: Record<string, never> | null;
+      /** Sentiment Metrics */
+      sentiment_metrics?: Record<string, never> | null;
+      /** Behavioral Metrics */
+      behavioral_metrics?: Record<string, never> | null;
+      /** Crypto Project Mentions */
+      crypto_project_mentions?: unknown[] | null;
+      /** Topic */
+      topic?: string | null;
+      /** Sentiment Score */
+      sentiment_score?: string | null;
+      /** Analyzed By */
+      analyzed_by?: string | null;
+      /** Analysis Cost */
+      analysis_cost?: Record<string, never> | null;
+      /** Last Analyzed At */
+      last_analyzed_at?: string | null;
+      /** Last Aggregated At */
+      last_aggregated_at?: string | null;
+      /** Tweet Score */
+      tweet_score?: string | null;
       /**
        * Persona Id
        * Format: uuid
@@ -6612,6 +6955,14 @@ export interface components {
        * Format: date-time
        */
       updated_at: string;
+      /** Author Avatar Url */
+      author_avatar_url?: string;
+      /** Scaled Sentiment Score */
+      scaled_sentiment_score?: string;
+      /** Scaled Engagement Score */
+      scaled_engagement_score?: string;
+      /** Scaled Influencer Weight */
+      scaled_influencer_weight?: string;
     };
     /**
      * TweetOrderByRequest
@@ -6623,6 +6974,12 @@ export interface components {
      * @enum {string}
      */
     TweetTimeRangeRequest: "1d" | "7d" | "1M" | "3M" | "6M" | "1Y";
+    /**
+     * TweetTopic
+     * @description The topic of the tweet.
+     * @enum {string}
+     */
+    TweetTopic: "CRYPTO_TWITTER" | "CRYPTO_AI" | "AI_AGENT" | "OTHER";
     /** TwitterClientDBModel */
     TwitterClientDBModel: {
       /** Id */
@@ -6721,6 +7078,22 @@ export interface components {
       screen_name: string;
       /** Name */
       name: string;
+      /** Description */
+      description?: string | null;
+      /** Profile Image Url Https */
+      profile_image_url_https?: string | null;
+      /** Profile Banner Url */
+      profile_banner_url?: string | null;
+      /** Is Blue Verified */
+      is_blue_verified?: boolean | null;
+      /** Favourites Count */
+      favourites_count?: number | null;
+      /** Followers Count */
+      followers_count?: number | null;
+      /** Friends Count */
+      friends_count?: number | null;
+      /** Statuses Count */
+      statuses_count?: number | null;
       [key: string]: unknown;
     };
     /** UpdateAiToken */
@@ -6787,8 +7160,21 @@ export interface components {
       redirect_uris?: string[] | null;
       /** Client Name */
       client_name?: string | null;
+      /** Avatar */
+      avatar?: string | null;
+      /** Terms Url */
+      terms_url?: string | null;
+      /** Policy Url */
+      policy_url?: string | null;
       /** Scopes */
       scopes?: string[] | null;
+      /**
+       * Origin Urls
+       * @default []
+       */
+      origin_urls?: string[];
+      /** Client Description */
+      client_description?: string | null;
     };
     /** UpdateNote */
     UpdateNote: {
@@ -6860,6 +7246,10 @@ export interface components {
       karma_confirmation_threshold_enabled?: boolean | null;
       /** Get Airdrop */
       get_airdrop?: boolean | null;
+      /** From Yaps */
+      from_yaps?: boolean | null;
+      /** Smart */
+      smart?: boolean | null;
     };
     /** UpdatePersonaAllowGenieDailyAllowance */
     UpdatePersonaAllowGenieDailyAllowance: {
@@ -6938,6 +7328,35 @@ export interface components {
       primary?: boolean | null;
       /** Meta */
       meta?: Record<string, never> | null;
+    };
+    /** UpdateYapperExternalData */
+    UpdateYapperExternalData: {
+      /**
+       * Persona Id
+       * Format: uuid4
+       */
+      persona_id: string;
+      /** Project */
+      project: string;
+      cookie_twitter_data?: components["schemas"]["YapperCookieTwitterData"] | null;
+      kaito_yaps_data?: components["schemas"]["YapperKaitoYapsData"] | null;
+    };
+    /** UpdateYapperProject */
+    UpdateYapperProject: {
+      /** Twitter Handle */
+      twitter_handle?: string | null;
+      /** Display Name */
+      display_name?: string | null;
+      /** Description */
+      description?: string | null;
+      /** Logo Url */
+      logo_url?: string | null;
+      /** Website Url */
+      website_url?: string | null;
+      /** Keywords */
+      keywords?: string[] | null;
+      /** Tags */
+      tags?: string[] | null;
     };
     /** UseVerificationToken */
     UseVerificationToken: {
@@ -7076,6 +7495,11 @@ export interface components {
     };
     /** UserPersonaInfo */
     UserPersonaInfo: {
+      /**
+       * Id
+       * Format: uuid4
+       */
+      id: string;
       /** Username */
       username: string;
       /** Display Name */
@@ -7399,6 +7823,186 @@ export interface components {
      * @enum {string}
      */
     Web3TransactionType: "CONTRACT_APPROVAL" | "MINT_GEM" | "SWAP" | "CONVERT" | "ADD_LIQUIDITY" | "REMOVE_LIQUIDITY" | "CREATE_LIQUIDITY_POOL" | "MISC";
+    /** YapperCookieTwitterData */
+    YapperCookieTwitterData: {
+      /** Url */
+      url?: string | null;
+      /** Kol Username */
+      kol_username: string;
+      /** Kol Display Name */
+      kol_display_name: string;
+      /** Posts */
+      posts?: number | null;
+      /** Average Engagement */
+      average_engagement?: number | null;
+      /** Average Post Impressions */
+      average_post_impressions?: number | null;
+      /** Followers Count */
+      followers_count?: number | null;
+      /** Impressions Count */
+      impressions_count?: number | null;
+      /** Median Impressions Count */
+      median_impressions_count?: number | null;
+      /** Engagements Count */
+      engagements_count?: number | null;
+      /** Median Engagements Count */
+      median_engagements_count?: number | null;
+      /** Engagement Rate */
+      engagement_rate?: number | null;
+      /** Score */
+      score?: number | null;
+      [key: string]: unknown;
+    };
+    /** YapperExternalDBModel */
+    YapperExternalDBModel: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /**
+       * Persona Id
+       * Format: uuid
+       */
+      persona_id: string;
+      /** Project */
+      project: string;
+      /** Cookie Twitter Data */
+      cookie_twitter_data?: Record<string, never> | null;
+      /** Kaito Yaps Data */
+      kaito_yaps_data?: Record<string, never> | null;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /**
+       * Updated At
+       * Format: date-time
+       */
+      updated_at: string;
+    };
+    /** YapperKaitoYapsData */
+    YapperKaitoYapsData: {
+      /** Profile Name */
+      profile_name?: string | null;
+      /** X Username */
+      x_username?: string | null;
+      /** Yapper Votes */
+      yapper_votes?: number | null;
+      /** Yap Votes */
+      yap_votes?: number | null;
+      /** Smart Follower Votes */
+      smart_follower_votes?: number | null;
+      /** Lifetime Yaps */
+      lifetime_yaps?: number | null;
+      /** Smart Followers */
+      smart_followers?: number | null;
+      [key: string]: unknown;
+    };
+    /** YapperLBItem */
+    YapperLBItem: {
+      /** Rank */
+      rank: number;
+      /**
+       * Persona Id
+       * Format: uuid4
+       */
+      persona_id: string;
+      /** Filter Column */
+      filter_column: string | null;
+      /** Mindshare */
+      mindshare: string;
+      /** Last 7D Mindshare */
+      last_7d_mindshare: string;
+      /** Last 30D Mindshare */
+      last_30d_mindshare: string;
+      /** Last 3M Mindshare */
+      last_3m_mindshare: string;
+      /** Last 6M Mindshare */
+      last_6m_mindshare: string;
+      /** Last 1Y Mindshare */
+      last_1y_mindshare: string;
+      /** Change 7D Mindshare */
+      change_7d_mindshare: string;
+      /** Change 30D Mindshare */
+      change_30d_mindshare: string;
+      /** Change 3M Mindshare */
+      change_3m_mindshare: string;
+      /** Change 6M Mindshare */
+      change_6m_mindshare: string;
+      /** Change 1Y Mindshare */
+      change_1y_mindshare: string;
+      /** Change 7D Mindshare Percentage */
+      change_7d_mindshare_percentage: string;
+      /** Change 30D Mindshare Percentage */
+      change_30d_mindshare_percentage: string;
+      /** Change 3M Mindshare Percentage */
+      change_3m_mindshare_percentage: string;
+      /** Change 6M Mindshare Percentage */
+      change_6m_mindshare_percentage: string;
+      /** Change 1Y Mindshare Percentage */
+      change_1y_mindshare_percentage: string;
+      /** Username */
+      username: string;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /** User Id */
+      user_id?: string | null;
+      /** Display Name */
+      display_name?: string | null;
+      /** Avatar */
+      avatar?: string | null;
+      /** Description */
+      description?: string | null;
+      /** Following Count */
+      following_count: number;
+      /** Followers Count */
+      followers_count: number;
+      /** Smart Followers */
+      smart_followers: number;
+      /** Smart Following */
+      smart_following: number;
+      /** Categories */
+      categories?: string[];
+    };
+    /** YapperProjectDBModel */
+    YapperProjectDBModel: {
+      /** Name */
+      name: string;
+      /** Display Name */
+      display_name: string;
+      /** Description */
+      description: string;
+      /** Twitter Handle */
+      twitter_handle: string;
+      /** Logo Url */
+      logo_url: string;
+      /** Website Url */
+      website_url: string;
+      /** Keywords */
+      keywords: unknown[];
+      /** Tags */
+      tags: unknown[];
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /**
+       * Updated At
+       * Format: date-time
+       */
+      updated_at: string;
+    };
     /** UpdateUser */
     schemas__auth__UpdateUser: {
       /** Email */
@@ -11263,6 +11867,35 @@ export interface operations {
     };
   };
   /**
+   * Get Personas To Analyze Tweets
+   * @description Get personas to analyze tweets
+   */
+  get_personas_to_analyze_tweets_internal_persona_get_personas_to_analyze_tweets_get: {
+    parameters: {
+      query?: {
+        raise_error?: boolean;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": string[];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
    * Update Persona Is Smart
    * @description Update persona is smart if persona is from KOL intelligence list
    */
@@ -11278,6 +11911,38 @@ export interface operations {
     requestBody: {
       content: {
         "application/json": components["schemas"]["UpdateSmartPersona"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Update Persona By Twitter Profile
+   * @description Update persona by twitter profile
+   */
+  update_persona_by_twitter_profile_internal_persona___id__twitter_profile_put: {
+    parameters: {
+      query?: {
+        raise_error?: boolean;
+      };
+      path: {
+        _id: string;
       };
     };
     responses: {
@@ -12242,6 +12907,120 @@ export interface operations {
     };
   };
   /**
+   * Update Yapper External Data
+   * @description Update yapper external data
+   */
+  update_yapper_external_data_internal_yapper_external_data_put: {
+    parameters: {
+      query?: {
+        raise_error?: boolean;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UpdateYapperExternalData"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["YapperExternalDBModel"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Get Yappers To Collect Follow */
+  get_yappers_to_collect_follow_internal_yapper_collect_follow_ids_get: {
+    parameters: {
+      query?: {
+        raise_error?: boolean;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Collect Twitter Follower */
+  collect_twitter_follower_internal_yapper_twitter_follow_post: {
+    parameters: {
+      query: {
+        persona_id: string;
+        follow_type: components["schemas"]["FollowTypeRequest"];
+        raise_error?: boolean;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Update Smart Follow Count */
+  update_smart_follow_count_internal_yapper_smart_follow_count_put: {
+    parameters: {
+      query?: {
+        raise_error?: boolean;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
    * List User Transactions
    * @description Get a list of karma transactions for a user, can also be persona_id of user
    */
@@ -12660,6 +13439,41 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["PaginatedGemLBItems"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Yapper Leaderboard
+   * @description Get a list of top users by yappers count (PUBLIC API)
+   */
+  yapper_leaderboard_leaderboard_yapper_get: {
+    parameters: {
+      query?: {
+        filter_column?: string | null;
+        search_query?: string | null;
+        search_query_threshold?: number;
+        usernames?: string[] | null;
+        order_by?: string;
+        skip?: number;
+        limit?: number;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["PaginatedYapperLBItems"];
         };
       };
       /** @description Not found */
@@ -13693,6 +14507,10 @@ export interface operations {
         order_by?: "updated_at" | "created_at";
         order_direction?: "desc" | "asc";
       };
+      header?: {
+        origin?: string | null;
+        "x-forwarded-host"?: string | null;
+      };
     };
     responses: {
       /** @description Successful Response */
@@ -13932,6 +14750,173 @@ export interface operations {
       /** @description Not found */
       404: {
         content: never;
+      };
+    };
+  };
+  /** Get Or Create Dm Thread */
+  get_or_create_dm_thread_sdk_chat_dm__username__get: {
+    parameters: {
+      header?: {
+        origin?: string | null;
+        "x-forwarded-host"?: string | null;
+      };
+      path: {
+        username: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ChatThreadMembersDBModel"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Chat Dm Options */
+  chat_dm_options_sdk_chat_dm__username__options: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+    };
+  };
+  /**
+   * List Messages
+   * @description Get a paginated list of messages for a thread, ordered by latest first
+   */
+  list_messages_sdk_chat__thread_id__messages_get: {
+    parameters: {
+      query?: {
+        before_created_at?: string | null;
+        after_created_at?: string | null;
+        exclude_expired?: boolean;
+        author_type?: components["schemas"]["MessageAuthorType"] | null;
+        thread_persona_id?: string | null;
+        skip?: number;
+        limit?: number;
+      };
+      header?: {
+        origin?: string | null;
+        "x-forwarded-host"?: string | null;
+      };
+      path: {
+        thread_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["PaginatedFullChatMessages"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Create User Message
+   * @description Create a chat message
+   */
+  create_user_message_sdk_chat__thread_id__messages_post: {
+    parameters: {
+      header?: {
+        origin?: string | null;
+        "x-forwarded-host"?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreateUserChatMessage"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        content: {
+          "application/json": components["schemas"]["ChatMessageDBModel"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Chat Dm Options */
+  chat_dm_options_sdk_chat__thread_id__messages_options: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+    };
+  };
+  /**
+   * Query Message Stream
+   * @description Prompt the LLM to respond to a specific chat message. Return an event
+   * stream as the LLM responds
+   */
+  query_message_stream_sdk_chat__thread_id__messages___id__query_stream_post: {
+    parameters: {
+      path: {
+        _id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["FullChatMessageDBModel"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
       };
     };
   };
@@ -15180,6 +16165,208 @@ export interface operations {
     };
   };
   /**
+   * Analyze Tweets
+   * @description Analyze tweets for a persona
+   */
+  analyze_tweets_secure_tweet_analyze_post: {
+    parameters: {
+      query: {
+        persona_id: string;
+        limit?: number;
+        raise_error?: boolean;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Aggregate Tweet */
+  aggregate_tweet_secure_tweet_aggregate_post: {
+    parameters: {
+      query?: {
+        raise_error?: boolean;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      204: {
+        content: never;
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Update Crypto Project Mapping */
+  update_crypto_project_mapping_secure_tweet_crypto_project_mapping___id__put: {
+    parameters: {
+      query?: {
+        raise_error?: boolean;
+      };
+      path: {
+        _id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      204: {
+        content: never;
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Collect Twitter Follower */
+  collect_twitter_follower_secure_yapper_twitter_follow_post: {
+    parameters: {
+      query: {
+        persona_id: string;
+        follow_type: components["schemas"]["FollowTypeRequest"];
+        raise_error?: boolean;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Create Project */
+  create_project_secure_yapper_project_post: {
+    parameters: {
+      query?: {
+        raise_error?: boolean;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreateYapperProject"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Update Project */
+  update_project_secure_yapper_project__project_id__put: {
+    parameters: {
+      query?: {
+        raise_error?: boolean;
+      };
+      path: {
+        project_id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UpdateYapperProject"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Delete Project */
+  delete_project_secure_yapper_project__project_id__delete: {
+    parameters: {
+      query?: {
+        raise_error?: boolean;
+      };
+      path: {
+        project_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      204: {
+        content: never;
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
    * Get Persona Tweets
    * @description Retrieves a list of latest tweets for a persona.
    */
@@ -15222,6 +16409,41 @@ export interface operations {
         order_direction?: "asc" | "desc";
         skip?: number;
         limit?: number;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["PaginatedTweets"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Tweets
+   * @description Retrieves a list of tweets for a persona.
+   */
+  get_tweets_tweet_get: {
+    parameters: {
+      query?: {
+        persona_id?: string | null;
+        project?: string | null;
+        topic?: components["schemas"]["TweetTopic"] | null;
+        skip?: number;
+        limit?: number;
+        order_by?: "published_at" | "tweet_score";
+        order_direction?: "asc" | "desc";
       };
     };
     responses: {
@@ -16804,6 +18026,101 @@ export interface operations {
       200: {
         content: {
           "application/json": unknown;
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+    };
+  };
+  /**
+   * Get Projects
+   * @description Get all available crypto projects
+   */
+  get_projects_yapper_projects_get: {
+    parameters: {
+      query?: {
+        skip?: number;
+        limit?: number;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["PaginatedYapperProjects"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Project
+   * @description Get a specific crypto project by ID
+   */
+  get_project_yapper_projects__project_name__get: {
+    parameters: {
+      path: {
+        project_name: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["YapperProjectDBModel"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Topics
+   * @description Get all available topics
+   */
+  get_topics_yapper_topics_get: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": string[];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+    };
+  };
+  /**
+   * Get Social Graph
+   * @description Get the social graph
+   */
+  get_social_graph_yapper_social_graph_get: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["SocialGraph"];
         };
       };
       /** @description Not found */

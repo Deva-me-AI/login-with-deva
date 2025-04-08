@@ -25,14 +25,14 @@ const DropdownMenuSubTrigger = React.forwardRef<
   <DropdownMenuPrimitive.SubTrigger
     ref={ref}
     className={cn(
-      "flex cursor-default gap-2 select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none focus:bg-accent data-[state=open]:bg-accent [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
-      inset && "pl-8",
+      "deva-flex deva-cursor-default deva-gap-2 deva-select-none deva-items-center deva-rounded-sm deva-px-2 deva-py-1.5 deva-text-sm deva-outline-none focus:deva-bg-accent data-[state=open]:deva-bg-accent [&_svg]:deva-pointer-events-none [&_svg]:deva-size-4 [&_svg]:deva-shrink-0",
+      inset && "deva-pl-8",
       className
     )}
     {...props}
   >
     {children}
-    <ChevronRight className="ml-auto" />
+    <ChevronRight className="deva-ml-auto" />
   </DropdownMenuPrimitive.SubTrigger>
 ))
 DropdownMenuSubTrigger.displayName =
@@ -45,7 +45,7 @@ const DropdownMenuSubContent = React.forwardRef<
   <DropdownMenuPrimitive.SubContent
     ref={ref}
     className={cn(
-      "z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+      "deva-z-50 deva-min-w-[8rem] deva-overflow-hidden deva-rounded-md deva-border deva-bg-popover deva-p-1 deva-text-popover-foreground deva-shadow-lg data-[state=open]:deva-animate-in data-[state=closed]:deva-animate-out data-[state=closed]:deva-fade-out-0 data-[state=open]:deva-fade-in-0 data-[state=closed]:deva-zoom-out-95 data-[state=open]:deva-zoom-in-95 data-[side=bottom]:deva-slide-in-from-top-2 data-[side=left]:deva-slide-in-from-right-2 data-[side=right]:deva-slide-in-from-left-2 data-[side=top]:deva-slide-in-from-bottom-2",
       className
     )}
     {...props}
@@ -63,8 +63,8 @@ const DropdownMenuContent = React.forwardRef<
       ref={ref}
       sideOffset={sideOffset}
       className={cn(
-        "z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md",
-        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+        "deva-z-50 deva-min-w-[8rem] deva-overflow-hidden deva-rounded-md deva-border deva-bg-popover deva-p-1 deva-text-popover-foreground deva-shadow-md",
+        "data-[state=open]:deva-animate-in data-[state=closed]:deva-animate-out data-[state=closed]:deva-fade-out-0 data-[state=open]:deva-fade-in-0 data-[state=closed]:deva-zoom-out-95 data-[state=open]:deva-zoom-in-95 data-[side=bottom]:deva-slide-in-from-top-2 data-[side=left]:deva-slide-in-from-right-2 data-[side=right]:deva-slide-in-from-left-2 data-[side=top]:deva-slide-in-from-bottom-2",
         className
       )}
       {...props}
@@ -82,8 +82,8 @@ const DropdownMenuItem = React.forwardRef<
   <DropdownMenuPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&>svg]:size-4 [&>svg]:shrink-0",
-      inset && "pl-8",
+      "deva-relative deva-flex deva-cursor-default deva-select-none deva-items-center deva-gap-2 deva-rounded-sm deva-px-2 deva-py-1.5 deva-text-sm deva-outline-none deva-transition-colors focus:deva-bg-accent focus:deva-text-accent-foreground data-[disabled]:deva-pointer-events-none data-[disabled]:deva-opacity-50 [&>svg]:deva-size-4 [&>svg]:deva-shrink-0",
+      inset && "deva-pl-8",
       className
     )}
     {...props}
@@ -98,15 +98,15 @@ const DropdownMenuCheckboxItem = React.forwardRef<
   <DropdownMenuPrimitive.CheckboxItem
     ref={ref}
     className={cn(
-      "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "deva-relative deva-flex deva-cursor-default deva-select-none deva-items-center deva-rounded-sm deva-py-1.5 deva-pl-8 deva-pr-2 deva-text-sm deva-outline-none deva-transition-colors focus:deva-bg-accent focus:deva-text-accent-foreground data-[disabled]:deva-pointer-events-none data-[disabled]:deva-opacity-50",
       className
     )}
     checked={checked}
     {...props}
   >
-    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+    <span className="deva-absolute deva-left-2 deva-flex deva-h-3.5 deva-w-3.5 deva-items-center deva-justify-center">
       <DropdownMenuPrimitive.ItemIndicator>
-        <Check className="h-4 w-4" />
+        <Check className="deva-h-4 deva-w-4" />
       </DropdownMenuPrimitive.ItemIndicator>
     </span>
     {children}
@@ -127,9 +127,9 @@ const DropdownMenuRadioItem = React.forwardRef<
     )}
     {...props}
   >
-    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+    <span className="deva-absolute deva-left-2 deva-flex deva-h-3.5 deva-w-3.5 deva-items-center deva-justify-center">
       <DropdownMenuPrimitive.ItemIndicator>
-        <Circle className="h-2 w-2 fill-current" />
+        <Circle className="deva-h-2 deva-w-2 deva-fill-current" />
       </DropdownMenuPrimitive.ItemIndicator>
     </span>
     {children}
@@ -146,8 +146,8 @@ const DropdownMenuLabel = React.forwardRef<
   <DropdownMenuPrimitive.Label
     ref={ref}
     className={cn(
-      "px-2 py-1.5 text-sm font-semibold",
-      inset && "pl-8",
+      "deva-px-2 deva-py-1.5 deva-text-sm deva-font-semibold",
+      inset && "deva-pl-8",
       className
     )}
     {...props}
@@ -161,7 +161,7 @@ const DropdownMenuSeparator = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DropdownMenuPrimitive.Separator
     ref={ref}
-    className={cn("-mx-1 my-1 h-px bg-muted", className)}
+    className={cn("-deva-mx-1 deva-my-1 deva-h-px deva-bg-muted", className)}
     {...props}
   />
 ))
@@ -173,7 +173,7 @@ const DropdownMenuShortcut = ({
 }: React.HTMLAttributes<HTMLSpanElement>) => {
   return (
     <span
-      className={cn("ml-auto text-xs tracking-widest opacity-60", className)}
+      className={cn("deva-ml-auto deva-text-xs deva-tracking-widest deva-opacity-60", className)}
       {...props}
     />
   )
