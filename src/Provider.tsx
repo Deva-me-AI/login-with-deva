@@ -253,7 +253,7 @@ export function DevaProvider({
       }
 
       if (!epochTimeIsPast(expiresIn)) {
-        console.log("access token not expired yet");
+        // console.log("access token not expired yet");
         return;
       }
 
