@@ -18,6 +18,10 @@ jobs:
           registry-url: 'https://npm.pkg.github.com'
           # Defaults to the user or organization that owns the workflow file
           scope: '@10Planet-L1'
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.6
       - name: Install dependencies
         run: pnpm install
       - name: Publish package
