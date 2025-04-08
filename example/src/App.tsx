@@ -1,7 +1,7 @@
 import "deva-sdk/style.css";
 import "./index.css";
 import "./App.css";
-import { DevaProvider, useDeva, ChannelFeed, Intercom } from "deva-sdk";
+import { DevaProvider, useDeva, ChannelFeed, Intercom, type Envs } from "deva-sdk";
 import { ReactNode, useState, useEffect } from "react";
 
 export function Card({
@@ -157,7 +157,7 @@ function App() {
       clientId={import.meta.env.VITE_DEVA_CLIENT_ID!}
       redirectUri={typeof window != "undefined" ? window.location.origin : ""}
       scopes={["read", "write"]}
-      env="development"
+      env={import.meta.env.VITE_DEVA_ENV as Envs}
     >
       <>
         <header
