@@ -15,6 +15,11 @@ import { jwtDecode } from "jwt-decode";
 import { useInterval } from "./hooks/use-timeout";
 import { type Envs, envToUrl } from "./config";
 
+// Logger function that prefixes logs with [sdk/provider]
+const log = (...args: Parameters<typeof console.log>) => {
+  console.log("[sdk/provider]", ...args);
+};
+
 export type DevaProviderProps = {
   clientId: string;
   redirectUri: string;
@@ -66,7 +71,7 @@ const useRefreshToken = (
 ) => {
   const refresh = useCallback(async () => {
     if (!refreshToken || !tokenEndpoint) {
-      console.log("no refresh token or token endpoint");
+      log("no refresh token or token endpoint");
       return;
     }
 
@@ -119,7 +124,7 @@ export function DevaProvider({
   const url = envToUrl(env);
   const { openIdConfig, isOpenIdConfigLoading, error } = useOpenIdConfig(env);
   if (error) {
-    console.error(openIdConfig);
+    console.error("[sdk/provider]", openIdConfig);
   }
   const fetchingTokensRef = useRef(false);
   const [codeVerifier, setCodeVerifier] = useStorage("code_verifier", "");
@@ -150,7 +155,9 @@ export function DevaProvider({
         const decodedToken = jwtDecode(res.id_token);
         tokenExp = Math.round(Number(decodedToken.exp) - Date.now() / 1000); // number of seconds from now
       } catch (e) {
-        console.warn(`Failed to decode idToken: ${(e as Error).message}`);
+        console.warn(
+          `[sdk/provider]: Failed to decode idToken: ${(e as Error).message}`,
+        );
       }
 
       const tokenExpiresIn = res.expires_in ?? tokenExp;
@@ -248,23 +255,23 @@ export function DevaProvider({
   const refresh = useCallback(
     async (init = false) => {
       if (!accessToken) {
-        console.log("no access token");
+        log("no access token");
         return;
       }
 
       if (!epochTimeIsPast(expiresIn)) {
-        // console.log("access token not expired yet");
+        // log("access token not expired yet");
         return;
       }
 
       if (isRefreshing && !init) {
-        console.log("already refreshing");
+        log("already refreshing");
         return;
       }
 
       if (!refreshToken) {
         // TODO: handle this better
-        console.log("no refresh token");
+        log("no refresh token");
         return;
       }
 
@@ -315,7 +322,7 @@ export function DevaProvider({
           params.get("error_description") ?? "An unknown error occurred";
 
         console.error(
-          `${error_description}\nExpected  to find a '?code=' parameter in the URL but found none`,
+          `[sdk/provider]: ${error_description}\nExpected  to find a '?code=' parameter in the URL but found none`,
         );
         setAuthError(error_description);
         clearState();
@@ -346,7 +353,7 @@ export function DevaProvider({
       })
         .then(handleTokenResponse)
         .catch((error) => {
-          console.error("error in fetching", error);
+          console.error("[sdk/provider]: error in fetching", error);
           setAuthError("An error occurred while fetching tokens");
         });
 
