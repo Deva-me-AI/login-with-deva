@@ -1,8 +1,12 @@
+"use client";
+
 import "deva-sdk/style.css";
 import "./index.css";
 import "./App.css";
-import { DevaProvider, useDeva, ChannelFeed, Intercom, type Envs } from "deva-sdk";
+import { DevaProvider, useDeva, type Envs } from "deva-sdk";
 import { ReactNode, useState, useEffect } from "react";
+
+// Dynamically import components
 
 export function Card({
   children,
@@ -118,7 +122,6 @@ function Content() {
             </select>
           </div>
           <div className="content-container">
-            <ChannelFeed handle={selectedChannel} />
           </div>
         </Card>
         <Card>
@@ -146,7 +149,6 @@ function Content() {
           )}
         </Card>
       </div>
-      <Intercom username={selectedPersona} />
     </>
   );
 }

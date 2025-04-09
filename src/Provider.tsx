@@ -1,6 +1,5 @@
 import { useCallback, useState, useEffect, useRef } from "react";
 import { DevaContext } from "./DevaContext";
-import { Toaster } from "./components/ui/toaster";
 import {
   generateCodeVerifier,
   generateCodeChallenge,
@@ -304,7 +303,7 @@ export function DevaProvider({
     () => {
       void refresh();
     },
-    isBrowser && refreshToken ? 1000 + stagger : null,
+    isBrowser &&refreshToken ? 1000 + stagger : null,
     [refresh],
   );
 
@@ -396,7 +395,6 @@ export function DevaProvider({
       }}
     >
       {children}
-      <Toaster />
     </DevaContext.Provider>
   );
 }

@@ -27,7 +27,11 @@
       "import": "./dist/index.es.js"
     },
     "./package.json": "./package.json",
-    "./style.css": "./dist/assets/deva-sdk.css"
+    "./style.css": "./dist/assets/deva-sdk.css",
+    "./components": {
+      "types": "./dist/components.d.ts",
+      "import": "./dist/components.js"
+    }
   },
   "files": [
     "dist/**/*"
