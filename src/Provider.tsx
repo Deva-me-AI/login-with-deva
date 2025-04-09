@@ -15,6 +15,9 @@ import { jwtDecode } from "jwt-decode";
 import { useInterval } from "./hooks/use-timeout";
 import { type Envs, envToUrl } from "./config";
 
+// Check if we're running in a browser environment
+const isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined';
+
 // Logger function that prefixes logs with [sdk/provider]
 const log = (...args: Parameters<typeof console.log>) => {
   console.log("[sdk/provider]", ...args);
@@ -38,7 +41,7 @@ type OpenIdConfig = {
 const useOpenIdConfig = (env: Envs) => {
   const baseUrl = envToUrl(env);
   const { data, error, isLoading } = useSWR<OpenIdConfig, Error>(
-    `${baseUrl}/.well-known/openid-configuration`,
+    isBrowser ? `${baseUrl}/.well-known/openid-configuration` : null,
     fetcher,
   );
   return { openIdConfig: data, isOpenIdConfigLoading: isLoading, error };
@@ -301,15 +304,14 @@ export function DevaProvider({
     () => {
       void refresh();
     },
-    refreshToken ? 1000 + stagger : null,
+    isBrowser && refreshToken ? 1000 + stagger : null,
     [refresh],
   );
 
   useEffect(() => {
     let code = "";
 
-    // don't run during ssr
-    if (typeof window === undefined) {
+    if (!isBrowser) {
       return;
     }
 
