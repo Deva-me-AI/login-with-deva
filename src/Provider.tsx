@@ -308,6 +308,11 @@ export function DevaProvider({
   useEffect(() => {
     let code = "";
 
+    // don't run during ssr
+    if (typeof window === undefined) {
+      return;
+    }
+
     // check if openIdConfig is loaded
     if (isOpenIdConfigLoading) {
       return;
