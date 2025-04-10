@@ -18,19 +18,21 @@
     "typecheck": "tsc --noEmit"
   },
   "type": "module",
-  "main": "dist/index.js",
+  "main": "dist/index.es.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.es.js"
+      "import": "./dist/index.es.js",
+      "require": "./dist/index.es.js"
     },
     "./package.json": "./package.json",
     "./style.css": "./dist/assets/deva-sdk.css",
     "./components": {
       "types": "./dist/components.d.ts",
-      "import": "./dist/components.es.js"
+      "import": "./dist/components.es.js",
+      "require": "./dist/components.es.js"
     }
   },
   "files": [
