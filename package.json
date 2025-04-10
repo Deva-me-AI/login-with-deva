@@ -9,7 +9,7 @@
     "build": "vite build",
     "dev:install": "pnpm install --frozen-lockfile && cd example && pnpm install --frozen-lockfile",
     "dev:example": "cd example && pnpm run dev",
-    "dev": "vite build --watch",
+    "dev": "NODE_ENV=development vite build --watch",
     "example": "cd example && pnpm run dev",
     "example:link": "cd example && pnpm link ../",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",
