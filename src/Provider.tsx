@@ -1,6 +1,5 @@
 import { useCallback, useState, useEffect, useRef } from "react";
 import { DevaContext } from "./DevaContext";
-import { Toaster } from "./components/ui/toaster";
 import {
   generateCodeVerifier,
   generateCodeChallenge,
@@ -8,7 +7,6 @@ import {
   epochTimeIsPast,
 } from "./lib/crypto";
 import { useStorage } from "./hooks/use-storage";
-import useSWR from "swr";
 import { fetcher, useSWRFetcher } from "./lib/fetcher";
 import type { OidcAccessTokenJWT, UserInfo } from "./server";
 import { jwtDecode } from "jwt-decode";
@@ -40,9 +38,8 @@ type OpenIdConfig = {
 
 const useOpenIdConfig = (env: Envs) => {
   const baseUrl = envToUrl(env);
-  const { data, error, isLoading } = useSWR<OpenIdConfig, Error>(
+  const { data, error, isLoading } = useSWRFetcher<OpenIdConfig, Error>(
     isBrowser ? `${baseUrl}/.well-known/openid-configuration` : null,
-    fetcher,
   );
   return { openIdConfig: data, isOpenIdConfigLoading: isLoading, error };
 };
@@ -304,7 +301,7 @@ export function DevaProvider({
     () => {
       void refresh();
     },
-    isBrowser && refreshToken ? 1000 + stagger : null,
+    isBrowser &&refreshToken ? 1000 + stagger : null,
     [refresh],
   );
 
@@ -396,7 +393,6 @@ export function DevaProvider({
       }}
     >
       {children}
-      <Toaster />
     </DevaContext.Provider>
   );
 }

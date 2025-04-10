@@ -9,7 +9,7 @@
     "build": "vite build",
     "dev:install": "pnpm install --frozen-lockfile && cd example && pnpm install --frozen-lockfile",
     "dev:example": "cd example && pnpm run dev",
-    "dev": "vite build --watch",
+    "dev": "NODE_ENV=development vite build --watch",
     "example": "cd example && pnpm run dev",
     "example:link": "cd example && pnpm link ../",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",
@@ -27,7 +27,11 @@
       "import": "./dist/index.es.js"
     },
     "./package.json": "./package.json",
-    "./style.css": "./dist/assets/deva-sdk.css"
+    "./style.css": "./dist/assets/deva-sdk.css",
+    "./components": {
+      "types": "./dist/components.d.ts",
+      "import": "./dist/components.js"
+    }
   },
   "files": [
     "dist/**/*"
