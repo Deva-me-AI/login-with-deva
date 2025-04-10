@@ -11,6 +11,9 @@ importers:
 
   .:
     dependencies:
+      '@docusaurus/react-loadable':
+        specifier: ^6.0.0
+        version: 6.0.0(react@18.3.1)
       '@types/express':
         specifier: ^5.0.1
         version: 5.0.1
@@ -62,6 +65,11 @@ importers:
         version: 6.1.0(@types/node@22.14.0)
 
 packages:
+
+  '@docusaurus/react-loadable@6.0.0':
+    resolution: {integrity: sha512-YMMxTUQV/QFSnbgrP3tjDzLHRg7vsbMn8e9HAa8o/1iXoiomo48b7sk/kkmWEuWNDPJVlKSJRB6Y2fHqdJk+SQ==}
+    peerDependencies:
+      react: '*'
 
   '@esbuild/aix-ppc64@0.24.2':
     resolution: {integrity: sha512-thpVCb/rhxE/BnMLQ7GReQLLN8q9qbHmI55F4489/ByVg2aQaQ6kbcLb6FHkocZzQhxc4gx0sCk0tJkKBFzDhA==}
@@ -1268,6 +1276,11 @@ packages:
     engines: {node: '>=10'}
 
 snapshots:
+
+  '@docusaurus/react-loadable@6.0.0(react@18.3.1)':
+    dependencies:
+      '@types/react': 18.3.18
+      react: 18.3.1
 
   '@esbuild/aix-ppc64@0.24.2':
     optional: true

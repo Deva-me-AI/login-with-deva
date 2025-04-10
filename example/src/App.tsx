@@ -4,14 +4,15 @@ import "deva-sdk/style.css";
 import "./index.css";
 import "./App.css";
 import { type Envs } from "deva-sdk";
-import { lazy, Suspense, type ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
+import { noSSR } from "./dynamic";
 
 // Dynamically import components
-const DevaProvider = lazy(() =>
-  import("deva-sdk").then(({ DevaProvider }) => ({ default: DevaProvider })),
+const DevaProvider = noSSR(() =>
+  import("deva-sdk").then(({ DevaProvider }) => DevaProvider),
 );
-const Content = lazy(() =>
-  import("./Content").then(({ Content }) => ({ default: Content })),
+const Content = noSSR(() =>
+  import("./Content").then(({ Content }) => Content),
 );
 
 export function Card({

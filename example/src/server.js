@@ -1,10 +1,12 @@
 import fs from 'node:fs/promises'
 import express from 'express'
 import { createServer } from 'vite'
+import { Transform } from 'node:stream'
 
 const port = process.env.PORT || 3001
 const base = process.env.BASE || '/'
 const app = express()
+const ABORT_DELAY = 10000
 
 
 const vite = await createServer({
@@ -24,13 +26,46 @@ app.use('*all', async (req, res) => {
     // Always read fresh template in development
     const render = (await vite.ssrLoadModule('/src/entry-server.jsx')).render
 
-    const rendered = await render(url)
 
-    const html = template
-      .replace(`<!--app-head-->`, rendered.head ?? '')
-      .replace(`<!--app-html-->`, rendered.html ?? '')
+    let didError = false;
+    const { pipe, abort } = render({
+      onShellError() {
+        res.status(500)
+        res.set({ 'Content-Type': 'text/html' })
+        res.send('<h1>Something went wrong</h1>')
+      },
+      onShellReady() {
+        res.status(didError ? 500 : 200)
+        res.set({ 'Content-Type': 'text/html' })
 
-    res.status(200).set({ 'Content-Type': 'text/html' }).send(html)
+        const transformStream = new Transform({
+          transform(chunk, encoding, callback) {
+            console.log("chunk")
+            res.write(chunk, encoding)
+            callback()
+          },
+        })
+
+        const [htmlStart, htmlEnd] = template.split(`<!--app-html-->`)
+
+        res.write(htmlStart)
+
+        transformStream.on('finish', () => {
+          res.end(htmlEnd)
+        })
+
+        pipe(transformStream)
+      },
+      // @ts-expect-error
+      onError(error) {
+        didError = true
+        console.error(error)
+      },
+    })
+
+    setTimeout(() => {
+      abort()
+    }, ABORT_DELAY)
   } catch (e) {
     // @ts-expect-error
     vite?.ssrFixStacktrace(e)

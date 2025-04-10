@@ -1,6 +1,7 @@
 "use client";
 
 import { useDeva } from "deva-sdk";
+import { ChannelFeed, Intercom } from "deva-sdk/components";
 import { type ReactNode, useState, useEffect } from "react";
 
 // Dynamically import components
@@ -119,6 +120,7 @@ export function Content() {
             </select>
           </div>
           <div className="content-container">
+            <ChannelFeed handle={selectedChannel} />
           </div>
         </Card>
         <Card>
@@ -146,6 +148,7 @@ export function Content() {
           )}
         </Card>
       </div>
+      <Intercom username={selectedPersona} />
     </>
   );
 }
