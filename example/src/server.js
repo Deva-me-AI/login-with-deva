@@ -40,7 +40,6 @@ app.use('*all', async (req, res) => {
 
         const transformStream = new Transform({
           transform(chunk, encoding, callback) {
-            console.log("chunk")
             res.write(chunk, encoding)
             callback()
           },
