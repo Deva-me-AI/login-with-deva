@@ -7,7 +7,6 @@ import {
   epochTimeIsPast,
 } from "./lib/crypto";
 import { useStorage } from "./hooks/use-storage";
-import useSWR from "swr";
 import { fetcher, useSWRFetcher } from "./lib/fetcher";
 import type { OidcAccessTokenJWT, UserInfo } from "./server";
 import { jwtDecode } from "jwt-decode";
@@ -39,9 +38,8 @@ type OpenIdConfig = {
 
 const useOpenIdConfig = (env: Envs) => {
   const baseUrl = envToUrl(env);
-  const { data, error, isLoading } = useSWR<OpenIdConfig, Error>(
+  const { data, error, isLoading } = useSWRFetcher<OpenIdConfig, Error>(
     isBrowser ? `${baseUrl}/.well-known/openid-configuration` : null,
-    fetcher,
   );
   return { openIdConfig: data, isOpenIdConfigLoading: isLoading, error };
 };
