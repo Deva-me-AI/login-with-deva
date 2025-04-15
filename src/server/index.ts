@@ -34,3 +34,5 @@ export type ChatLLMQueryStreamTypes =
   | "content"
   | "error"
   | "response_message";
+
+export type PaginatedYapperProjectVotes = components["schemas"]["PaginatedYapperProjectVoteses"];
