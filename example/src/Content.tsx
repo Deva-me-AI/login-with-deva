@@ -20,7 +20,7 @@ type Channel = "empty" | "eliza" | "null";
 type PersonaOption = "deva_support" | "truejaian" | "no-user";
 
 export function Content() {
-  const { user, login, logout } = useDeva();
+  const { isAuthenticated, user, login, logout } = useDeva();
 
   // Get initial channel from URL or default to "empty"
   const getInitialChannel = (): Channel => {
@@ -76,7 +76,7 @@ export function Content() {
         }}
       >
         <Card>
-          {user ? (
+          {isAuthenticated ? (
             <>
               <h2
                 style={{
@@ -124,7 +124,7 @@ export function Content() {
           </div>
         </Card>
         <Card>
-          {user ? (
+          {isAuthenticated ? (
             <div className="persona-select-container">
               <h3 style={{ marginBottom: "1rem" }}>
                 Select Persona for Intercom Chat
