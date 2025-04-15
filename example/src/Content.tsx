@@ -97,6 +97,9 @@ export function Content() {
                   user?.persona?.username ??
                   user?.preferred_username}
               </h3>
+              <div>
+                Vap Votes: {user?.persona?.yap_votes ?? 0}
+              </div>
               <button className="button" onClick={logout}>
                 logout
               </button>
