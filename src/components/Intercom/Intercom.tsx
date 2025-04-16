@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Portal } from "@radix-ui/react-portal";
 import {
   Popover,
   PopoverContent,
@@ -479,20 +480,22 @@ export const Intercom = ({
 
   return (
     <Popover open={isOpen} onOpenChange={handleOpenChange}>
-      <PopoverTrigger asChild>
-        <div
-          id="intercom-container"
-          className="deva-absolute deva-bottom-28 deva-right-4 deva-z-10 md:deva-bottom-10 md:deva-right-10"
-        >
-          <button className="deva-m-3 deva-flex deva-items-center deva-justify-center deva-rounded-full deva-bg-midnight-900">
-            {isOpen ? (
-              <CircleX className="deva-h-[50px] deva-w-[50px] deva-p-2 deva-text-white" />
-            ) : (
-              <HelpCircle className="deva-h-[50px] deva-w-[50px] deva-p-2 deva-text-white" />
-            )}
-          </button>
-        </div>
-      </PopoverTrigger>
+      <Portal id="intercom-trigger-container">
+        <PopoverTrigger asChild>
+          <div
+            id="intercom-trigger"
+            className="deva-absolute deva-bottom-28 deva-right-4 deva-z-10 md:deva-bottom-10 md:deva-right-10"
+          >
+            <button className="deva-m-3 deva-flex deva-items-center deva-justify-center deva-rounded-full deva-bg-midnight-900">
+              {isOpen ? (
+                <CircleX className="deva-h-[50px] deva-w-[50px] deva-p-2 deva-text-white" />
+              ) : (
+                <HelpCircle className="deva-h-[50px] deva-w-[50px] deva-p-2 deva-text-white" />
+              )}
+            </button>
+          </div>
+        </PopoverTrigger>
+      </Portal>
 
       <PopoverContent
         className="deva-w-auto deva-border-none deva-bg-transparent deva-p-0 deva-shadow-none"
@@ -506,7 +509,9 @@ export const Intercom = ({
               <div className="deva-mb-4 deva-rounded-full deva-bg-midnight-800 deva-p-4">
                 <HelpCircle className="deva-h-10 deva-w-10 deva-text-red-400" />
               </div>
-              <h3 className="deva-mb-2 deva-text-xl deva-font-semibold">Deva Not Found</h3>
+              <h3 className="deva-mb-2 deva-text-xl deva-font-semibold">
+                Deva Not Found
+              </h3>
               <p className="deva-text-lynch-400 deva-mb-4">
                 The Deva for &apos;{username}&apos; doesn&apos;t exist or is not
                 available.
