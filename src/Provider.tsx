@@ -12,7 +12,7 @@ import type { OidcAccessTokenJWT, UserInfo } from "./server";
 import { jwtDecode } from "jwt-decode";
 import { useInterval } from "./hooks/use-timeout";
 import { type Envs, envToUrl } from "./config";
-import type { useDeva } from "dist";
+import type { useDeva } from "./use-deva";
 
 // Check if we're running in a browser environment
 const isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined';
