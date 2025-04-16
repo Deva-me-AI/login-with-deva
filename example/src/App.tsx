@@ -11,9 +11,7 @@ import { noSSR } from "./dynamic";
 const DevaProvider = noSSR(() =>
   import("deva-sdk").then(({ DevaProvider }) => DevaProvider),
 );
-const Content = noSSR(() =>
-  import("./Content").then(({ Content }) => Content),
-);
+const Content = noSSR(() => import("./Content").then(({ Content }) => Content));
 
 export function Card({
   children,
@@ -34,26 +32,31 @@ function App() {
         scopes={["read", "write"]}
         env={import.meta.env.VITE_DEVA_ENV as Envs}
       >
-        <>
-          <header
-            style={{
-              marginTop: "1rem",
-              marginBottom: "1rem",
-            }}
-          >
-            <h1
-              className="h1"
-              style={{
-                fontSize: "3.2em",
-                lineHeight: "1.1",
-                wordWrap: "break-word",
-              }}
-            >
-              Deva-Sdk
-            </h1>
-          </header>
-          <Content />
-        </>
+        {({ user }) => {
+          console.log("userId: ", user?.id);
+          return (
+            <>
+              <header
+                style={{
+                  marginTop: "1rem",
+                  marginBottom: "1rem",
+                }}
+              >
+                <h1
+                  className="h1"
+                  style={{
+                    fontSize: "3.2em",
+                    lineHeight: "1.1",
+                    wordWrap: "break-word",
+                  }}
+                >
+                  Deva-Sdk
+                </h1>
+              </header>
+              <Content />
+            </>
+          );
+        }}
       </DevaProvider>
     </Suspense>
   );

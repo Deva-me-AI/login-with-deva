@@ -1026,9 +1026,51 @@ export interface paths {
   "/leaderboard/yapper": {
     /**
      * Yapper Leaderboard
-     * @description Get a list of top users by yappers count (PUBLIC API)
+     * @description Get a list of top yappers (PUBLIC API)
      */
     get: operations["yapper_leaderboard_leaderboard_yapper_get"];
+  };
+  "/leaderboard/yapper-tag": {
+    /**
+     * Yapper Tag Leaderboard
+     * @description Get a list of top yappers (PUBLIC API)
+     *
+     * The tags are persona tags.
+     * You can use `filter_column` to filter by a specific tag.
+     */
+    get: operations["yapper_tag_leaderboard_leaderboard_yapper_tag_get"];
+  };
+  "/leaderboard/yapper-project": {
+    /**
+     * Yapper Project Leaderboard
+     * @description Get a list of top crypto projects(PUBLIC API)
+     *
+     * You can use `filter_column` to filter by a specific project.
+     */
+    get: operations["yapper_project_leaderboard_leaderboard_yapper_project_get"];
+  };
+  "/leaderboard/yapper-by-project": {
+    /**
+     * Yapper By Project Leaderboard
+     * @description Get a list of top yappers by project(PUBLIC API)
+     *
+     * You can use `filter_column` to filter by a specific project.
+     */
+    get: operations["yapper_by_project_leaderboard_leaderboard_yapper_by_project_get"];
+  };
+  "/leaderboard/yapper-by-user": {
+    /**
+     * Yapper By User Leaderboard
+     * @description Get a list of top yapper projects by user that the user has mentioned (PUBLIC API)
+     */
+    get: operations["yapper_by_user_leaderboard_leaderboard_yapper_by_user_get"];
+  };
+  "/leaderboard/yapper-by-username": {
+    /**
+     * Yapper Leaderboard By Username
+     * @description Get a yapper data by username from the global leaderboard (PUBLIC API)
+     */
+    get: operations["yapper_leaderboard_by_username_leaderboard_yapper_by_username_get"];
   };
   "/library/skipped": {
     /** Get Skipped Items */
@@ -1204,80 +1246,12 @@ export interface paths {
     /** Scope Info */
     get: operations["scope_info_oidc_scope_get"];
   };
-  "/sdk/feed": {
+  "/oidc/yapper/vote-history-by-project": {
     /**
-     * Get Feed
-     * @description Get paginated feed of posts with their replies.
-     * Works for both authenticated and unauthenticated users.
+     * Get Vote History By Project
+     * @description Get the vote history for a project
      */
-    get: operations["get_feed_sdk_feed_get"];
-    /** Feed Options */
-    options: operations["feed_options_sdk_feed_options"];
-  };
-  "/sdk/feed/post": {
-    /**
-     * Create Post
-     * @description Create a Post with CORS support for client applications
-     */
-    post: operations["create_post_sdk_feed_post_post"];
-    /** Feed Options */
-    options: operations["feed_options_sdk_feed_post_options"];
-  };
-  "/sdk/feed/post/{_id}/react": {
-    /**
-     * React To Post
-     * @description React to a post with CORS support for client applications
-     */
-    put: operations["react_to_post_sdk_feed_post___id__react_put"];
-    /** Post React Options */
-    options: operations["post_react_options_sdk_feed_post___id__react_options"];
-  };
-  "/sdk/channel/handle/{handle}": {
-    /**
-     * Get Channel By Handle
-     * @description Get a channel by handle
-     */
-    get: operations["get_channel_by_handle_sdk_channel_handle__handle__get"];
-    /** Channel Handle Options */
-    options: operations["channel_handle_options_sdk_channel_handle__handle__options"];
-  };
-  "/sdk/persona/public": {
-    /**
-     * List Public Personas
-     * @description Returns a paginated list of personas filtered by the given parameters.
-     * Public endpoint with CORS support.
-     */
-    get: operations["list_public_personas_sdk_persona_public_get"];
-    /** Public Personas Options */
-    options: operations["public_personas_options_sdk_persona_public_options"];
-  };
-  "/sdk/chat/dm/{username}": {
-    /** Get Or Create Dm Thread */
-    get: operations["get_or_create_dm_thread_sdk_chat_dm__username__get"];
-    /** Chat Dm Options */
-    options: operations["chat_dm_options_sdk_chat_dm__username__options"];
-  };
-  "/sdk/chat/{thread_id}/messages": {
-    /**
-     * List Messages
-     * @description Get a paginated list of messages for a thread, ordered by latest first
-     */
-    get: operations["list_messages_sdk_chat__thread_id__messages_get"];
-    /**
-     * Create User Message
-     * @description Create a chat message
-     */
-    post: operations["create_user_message_sdk_chat__thread_id__messages_post"];
-    /** Chat Dm Options */
-    options: operations["chat_dm_options_sdk_chat__thread_id__messages_options"];
-  };
-  "/sdk/chat/{thread_id}/messages/{_id}/query/stream": {
-    /**
-     * Query Message Stream
-     * @description Prompt the LLM to respond to a specific chat message. Return an event
-     * stream as the LLM responds
-     */
-    post: operations["query_message_stream_sdk_chat__thread_id__messages___id__query_stream_post"];
+    get: operations["get_vote_history_by_project_oidc_yapper_vote_history_by_project_get"];
   };
   "/persona": {
     /** Get Persona */
@@ -1568,6 +1542,34 @@ export interface paths {
      */
     post: operations["analyze_tweets_secure_tweet_analyze_post"];
   };
+  "/secure/tweet/{_id}/analyze": {
+    /**
+     * Analyze Tweet By Id
+     * @description Analyze a single tweet by raw text
+     */
+    post: operations["analyze_tweet_by_id_secure_tweet___id__analyze_post"];
+  };
+  "/secure/tweet/analyze-text": {
+    /**
+     * Analyze Tweet By Text
+     * @description Analyze a single tweet by raw text
+     */
+    post: operations["analyze_tweet_by_text_secure_tweet_analyze_text_post"];
+  };
+  "/secure/tweet/calculate-score": {
+    /**
+     * Calculate Score
+     * @description Calculate the score for a tweet
+     */
+    post: operations["calculate_score_secure_tweet_calculate_score_post"];
+  };
+  "/secure/tweet/re-calculate-score": {
+    /**
+     * Re Calculate Score
+     * @description Re-calculate the score for all tweets within a specified time range
+     */
+    post: operations["re_calculate_score_secure_tweet_re_calculate_score_post"];
+  };
   "/secure/tweet/aggregate": {
     /** Aggregate Tweet */
     post: operations["aggregate_tweet_secure_tweet_aggregate_post"];
@@ -1575,6 +1577,14 @@ export interface paths {
   "/secure/tweet/crypto-project-mapping/{_id}": {
     /** Update Crypto Project Mapping */
     put: operations["update_crypto_project_mapping_secure_tweet_crypto_project_mapping___id__put"];
+  };
+  "/secure/tweet/smart-follower-statistics": {
+    /** Get Smart Follower Statistics */
+    post: operations["get_smart_follower_statistics_secure_tweet_smart_follower_statistics_post"];
+  };
+  "/secure/tweet/re-extract-crypto-project-mentions": {
+    /** Re Extract Crypto Project Mentions */
+    post: operations["re_extract_crypto_project_mentions_secure_tweet_re_extract_crypto_project_mentions_post"];
   };
   "/secure/yapper/twitter-follow": {
     /** Collect Twitter Follower */
@@ -1590,12 +1600,25 @@ export interface paths {
     /** Delete Project */
     delete: operations["delete_project_secure_yapper_project__project_id__delete"];
   };
-  "/tweet/persona/{_id}": {
+  "/secure/yapper/distribute-votes": {
+    /** Distribute Yap Votes */
+    post: operations["distribute_yap_votes_secure_yapper_distribute_votes_post"];
+  };
+  "/secure/refresh-mv": {
+    /** Refresh Mv */
+    post: operations["refresh_mv_secure_refresh_mv_post"];
+  };
+  "/secure/resource-permission": {
     /**
-     * Get Persona Tweets
-     * @description Retrieves a list of latest tweets for a persona.
+     * Create Resource Permission
+     * @description Create a new resource permission entry
      */
-    get: operations["get_persona_tweets_tweet_persona___id__get"];
+    post: operations["create_resource_permission_secure_resource_permission_post"];
+    /**
+     * Delete Resource Permission
+     * @description Delete a resource permission entry
+     */
+    delete: operations["delete_resource_permission_secure_resource_permission_delete"];
   };
   "/tweet/top": {
     /** Get Top Tweets */
@@ -1947,6 +1970,118 @@ export interface paths {
      * @description Get the social graph
      */
     get: operations["get_social_graph_yapper_social_graph_get"];
+  };
+  "/yapper/project/{project_id}/vote": {
+    /**
+     * Create Yap Vote
+     * @description Create a new yap vote
+     */
+    post: operations["create_yap_vote_yapper_project__project_id__vote_post"];
+  };
+  "/yapper/estimated-votes": {
+    /**
+     * Get Estimated Votes
+     * @description Get the estimated votes for a project
+     */
+    get: operations["get_estimated_votes_yapper_estimated_votes_get"];
+  };
+  "/yapper/voters": {
+    /**
+     * Get Voters
+     * @description Get all voters
+     */
+    get: operations["get_voters_yapper_voters_get"];
+  };
+  "/yapper/vote-history": {
+    /**
+     * Get Vote History
+     * @description Get the vote history for a project
+     */
+    get: operations["get_vote_history_yapper_vote_history_get"];
+  };
+  "/yapper/vote-history-by-project": {
+    /**
+     * Get Vote History By Project
+     * @description Get the vote history for a project
+     */
+    get: operations["get_vote_history_by_project_yapper_vote_history_by_project_get"];
+  };
+  "/sdk/feed": {
+    /**
+     * Get Feed
+     * @description Get paginated feed of posts with their replies.
+     * Works for both authenticated and unauthenticated users.
+     */
+    get: operations["get_feed_sdk_feed_get"];
+    /** Feed Options */
+    options: operations["feed_options_sdk_feed_options"];
+  };
+  "/sdk/feed/post": {
+    /**
+     * Create Post
+     * @description Create a Post with CORS support for client applications
+     */
+    post: operations["create_post_sdk_feed_post_post"];
+    /** Feed Options */
+    options: operations["feed_options_sdk_feed_post_options"];
+  };
+  "/sdk/feed/post/{_id}/react": {
+    /**
+     * React To Post
+     * @description React to a post with CORS support for client applications
+     */
+    put: operations["react_to_post_sdk_feed_post___id__react_put"];
+    /** Post React Options */
+    options: operations["post_react_options_sdk_feed_post___id__react_options"];
+  };
+  "/sdk/channel/handle/{handle}": {
+    /**
+     * Get Channel By Handle
+     * @description Get a channel by handle
+     */
+    get: operations["get_channel_by_handle_sdk_channel_handle__handle__get"];
+    /** Channel Handle Options */
+    options: operations["channel_handle_options_sdk_channel_handle__handle__options"];
+  };
+  "/sdk/persona/public": {
+    /**
+     * List Public Personas
+     * @description Returns a paginated list of personas filtered by the given parameters.
+     * Public endpoint with CORS support.
+     */
+    get: operations["list_public_personas_sdk_persona_public_get"];
+    /** Public Personas Options */
+    options: operations["public_personas_options_sdk_persona_public_options"];
+  };
+  "/sdk/chat/dm/{username}": {
+    /** Get Or Create Dm Thread */
+    get: operations["get_or_create_dm_thread_sdk_chat_dm__username__get"];
+    /** Chat Dm Options */
+    options: operations["chat_dm_options_sdk_chat_dm__username__options"];
+  };
+  "/sdk/chat/{thread_id}/messages": {
+    /**
+     * List Messages
+     * @description Get a paginated list of messages for a thread, ordered by latest first
+     */
+    get: operations["list_messages_sdk_chat__thread_id__messages_get"];
+    /**
+     * Create User Message
+     * @description Create a chat message
+     */
+    post: operations["create_user_message_sdk_chat__thread_id__messages_post"];
+    /** Chat Dm Options */
+    options: operations["chat_dm_options_sdk_chat__thread_id__messages_options"];
+  };
+  "/sdk/chat/{thread_id}/messages/{_id}/query/stream": {
+    /**
+     * Query Message Stream
+     * @description Prompt the LLM to respond to a specific chat message. Return an event
+     * stream as the LLM responds
+     */
+    post: operations["query_message_stream_sdk_chat__thread_id__messages___id__query_stream_post"];
+    /** Chat Query Stream Options */
+    options: operations["chat_query_stream_options_sdk_chat__thread_id__messages___id__query_stream_options"];
   };
 }
 
@@ -3020,6 +3155,11 @@ export interface components {
        * @default false
        */
       is_public?: boolean;
+      /**
+       * Show Retrievals
+       * @default false
+       */
+      show_retrievals?: boolean;
     };
     /** CreateNoteComment */
     CreateNoteComment: {
@@ -3197,6 +3337,11 @@ export interface components {
        * @default false
        */
       welcomed?: boolean;
+      /**
+       * Wait Listed
+       * @default true
+       */
+      wait_listed?: boolean;
     };
     /** CreateUserChatMessage */
     CreateUserChatMessage: {
@@ -3303,6 +3448,11 @@ export interface components {
        */
       expires_at: string;
     };
+    /** CreateYapVote */
+    CreateYapVote: {
+      /** Amount Of Votes */
+      amount_of_votes: number | string;
+    };
     /** CreateYapperProject */
     CreateYapperProject: {
       /** Name */
@@ -3327,6 +3477,17 @@ export interface components {
       keywords: string[];
       /** Tags */
       tags?: string[];
+      /** @default PRE_VOTING */
+      vote_status?: components["schemas"]["YapperProjectVoteStatus"];
+      /** @default PRE */
+      tge_status?: components["schemas"]["YapperProjectTgeStatus"];
+      /**
+       * Featured
+       * @default false
+       */
+      featured?: boolean;
+      /** Corporate Account Usernames */
+      corporate_account_usernames?: string[] | null;
     };
     /** CreateYapsPersona */
     CreateYapsPersona: {
@@ -3498,6 +3659,11 @@ export interface components {
       /** Deva Id */
       deva_id: string;
     };
+    /** EstimatedVotes */
+    EstimatedVotes: {
+      /** Estimated Votes */
+      estimated_votes: string;
+    };
     /** ExcerptDBModel */
     ExcerptDBModel: {
       /**
@@ -3585,6 +3751,12 @@ export interface components {
       /** Username */
       username: string;
     };
+    /**
+     * FilterOperator
+     * @description Supported filter operators
+     * @enum {string}
+     */
+    FilterOperator: "eq" | "ne" | "gt" | "gte" | "lt" | "lte" | "in" | "not_in" | "contains" | "not_contains" | "starts_with" | "ends_with" | "is_null" | "is_not_null";
     /**
      * FollowTypeRequest
      * @enum {string}
@@ -3826,6 +3998,8 @@ export interface components {
       persona_id: string;
       /** Is Public */
       is_public: boolean;
+      /** Show Retrievals */
+      show_retrievals: boolean;
       /**
        * Id
        * Format: uuid
@@ -4010,6 +4184,8 @@ export interface components {
       karma_confirmation_threshold_enabled: boolean;
       /** Allow Genie Daily Allowance */
       allow_genie_daily_allowance: boolean;
+      /** Yap Votes */
+      yap_votes: number;
       /** Bronze Karma */
       bronze_karma: string;
       /** Silver Karma */
@@ -4760,6 +4936,11 @@ export interface components {
       /** Pairs */
       pairs: components["schemas"]["LiquidityPair"][];
     };
+    /**
+     * MV
+     * @enum {string}
+     */
+    MV: "DEVA" | "CREATOR" | "PROMPTER" | "TRAINER" | "PERSONA" | "REFERRAL" | "NW_REFERRAL" | "GOVERNOR" | "ARTIFACT" | "GEM" | "YAPPER" | "YAPPER_PROJECT" | "YAPPER_TAG" | "YAPPER_BY_PROJECT" | "YAPPER_BY_USER";
     /** MarkMessageAsRead */
     MarkMessageAsRead: {
       /**
@@ -4848,6 +5029,8 @@ export interface components {
       persona_id: string;
       /** Is Public */
       is_public: boolean;
+      /** Show Retrievals */
+      show_retrievals: boolean;
       /**
        * Id
        * Format: uuid
@@ -5331,6 +5514,13 @@ export interface components {
       /** Items */
       items: components["schemas"]["PersonaCategoriesDBModel"][];
     };
+    /** PaginatedPersonaVoters */
+    PaginatedPersonaVoters: {
+      /** Total */
+      total: number;
+      /** Items */
+      items: components["schemas"]["PersonaVoterDBModel"][];
+    };
     /** PaginatedPersonae */
     PaginatedPersonae: {
       /** Total */
@@ -5401,12 +5591,33 @@ export interface components {
       /** Items */
       items: components["schemas"]["YapperLBItem"][];
     };
-    /** PaginatedYapperProjects */
-    PaginatedYapperProjects: {
+    /** PaginatedYapperProjectLBItems */
+    PaginatedYapperProjectLBItems: {
       /** Total */
       total: number;
       /** Items */
-      items: components["schemas"]["YapperProjectDBModel"][];
+      items: components["schemas"]["YapperProjectLBItem"][];
+    };
+    /** PaginatedYapperProjectVoterss */
+    PaginatedYapperProjectVoterss: {
+      /** Total */
+      total: number;
+      /** Items */
+      items: components["schemas"]["YapperProjectVotersDBModel"][];
+    };
+    /** PaginatedYapperProjectVoteses */
+    PaginatedYapperProjectVoteses: {
+      /** Total */
+      total: number;
+      /** Items */
+      items: components["schemas"]["YapperProjectVotesDBModel"][];
+    };
+    /** PaginatedYapperVoteProjects */
+    PaginatedYapperVoteProjects: {
+      /** Total */
+      total: number;
+      /** Items */
+      items: components["schemas"]["YapperVoteProjectDBModel"][];
     };
     /** PasskeyDBModel */
     PasskeyDBModel: {
@@ -5498,6 +5709,8 @@ export interface components {
       karma_reputation: string;
       /** Allow Genie Daily Allowance */
       allow_genie_daily_allowance: boolean;
+      /** Yap Votes */
+      yap_votes: number;
       /** Invited By */
       invited_by?: string | null;
       /** Has Followed Ten Planet Twitter */
@@ -5614,6 +5827,8 @@ export interface components {
       karma_confirmation_threshold_enabled: boolean;
       /** Allow Genie Daily Allowance */
       allow_genie_daily_allowance: boolean;
+      /** Yap Votes */
+      yap_votes: number;
       /** Bronze Karma */
       bronze_karma: string;
       /** Silver Karma */
@@ -5736,6 +5951,8 @@ export interface components {
       karma_reputation: string;
       /** Allow Genie Daily Allowance */
       allow_genie_daily_allowance: boolean;
+      /** Yap Votes */
+      yap_votes: number;
       /** Invited By */
       invited_by?: string | null;
       /** Has Followed Ten Planet Twitter */
@@ -5790,6 +6007,12 @@ export interface components {
      * @enum {string}
      */
     PersonaVisibility: "PUBLIC" | "PRIVATE" | "OFF";
+    /** PersonaVoterDBModel */
+    PersonaVoterDBModel: {
+      persona: components["schemas"]["PublicPersonaDBModel"];
+      /** Votes */
+      votes: number;
+    };
     /** PersonaWithInvitedByPersonaDBModel */
     PersonaWithInvitedByPersonaDBModel: {
       /**
@@ -5858,6 +6081,8 @@ export interface components {
       karma_confirmation_threshold_enabled: boolean;
       /** Allow Genie Daily Allowance */
       allow_genie_daily_allowance: boolean;
+      /** Yap Votes */
+      yap_votes: number;
       /** Bronze Karma */
       bronze_karma: string;
       /** Silver Karma */
@@ -6402,6 +6627,8 @@ export interface components {
       karma_reputation: string;
       /** Allow Genie Daily Allowance */
       allow_genie_daily_allowance: boolean;
+      /** Yap Votes */
+      yap_votes: number;
       /** Invited By */
       invited_by?: string | null;
       /** Has Followed Ten Planet Twitter */
@@ -6649,6 +6876,89 @@ export interface components {
       /** Twitter */
       twitter: string;
     };
+    /**
+     * ResourceFilter
+     * @description Schema for resource filter with logical operations
+     *
+     * Examples:
+     *     {
+     *         "filters": [
+     *             {
+     *                 "filter_key": "department",
+     *                 "filter_value": "HR",
+     *                 "filter_operator": "eq"
+     *             },
+     *             {
+     *                 "filter_key": "clearance_level",
+     *                 "filter_value": 3,
+     *                 "filter_operator": "gte"
+     *             }
+     *         ],
+     *         "combine_with": "AND"
+     *     }
+     */
+    ResourceFilter: {
+      /**
+       * Filters
+       * @description List of filter items
+       */
+      filters: components["schemas"]["ResourceFilterItem"][];
+      /**
+       * Combine With
+       * @description How to combine multiple filters ('AND' or 'OR')
+       * @default AND
+       */
+      combine_with?: string;
+    };
+    /**
+     * ResourceFilterItem
+     * @description Base schema for resource filter
+     *
+     * Examples:
+     *     - {"filter_key": "department", "filter_value": "HR", "filter_operator": "eq"}
+     *     - {"filter_key": "age", "filter_value": 18, "filter_operator": "gte"}
+     *     - {"filter_key": "tags", "filter_value": ["urgent", "review"], "filter_operator": "contains"}
+     *     - {"filter_key": "is_active", "filter_value": True, "filter_operator": "eq"}
+     *     - {"filter_key": "is_active", "filter_operator": "is_null"}
+     *     - {"filter_key": "is_active", "filter_operator": "is_not_null"}
+     */
+    ResourceFilterItem: {
+      /**
+       * Filter Key
+       * @description Key to filter on
+       */
+      filter_key: string;
+      /**
+       * Filter Value
+       * @description Value to filter on
+       */
+      filter_value?: unknown;
+      /** @description Operator to filter with */
+      filter_operator: components["schemas"]["FilterOperator"];
+    };
+    /**
+     * ResourcePermissionCreate
+     * @description Schema for creating a resource permission
+     */
+    ResourcePermissionCreate: {
+      /**
+       * Resource
+       * @description Type of resource
+       */
+      resource: string;
+      /**
+       * Action
+       * @description Type of action
+       */
+      action: string;
+      /** @description Filter configuration */
+      resource_filter: components["schemas"]["ResourceFilter"];
+      /**
+       * Persona Id
+       * Format: uuid
+       */
+      persona_id: string;
+    };
     /** RetrievalDBModel */
     RetrievalDBModel: {
       /** Content */
@@ -6894,6 +7204,31 @@ export interface components {
      * @enum {string}
      */
     TranscriptState: "PENDING" | "IN_PROGRESS" | "NO_DATA" | "COMPLETED" | "FAILED";
+    /**
+     * TweetAnalysisRequest
+     * @description Request for tweet analysis.
+     */
+    TweetAnalysisRequest: {
+      /**
+       * Id
+       * Format: uuid4
+       */
+      id: string;
+      /** Text */
+      text: string;
+      /** Author */
+      author: string;
+      /** Tweet Id */
+      tweet_id: string;
+    };
+    /**
+     * TweetCount
+     * @description The number of tweets in the time period.
+     */
+    TweetCount: {
+      /** Count */
+      count: number;
+    };
     /** TweetDBModel */
     TweetDBModel: {
       /**
@@ -6963,6 +7298,8 @@ export interface components {
       scaled_engagement_score?: string;
       /** Scaled Influencer Weight */
       scaled_influencer_weight?: string;
+      /** Scaled Smart Follower Score */
+      scaled_smart_follower_score?: string;
     };
     /**
      * TweetOrderByRequest
@@ -7188,6 +7525,8 @@ export interface components {
       backlink_post_ids?: string[] | null;
       /** Is Public */
       is_public?: boolean | null;
+      /** Show Retrievals */
+      show_retrievals?: boolean | null;
     };
     /** UpdatePersona */
     UpdatePersona: {
@@ -7246,10 +7585,6 @@ export interface components {
       karma_confirmation_threshold_enabled?: boolean | null;
       /** Get Airdrop */
       get_airdrop?: boolean | null;
-      /** From Yaps */
-      from_yaps?: boolean | null;
-      /** Smart */
-      smart?: boolean | null;
     };
     /** UpdatePersonaAllowGenieDailyAllowance */
     UpdatePersonaAllowGenieDailyAllowance: {
@@ -7357,6 +7692,12 @@ export interface components {
       keywords?: string[] | null;
       /** Tags */
       tags?: string[] | null;
+      vote_status?: components["schemas"]["YapperProjectVoteStatus"] | null;
+      tge_status?: components["schemas"]["YapperProjectTgeStatus"] | null;
+      /** Featured */
+      featured?: boolean | null;
+      /** Corporate Account Usernames */
+      corporate_account_usernames?: string[] | null;
     };
     /** UseVerificationToken */
     UseVerificationToken: {
@@ -7508,6 +7849,11 @@ export interface components {
       description?: string | null;
       /** Avatar */
       avatar?: string | null;
+      /**
+       * Yap Votes
+       * @default 0
+       */
+      yap_votes?: number;
     };
     /**
      * UserRole
@@ -7904,11 +8250,6 @@ export interface components {
     YapperLBItem: {
       /** Rank */
       rank: number;
-      /**
-       * Persona Id
-       * Format: uuid4
-       */
-      persona_id: string;
       /** Filter Column */
       filter_column: string | null;
       /** Mindshare */
@@ -7943,6 +8284,11 @@ export interface components {
       change_6m_mindshare_percentage: string;
       /** Change 1Y Mindshare Percentage */
       change_1y_mindshare_percentage: string;
+      /**
+       * Persona Id
+       * Format: uuid4
+       */
+      persona_id: string;
       /** Username */
       username: string;
       /**
@@ -7968,6 +8314,8 @@ export interface components {
       smart_following: number;
       /** Categories */
       categories?: string[];
+      /** Twitter Username */
+      twitter_username?: string | null;
     };
     /** YapperProjectDBModel */
     YapperProjectDBModel: {
@@ -7987,6 +8335,14 @@ export interface components {
       keywords: unknown[];
       /** Tags */
       tags: unknown[];
+      vote_status: components["schemas"]["YapperProjectVoteStatus"];
+      tge_status: components["schemas"]["YapperProjectTgeStatus"];
+      /** Yap Votes */
+      yap_votes: number;
+      /** Featured */
+      featured: boolean;
+      /** Vote Reduction Percentage */
+      vote_reduction_percentage: number;
       /**
        * Id
        * Format: uuid
@@ -8002,6 +8358,253 @@ export interface components {
        * Format: date-time
        */
       updated_at: string;
+      /** Total User Votes */
+      total_user_votes?: number;
+    };
+    /** YapperProjectLBItem */
+    YapperProjectLBItem: {
+      /** Rank */
+      rank: number;
+      /** Filter Column */
+      filter_column: string | null;
+      /** Mindshare */
+      mindshare: string;
+      /** Last 7D Mindshare */
+      last_7d_mindshare: string;
+      /** Last 30D Mindshare */
+      last_30d_mindshare: string;
+      /** Last 3M Mindshare */
+      last_3m_mindshare: string;
+      /** Last 6M Mindshare */
+      last_6m_mindshare: string;
+      /** Last 1Y Mindshare */
+      last_1y_mindshare: string;
+      /** Change 7D Mindshare */
+      change_7d_mindshare: string;
+      /** Change 30D Mindshare */
+      change_30d_mindshare: string;
+      /** Change 3M Mindshare */
+      change_3m_mindshare: string;
+      /** Change 6M Mindshare */
+      change_6m_mindshare: string;
+      /** Change 1Y Mindshare */
+      change_1y_mindshare: string;
+      /** Change 7D Mindshare Percentage */
+      change_7d_mindshare_percentage: string;
+      /** Change 30D Mindshare Percentage */
+      change_30d_mindshare_percentage: string;
+      /** Change 3M Mindshare Percentage */
+      change_3m_mindshare_percentage: string;
+      /** Change 6M Mindshare Percentage */
+      change_6m_mindshare_percentage: string;
+      /** Change 1Y Mindshare Percentage */
+      change_1y_mindshare_percentage: string;
+      /**
+       * Project Id
+       * Format: uuid4
+       */
+      project_id: string;
+      /** Name */
+      name: string;
+      /** Display Name */
+      display_name: string;
+      /** Description */
+      description: string;
+      /** Twitter Handle */
+      twitter_handle: string;
+      /** Logo Url */
+      logo_url: string;
+      /** Website Url */
+      website_url: string;
+      /** Tags */
+      tags?: string[];
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /** Yap Votes */
+      yap_votes: number;
+      /** Vote Status */
+      vote_status: string;
+      /** Tge Status */
+      tge_status: string;
+      /** Featured */
+      featured: boolean;
+    };
+    /**
+     * YapperProjectTgeStatus
+     * @description The TGE status of a yapper project.
+     * @enum {string}
+     */
+    YapperProjectTgeStatus: "PRE" | "POST";
+    /**
+     * YapperProjectVoteStatus
+     * @description The vote status of a yapper project.
+     * @enum {string}
+     */
+    YapperProjectVoteStatus: "POTENTIAL" | "ENGAGED" | "PRE_VOTING" | "VOTING" | "TO_LAUNCH" | "LAUNCHED" | "POST_TGE";
+    /** YapperProjectVotersDBModel */
+    YapperProjectVotersDBModel: {
+      /** Name */
+      name: string;
+      /** Display Name */
+      display_name: string;
+      /** Description */
+      description: string;
+      /** Twitter Handle */
+      twitter_handle: string;
+      /** Logo Url */
+      logo_url: string;
+      /** Website Url */
+      website_url: string;
+      /** Keywords */
+      keywords: unknown[];
+      /** Tags */
+      tags: unknown[];
+      vote_status: components["schemas"]["YapperProjectVoteStatus"];
+      tge_status: components["schemas"]["YapperProjectTgeStatus"];
+      /** Yap Votes */
+      yap_votes: number;
+      /** Featured */
+      featured: boolean;
+      /** Vote Reduction Percentage */
+      vote_reduction_percentage: number;
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /**
+       * Updated At
+       * Format: date-time
+       */
+      updated_at: string;
+      /** Total User Votes */
+      total_user_votes?: number;
+      /** Voters */
+      voters?: components["schemas"]["PersonaVoterDBModel"][];
+      /** Total Voters */
+      total_voters: number;
+      /** Top Yappers */
+      top_yappers?: components["schemas"]["YapperLBItem"][];
+      /**
+       * Total Top Yappers
+       * @default 0
+       */
+      total_top_yappers?: number;
+    };
+    /** YapperProjectVotesDBModel */
+    YapperProjectVotesDBModel: {
+      /** Name */
+      name: string;
+      /** Display Name */
+      display_name: string;
+      /** Description */
+      description: string;
+      /** Twitter Handle */
+      twitter_handle: string;
+      /** Logo Url */
+      logo_url: string;
+      /** Website Url */
+      website_url: string;
+      /** Keywords */
+      keywords: unknown[];
+      /** Tags */
+      tags: unknown[];
+      vote_status: components["schemas"]["YapperProjectVoteStatus"];
+      tge_status: components["schemas"]["YapperProjectTgeStatus"];
+      /** Yap Votes */
+      yap_votes: number;
+      /** Featured */
+      featured: boolean;
+      /** Vote Reduction Percentage */
+      vote_reduction_percentage: number;
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /**
+       * Updated At
+       * Format: date-time
+       */
+      updated_at: string;
+      /** Total User Votes */
+      total_user_votes: number;
+      /** Votes */
+      votes?: components["schemas"]["YapperVoteDBModel"][];
+    };
+    /** YapperVoteDBModel */
+    YapperVoteDBModel: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /**
+       * Persona Id
+       * Format: uuid
+       */
+      persona_id: string;
+      /** Amount Of Votes */
+      amount_of_votes: string;
+      /**
+       * Project Id
+       * Format: uuid
+       */
+      project_id: string;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /**
+       * Updated At
+       * Format: date-time
+       */
+      updated_at: string;
+    };
+    /** YapperVoteProjectDBModel */
+    YapperVoteProjectDBModel: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string;
+      /**
+       * Persona Id
+       * Format: uuid
+       */
+      persona_id: string;
+      /** Amount Of Votes */
+      amount_of_votes: string;
+      /**
+       * Project Id
+       * Format: uuid
+       */
+      project_id: string;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /**
+       * Updated At
+       * Format: date-time
+       */
+      updated_at: string;
+      project?: components["schemas"]["YapperProjectDBModel"] | null;
     };
     /** UpdateUser */
     schemas__auth__UpdateUser: {
@@ -11873,6 +12476,7 @@ export interface operations {
   get_personas_to_analyze_tweets_internal_persona_get_personas_to_analyze_tweets_get: {
     parameters: {
       query?: {
+        limit?: number;
         raise_error?: boolean;
       };
     };
@@ -13455,9 +14059,83 @@ export interface operations {
   };
   /**
    * Yapper Leaderboard
-   * @description Get a list of top users by yappers count (PUBLIC API)
+   * @description Get a list of top yappers (PUBLIC API)
    */
   yapper_leaderboard_leaderboard_yapper_get: {
+    parameters: {
+      query?: {
+        search_query?: string | null;
+        search_query_threshold?: number;
+        usernames?: string[] | null;
+        order_by?: string;
+        skip?: number;
+        limit?: number;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["PaginatedYapperLBItems"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Yapper Tag Leaderboard
+   * @description Get a list of top yappers (PUBLIC API)
+   *
+   * The tags are persona tags.
+   * You can use `filter_column` to filter by a specific tag.
+   */
+  yapper_tag_leaderboard_leaderboard_yapper_tag_get: {
+    parameters: {
+      query: {
+        filter_column: string;
+        search_query?: string | null;
+        search_query_threshold?: number;
+        usernames?: string[] | null;
+        order_by?: string;
+        skip?: number;
+        limit?: number;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["PaginatedYapperLBItems"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Yapper Project Leaderboard
+   * @description Get a list of top crypto projects(PUBLIC API)
+   *
+   * You can use `filter_column` to filter by a specific project.
+   */
+  yapper_project_leaderboard_leaderboard_yapper_project_get: {
     parameters: {
       query?: {
         filter_column?: string | null;
@@ -13473,7 +14151,106 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
+          "application/json": components["schemas"]["PaginatedYapperProjectLBItems"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Yapper By Project Leaderboard
+   * @description Get a list of top yappers by project(PUBLIC API)
+   *
+   * You can use `filter_column` to filter by a specific project.
+   */
+  yapper_by_project_leaderboard_leaderboard_yapper_by_project_get: {
+    parameters: {
+      query: {
+        project_name: string;
+        search_query?: string | null;
+        search_query_threshold?: number;
+        usernames?: string[] | null;
+        order_by?: string;
+        skip?: number;
+        limit?: number;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
           "application/json": components["schemas"]["PaginatedYapperLBItems"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Yapper By User Leaderboard
+   * @description Get a list of top yapper projects by user that the user has mentioned (PUBLIC API)
+   */
+  yapper_by_user_leaderboard_leaderboard_yapper_by_user_get: {
+    parameters: {
+      query: {
+        filter_column: string;
+        project_names?: string[] | null;
+        order_by?: string;
+        skip?: number;
+        limit?: number;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["PaginatedYapperProjectLBItems"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Yapper Leaderboard By Username
+   * @description Get a yapper data by username from the global leaderboard (PUBLIC API)
+   */
+  yapper_leaderboard_by_username_leaderboard_yapper_by_username_get: {
+    parameters: {
+      query: {
+        username: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["YapperLBItem"];
         };
       };
       /** @description Not found */
@@ -13678,6 +14455,7 @@ export interface operations {
         daily_note?: boolean | null;
         backlink_post_id?: string | null;
         is_public?: boolean | null;
+        show_retrievals?: boolean | null;
         skip?: number;
         limit?: number;
       };
@@ -14487,234 +15265,12 @@ export interface operations {
     };
   };
   /**
-   * Get Feed
-   * @description Get paginated feed of posts with their replies.
-   * Works for both authenticated and unauthenticated users.
+   * Get Vote History By Project
+   * @description Get the vote history for a project
    */
-  get_feed_sdk_feed_get: {
+  get_vote_history_by_project_oidc_yapper_vote_history_by_project_get: {
     parameters: {
       query?: {
-        channel_id?: string | null;
-        before_created_at?: string | null;
-        after_created_at?: string | null;
-        /** @description Filter posts by persona */
-        filter_persona_id?: string | null;
-        is_deleted?: boolean | null;
-        /** @description Search query */
-        query?: string | null;
-        skip?: number;
-        limit?: number;
-        order_by?: "updated_at" | "created_at";
-        order_direction?: "desc" | "asc";
-      };
-      header?: {
-        origin?: string | null;
-        "x-forwarded-host"?: string | null;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["PaginatedPostWithReplieses"];
-        };
-      };
-      /** @description Not found */
-      404: {
-        content: never;
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Feed Options */
-  feed_options_sdk_feed_options: {
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": unknown;
-        };
-      };
-      /** @description Not found */
-      404: {
-        content: never;
-      };
-    };
-  };
-  /**
-   * Create Post
-   * @description Create a Post with CORS support for client applications
-   */
-  create_post_sdk_feed_post_post: {
-    parameters: {
-      header?: {
-        origin?: string | null;
-        "x-forwarded-host"?: string | null;
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["CreateUserPost"];
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      201: {
-        content: {
-          "application/json": components["schemas"]["FullPostDBModel"];
-        };
-      };
-      /** @description Not found */
-      404: {
-        content: never;
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Feed Options */
-  feed_options_sdk_feed_post_options: {
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": unknown;
-        };
-      };
-      /** @description Not found */
-      404: {
-        content: never;
-      };
-    };
-  };
-  /**
-   * React To Post
-   * @description React to a post with CORS support for client applications
-   */
-  react_to_post_sdk_feed_post___id__react_put: {
-    parameters: {
-      header?: {
-        origin?: string | null;
-        "x-forwarded-host"?: string | null;
-      };
-      path: {
-        _id: string;
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["ReactPost"];
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["FullPostDBModel"];
-        };
-      };
-      /** @description Not found */
-      404: {
-        content: never;
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Post React Options */
-  post_react_options_sdk_feed_post___id__react_options: {
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": unknown;
-        };
-      };
-      /** @description Not found */
-      404: {
-        content: never;
-      };
-    };
-  };
-  /**
-   * Get Channel By Handle
-   * @description Get a channel by handle
-   */
-  get_channel_by_handle_sdk_channel_handle__handle__get: {
-    parameters: {
-      path: {
-        handle: string;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ChannelDBModel"];
-        };
-      };
-      /** @description Not found */
-      404: {
-        content: never;
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Channel Handle Options */
-  channel_handle_options_sdk_channel_handle__handle__options: {
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": unknown;
-        };
-      };
-      /** @description Not found */
-      404: {
-        content: never;
-      };
-    };
-  };
-  /**
-   * List Public Personas
-   * @description Returns a paginated list of personas filtered by the given parameters.
-   * Public endpoint with CORS support.
-   */
-  list_public_personas_sdk_persona_public_get: {
-    parameters: {
-      query?: {
-        /** @description Substring search on display_name and username fields */
-        query?: string | null;
-        usernames?: string[] | null;
-        /** @description Search for personas with any of the given categories */
-        categories_any?: string[] | null;
-        /** @description Search for personas with all of the given categories */
-        categories_all?: string[] | null;
-        display_name?: string | null;
-        has_on_chain_gem?: boolean | null;
-        type?: components["schemas"]["PersonaType"];
-        from_foom?: boolean | null;
-        from_yaps?: boolean | null;
-        smart?: boolean | null;
-        sort_by?: components["schemas"]["PersonaSort"][] | null;
         skip?: number;
         limit?: number;
       };
@@ -14723,189 +15279,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["PaginatedPersonaCategorieses"];
-        };
-      };
-      /** @description Not found */
-      404: {
-        content: never;
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Public Personas Options */
-  public_personas_options_sdk_persona_public_options: {
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": unknown;
-        };
-      };
-      /** @description Not found */
-      404: {
-        content: never;
-      };
-    };
-  };
-  /** Get Or Create Dm Thread */
-  get_or_create_dm_thread_sdk_chat_dm__username__get: {
-    parameters: {
-      header?: {
-        origin?: string | null;
-        "x-forwarded-host"?: string | null;
-      };
-      path: {
-        username: string;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ChatThreadMembersDBModel"];
-        };
-      };
-      /** @description Not found */
-      404: {
-        content: never;
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Chat Dm Options */
-  chat_dm_options_sdk_chat_dm__username__options: {
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": unknown;
-        };
-      };
-      /** @description Not found */
-      404: {
-        content: never;
-      };
-    };
-  };
-  /**
-   * List Messages
-   * @description Get a paginated list of messages for a thread, ordered by latest first
-   */
-  list_messages_sdk_chat__thread_id__messages_get: {
-    parameters: {
-      query?: {
-        before_created_at?: string | null;
-        after_created_at?: string | null;
-        exclude_expired?: boolean;
-        author_type?: components["schemas"]["MessageAuthorType"] | null;
-        thread_persona_id?: string | null;
-        skip?: number;
-        limit?: number;
-      };
-      header?: {
-        origin?: string | null;
-        "x-forwarded-host"?: string | null;
-      };
-      path: {
-        thread_id: string;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["PaginatedFullChatMessages"];
-        };
-      };
-      /** @description Not found */
-      404: {
-        content: never;
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /**
-   * Create User Message
-   * @description Create a chat message
-   */
-  create_user_message_sdk_chat__thread_id__messages_post: {
-    parameters: {
-      header?: {
-        origin?: string | null;
-        "x-forwarded-host"?: string | null;
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["CreateUserChatMessage"];
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      201: {
-        content: {
-          "application/json": components["schemas"]["ChatMessageDBModel"];
-        };
-      };
-      /** @description Not found */
-      404: {
-        content: never;
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Chat Dm Options */
-  chat_dm_options_sdk_chat__thread_id__messages_options: {
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": unknown;
-        };
-      };
-      /** @description Not found */
-      404: {
-        content: never;
-      };
-    };
-  };
-  /**
-   * Query Message Stream
-   * @description Prompt the LLM to respond to a specific chat message. Return an event
-   * stream as the LLM responds
-   */
-  query_message_stream_sdk_chat__thread_id__messages___id__query_stream_post: {
-    parameters: {
-      path: {
-        _id: string;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["FullChatMessageDBModel"];
+          "application/json": components["schemas"]["PaginatedYapperProjectVoteses"];
         };
       };
       /** @description Not found */
@@ -16195,6 +16569,136 @@ export interface operations {
       };
     };
   };
+  /**
+   * Analyze Tweet By Id
+   * @description Analyze a single tweet by raw text
+   */
+  analyze_tweet_by_id_secure_tweet___id__analyze_post: {
+    parameters: {
+      query?: {
+        raise_error?: boolean;
+      };
+      path: {
+        _id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Analyze Tweet By Text
+   * @description Analyze a single tweet by raw text
+   */
+  analyze_tweet_by_text_secure_tweet_analyze_text_post: {
+    parameters: {
+      query?: {
+        raise_error?: boolean;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["TweetAnalysisRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Calculate Score
+   * @description Calculate the score for a tweet
+   */
+  calculate_score_secure_tweet_calculate_score_post: {
+    parameters: {
+      query: {
+        tweet_id: string;
+        weight_ai_sentiment?: number | string;
+        weight_engagement?: number | string;
+        weight_influencer?: number | string;
+        weight_smart_follower?: number | string;
+        raise_error?: boolean;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Re Calculate Score
+   * @description Re-calculate the score for all tweets within a specified time range
+   */
+  re_calculate_score_secure_tweet_re_calculate_score_post: {
+    parameters: {
+      query?: {
+        reset_date?: string | null;
+        raise_error?: boolean;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
   /** Aggregate Tweet */
   aggregate_tweet_secure_tweet_aggregate_post: {
     parameters: {
@@ -16233,6 +16737,59 @@ export interface operations {
       /** @description Successful Response */
       204: {
         content: never;
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Get Smart Follower Statistics */
+  get_smart_follower_statistics_secure_tweet_smart_follower_statistics_post: {
+    parameters: {
+      query?: {
+        raise_error?: boolean;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Re Extract Crypto Project Mentions */
+  re_extract_crypto_project_mentions_secure_tweet_re_extract_crypto_project_mentions_post: {
+    parameters: {
+      query?: {
+        reset_date?: string | null;
+        raise_error?: boolean;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["TweetCount"];
+        };
       };
       /** @description Not found */
       404: {
@@ -16366,26 +16923,111 @@ export interface operations {
       };
     };
   };
-  /**
-   * Get Persona Tweets
-   * @description Retrieves a list of latest tweets for a persona.
-   */
-  get_persona_tweets_tweet_persona___id__get: {
+  /** Distribute Yap Votes */
+  distribute_yap_votes_secure_yapper_distribute_votes_post: {
     parameters: {
       query?: {
-        skip?: number;
-        limit?: number;
-      };
-      path: {
-        _id: string;
+        votes_to_distribute?: number | string | null;
+        raise_error?: boolean;
       };
     };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["PaginatedTweets"];
+          "application/json": unknown;
         };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Refresh Mv */
+  refresh_mv_secure_refresh_mv_post: {
+    parameters: {
+      query: {
+        mv: components["schemas"]["MV"];
+        raise_error?: boolean;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Create Resource Permission
+   * @description Create a new resource permission entry
+   */
+  create_resource_permission_secure_resource_permission_post: {
+    parameters: {
+      query?: {
+        raise_error?: boolean;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ResourcePermissionCreate"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Delete Resource Permission
+   * @description Delete a resource permission entry
+   */
+  delete_resource_permission_secure_resource_permission_delete: {
+    parameters: {
+      query: {
+        persona_id: string;
+        resource: string;
+        action: string;
+        raise_error?: boolean;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      204: {
+        content: never;
       };
       /** @description Not found */
       404: {
@@ -18041,15 +18683,22 @@ export interface operations {
   get_projects_yapper_projects_get: {
     parameters: {
       query?: {
+        search_query?: string | null;
+        vote_status?: components["schemas"]["YapperProjectVoteStatus"] | null;
+        tge_status?: components["schemas"]["YapperProjectTgeStatus"] | null;
+        featured?: boolean | null;
+        tweeted_by?: string | null;
         skip?: number;
         limit?: number;
+        voters_limit?: number;
+        top_yappers_limit?: number;
       };
     };
     responses: {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["PaginatedYapperProjects"];
+          "application/json": components["schemas"]["PaginatedYapperProjectVoterss"];
         };
       };
       /** @description Not found */
@@ -18070,6 +18719,9 @@ export interface operations {
    */
   get_project_yapper_projects__project_name__get: {
     parameters: {
+      query?: {
+        voters_limit?: number;
+      };
       path: {
         project_name: string;
       };
@@ -18078,7 +18730,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["YapperProjectDBModel"];
+          "application/json": components["schemas"]["YapperProjectVotersDBModel"];
         };
       };
       /** @description Not found */
@@ -18121,6 +18773,615 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["SocialGraph"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+    };
+  };
+  /**
+   * Create Yap Vote
+   * @description Create a new yap vote
+   */
+  create_yap_vote_yapper_project__project_id__vote_post: {
+    parameters: {
+      path: {
+        project_id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreateYapVote"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["YapperVoteDBModel"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Estimated Votes
+   * @description Get the estimated votes for a project
+   */
+  get_estimated_votes_yapper_estimated_votes_get: {
+    parameters: {
+      query: {
+        persona_id: string;
+        project_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["EstimatedVotes"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Voters
+   * @description Get all voters
+   */
+  get_voters_yapper_voters_get: {
+    parameters: {
+      query: {
+        project_id: string;
+        skip?: number;
+        limit?: number;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["PaginatedPersonaVoters"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Vote History
+   * @description Get the vote history for a project
+   */
+  get_vote_history_yapper_vote_history_get: {
+    parameters: {
+      query?: {
+        skip?: number;
+        limit?: number;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["PaginatedYapperVoteProjects"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Vote History By Project
+   * @description Get the vote history for a project
+   */
+  get_vote_history_by_project_yapper_vote_history_by_project_get: {
+    parameters: {
+      query?: {
+        skip?: number;
+        limit?: number;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["PaginatedYapperProjectVoteses"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Feed
+   * @description Get paginated feed of posts with their replies.
+   * Works for both authenticated and unauthenticated users.
+   */
+  get_feed_sdk_feed_get: {
+    parameters: {
+      query?: {
+        channel_id?: string | null;
+        before_created_at?: string | null;
+        after_created_at?: string | null;
+        /** @description Filter posts by persona */
+        filter_persona_id?: string | null;
+        is_deleted?: boolean | null;
+        /** @description Search query */
+        query?: string | null;
+        skip?: number;
+        limit?: number;
+        order_by?: "updated_at" | "created_at";
+        order_direction?: "desc" | "asc";
+      };
+      header?: {
+        origin?: string | null;
+        "x-forwarded-host"?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["PaginatedPostWithReplieses"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Feed Options */
+  feed_options_sdk_feed_options: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+    };
+  };
+  /**
+   * Create Post
+   * @description Create a Post with CORS support for client applications
+   */
+  create_post_sdk_feed_post_post: {
+    parameters: {
+      header?: {
+        origin?: string | null;
+        "x-forwarded-host"?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreateUserPost"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        content: {
+          "application/json": components["schemas"]["FullPostDBModel"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Feed Options */
+  feed_options_sdk_feed_post_options: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+    };
+  };
+  /**
+   * React To Post
+   * @description React to a post with CORS support for client applications
+   */
+  react_to_post_sdk_feed_post___id__react_put: {
+    parameters: {
+      header?: {
+        origin?: string | null;
+        "x-forwarded-host"?: string | null;
+      };
+      path: {
+        _id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ReactPost"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["FullPostDBModel"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Post React Options */
+  post_react_options_sdk_feed_post___id__react_options: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+    };
+  };
+  /**
+   * Get Channel By Handle
+   * @description Get a channel by handle
+   */
+  get_channel_by_handle_sdk_channel_handle__handle__get: {
+    parameters: {
+      path: {
+        handle: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ChannelDBModel"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Channel Handle Options */
+  channel_handle_options_sdk_channel_handle__handle__options: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+    };
+  };
+  /**
+   * List Public Personas
+   * @description Returns a paginated list of personas filtered by the given parameters.
+   * Public endpoint with CORS support.
+   */
+  list_public_personas_sdk_persona_public_get: {
+    parameters: {
+      query?: {
+        /** @description Substring search on display_name and username fields */
+        query?: string | null;
+        usernames?: string[] | null;
+        /** @description Search for personas with any of the given categories */
+        categories_any?: string[] | null;
+        /** @description Search for personas with all of the given categories */
+        categories_all?: string[] | null;
+        display_name?: string | null;
+        has_on_chain_gem?: boolean | null;
+        type?: components["schemas"]["PersonaType"];
+        from_foom?: boolean | null;
+        from_yaps?: boolean | null;
+        smart?: boolean | null;
+        sort_by?: components["schemas"]["PersonaSort"][] | null;
+        skip?: number;
+        limit?: number;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["PaginatedPersonaCategorieses"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Public Personas Options */
+  public_personas_options_sdk_persona_public_options: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+    };
+  };
+  /** Get Or Create Dm Thread */
+  get_or_create_dm_thread_sdk_chat_dm__username__get: {
+    parameters: {
+      header?: {
+        origin?: string | null;
+        "x-forwarded-host"?: string | null;
+      };
+      path: {
+        username: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ChatThreadMembersDBModel"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Chat Dm Options */
+  chat_dm_options_sdk_chat_dm__username__options: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+    };
+  };
+  /**
+   * List Messages
+   * @description Get a paginated list of messages for a thread, ordered by latest first
+   */
+  list_messages_sdk_chat__thread_id__messages_get: {
+    parameters: {
+      query?: {
+        before_created_at?: string | null;
+        after_created_at?: string | null;
+        exclude_expired?: boolean;
+        author_type?: components["schemas"]["MessageAuthorType"] | null;
+        thread_persona_id?: string | null;
+        skip?: number;
+        limit?: number;
+      };
+      header?: {
+        origin?: string | null;
+        "x-forwarded-host"?: string | null;
+      };
+      path: {
+        thread_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["PaginatedFullChatMessages"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Create User Message
+   * @description Create a chat message
+   */
+  create_user_message_sdk_chat__thread_id__messages_post: {
+    parameters: {
+      header?: {
+        origin?: string | null;
+        "x-forwarded-host"?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreateUserChatMessage"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        content: {
+          "application/json": components["schemas"]["ChatMessageDBModel"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Chat Dm Options */
+  chat_dm_options_sdk_chat__thread_id__messages_options: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+    };
+  };
+  /**
+   * Query Message Stream
+   * @description Prompt the LLM to respond to a specific chat message. Return an event
+   * stream as the LLM responds
+   */
+  query_message_stream_sdk_chat__thread_id__messages___id__query_stream_post: {
+    parameters: {
+      header?: {
+        origin?: string | null;
+        "x-forwarded-host"?: string | null;
+      };
+      path: {
+        _id: string;
+        thread_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["FullChatMessageDBModel"];
+        };
+      };
+      /** @description Not found */
+      404: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Chat Query Stream Options */
+  chat_query_stream_options_sdk_chat__thread_id__messages___id__query_stream_options: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
         };
       };
       /** @description Not found */

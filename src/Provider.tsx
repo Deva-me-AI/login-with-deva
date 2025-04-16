@@ -12,6 +12,7 @@ import type { OidcAccessTokenJWT, UserInfo } from "./server";
 import { jwtDecode } from "jwt-decode";
 import { useInterval } from "./hooks/use-timeout";
 import { type Envs, envToUrl } from "./config";
+import type { useDeva } from "dist";
 
 // Check if we're running in a browser environment
 const isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined';
@@ -25,7 +26,7 @@ export type DevaProviderProps = {
   clientId: string;
   redirectUri: string;
   scopes: string[];
-  children: React.ReactNode;
+  children: React.ReactNode | ((devaProps: ReturnType<typeof useDeva>) => React.ReactNode);
   env: Envs;
 };
 
@@ -367,6 +368,12 @@ export function DevaProvider({
     void refresh();
   }, [isOpenIdConfigLoading]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const devaProps = {
+    isAuthenticated: !!accessToken,
+    user: userInfo ?? null,
+    login,
+    logout,
+  };
   return (
     <DevaContext.Provider
       value={{
@@ -386,13 +393,13 @@ export function DevaProvider({
         accessToken,
         refreshToken,
 
-        user: userInfo ?? null,
-        isAuthenticated: !!accessToken,
+        user: devaProps.user,
+        isAuthenticated: devaProps.isAuthenticated,
 
         url,
       }}
     >
-      {children}
+      {typeof children === 'function' ? children(devaProps) : children}
     </DevaContext.Provider>
   );
 }
