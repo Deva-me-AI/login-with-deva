@@ -484,7 +484,7 @@ export const Intercom = ({
         <PopoverTrigger asChild>
           <div
             id="intercom-trigger"
-            className="deva-absolute deva-bottom-28 deva-right-4 deva-z-10 md:deva-bottom-10 md:deva-right-10"
+            className="deva-fixed deva-bottom-28 deva-right-4 deva-z-10 md:deva-bottom-10 md:deva-right-10"
           >
             <button className="deva-m-3 deva-flex deva-items-center deva-justify-center deva-rounded-full deva-bg-midnight-900">
               {isOpen ? (
