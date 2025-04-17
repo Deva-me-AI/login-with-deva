@@ -376,7 +376,7 @@ export function DevaProvider({
   }, [isOpenIdConfigLoading]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const devaProps = {
-    isAuthenticated: !!accessToken,
+    isAuthenticated: !!accessToken && !isRefreshing,
     user: userInfo ?? null,
     login,
     logout,
