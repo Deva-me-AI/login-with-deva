@@ -15,7 +15,8 @@ import { type Envs, envToUrl } from "./config";
 import type { useDeva } from "./use-deva";
 
 // Check if we're running in a browser environment
-const isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined';
+const isBrowser =
+  typeof window !== "undefined" && typeof document !== "undefined";
 
 // Logger function that prefixes logs with [sdk/provider]
 const log = (...args: Parameters<typeof console.log>) => {
@@ -26,7 +27,9 @@ export type DevaProviderProps = {
   clientId: string;
   redirectUri: string;
   scopes: string[];
-  children: React.ReactNode | ((devaProps: ReturnType<typeof useDeva>) => React.ReactNode);
+  children:
+    | React.ReactNode
+    | ((devaProps: ReturnType<typeof useDeva>) => React.ReactNode);
   env: Envs;
 };
 
@@ -144,7 +147,7 @@ export function DevaProvider({
   );
   const [expiresIn, setExpiresIn] = useStorage("expires_in", 0); // TODO: figure out sensible default
 
-  const [isRefreshing, setIsRefreshing] = useStorage("is_refreshing", false);
+  const [isRefreshing, setIsRefreshing] = useState(true);
 
   const handleTokenResponse = useCallback(
     (res: OidcAccessTokenJWT) => {
@@ -181,7 +184,7 @@ export function DevaProvider({
 
   const { userInfo } = useUserInfo(
     openIdConfig?.userinfo_endpoint,
-    accessToken,
+    isRefreshing ? null : accessToken,
   );
 
   const clearState = useCallback(() => {
@@ -260,7 +263,7 @@ export function DevaProvider({
         return;
       }
 
-      if (!epochTimeIsPast(expiresIn)) {
+      if (!epochTimeIsPast(expiresIn) && !init) {
         // log("access token not expired yet");
         return;
       }
@@ -277,13 +280,16 @@ export function DevaProvider({
       }
 
       setIsRefreshing(true);
-      // TODO: handle error
-      const res = await callRefreshApi();
+      try {
+        const res = await callRefreshApi();
 
-      setIsRefreshing(false);
-
-      if (res) {
-        handleTokenResponse(res);
+        if (res) {
+          handleTokenResponse(res);
+        }
+      } catch (error) {
+        console.error("[sdk/provider]: Error refreshing token", error);
+      } finally {
+        setIsRefreshing(false);
       }
     },
     [
@@ -302,7 +308,7 @@ export function DevaProvider({
     () => {
       void refresh();
     },
-    isBrowser &&refreshToken ? 1000 + stagger : null,
+    isBrowser && refreshToken ? 1000 + stagger : null,
     [refresh],
   );
 
@@ -319,6 +325,7 @@ export function DevaProvider({
     }
 
     if (authInProgress) {
+      setIsRefreshing(false);
       const params = new URLSearchParams(window.location.search);
       code = params.get("code") ?? "";
 
@@ -365,7 +372,7 @@ export function DevaProvider({
       // clear search params
       window.history.replaceState({}, document.title, window.location.pathname);
     }
-    void refresh();
+    void refresh(true);
   }, [isOpenIdConfigLoading]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const devaProps = {
@@ -399,7 +406,7 @@ export function DevaProvider({
         url,
       }}
     >
-      {typeof children === 'function' ? children(devaProps) : children}
+      {typeof children === "function" ? children(devaProps) : children}
     </DevaContext.Provider>
   );
 }
