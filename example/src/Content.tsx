@@ -20,7 +20,7 @@ type Channel = "empty" | "eliza" | "null";
 type PersonaOption = "deva_support" | "truejaian" | "no-user";
 
 export function Content() {
-  const { isAuthenticated, user, login, logout } = useDeva();
+  const { isAuthenticated, accessToken, user, login, logout } = useDeva();
 
   // Get initial channel from URL or default to "empty"
   const getInitialChannel = (): Channel => {
@@ -96,6 +96,14 @@ export function Content() {
                 {user?.persona?.display_name ??
                   user?.persona?.username ??
                   user?.preferred_username}
+              </h3>
+              <h3
+                style={{
+                  marginBottom: "1rem",
+                }}
+              >
+                Access Token: 
+                {accessToken ? `${accessToken.substring(0, 6)} * * * *` : "No access token found"}
               </h3>
               <div>
                 Vap Votes: {user?.persona?.yap_votes ?? 0}

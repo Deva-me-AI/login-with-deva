@@ -10,6 +10,7 @@ export const useDeva = () => {
 
   return {
     isAuthenticated: !!devaContext.accessToken,
+    accessToken: devaContext.accessToken,
 
     user: devaContext.user,
     login: devaContext.login,

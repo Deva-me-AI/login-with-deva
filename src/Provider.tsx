@@ -377,6 +377,7 @@ export function DevaProvider({
 
   const devaProps = {
     isAuthenticated: !!accessToken && !isRefreshing,
+    accessToken: accessToken,
     user: userInfo ?? null,
     login,
     logout,
