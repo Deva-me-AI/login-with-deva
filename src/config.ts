@@ -8,6 +8,6 @@ export const envToUrl = (env: Envs) => {
     case "staging":
       return "https://staging.deva.me";
     case "production":
-      return "https://deva.me";
+      return "https://www.deva.me";
   }
 };
