@@ -128,7 +128,7 @@ export function DevaProvider({
   const url = envToUrl(env);
   const { openIdConfig, isOpenIdConfigLoading, error } = useOpenIdConfig(env);
   if (error) {
-    console.error("[sdk/provider]", openIdConfig);
+    console.error("[sdk/provider] error fetching openid info: ", error);
   }
   const fetchingTokensRef = useRef(false);
   const [codeVerifier, setCodeVerifier] = useStorage("code_verifier", "");
