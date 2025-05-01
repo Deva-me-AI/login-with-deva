@@ -21,11 +21,13 @@ type PersonaOption = "deva_support" | "truejaian" | "no-user";
 
 export function Content() {
   const { isAuthenticated, accessToken, user, login, logout } = useDeva();
+  const username: string = user?.persona?.username;
+  const params = new URLSearchParams(window.location.search);
+  console.log("username: ", user);
 
   // Get initial channel from URL or default to "empty"
   const getInitialChannel = (): Channel => {
-    const params = new URLSearchParams(window.location.search);
-    const channel = params.get("channel") as Channel;
+    const channel = (params.get("channel") as Channel) || username;
     return channel && ["empty", "eliza", "null"].includes(channel)
       ? channel
       : "eliza";
@@ -33,7 +35,6 @@ export function Content() {
 
   // Get initial persona from URL or default to "deva_support"
   const getInitialPersona = (): PersonaOption => {
-    const params = new URLSearchParams(window.location.search);
     const persona = params.get("persona") as PersonaOption;
     return persona && ["deva_support", "truejaian", "no-user"].includes(persona)
       ? persona
@@ -102,12 +103,12 @@ export function Content() {
                   marginBottom: "1rem",
                 }}
               >
-                Access Token: 
-                {accessToken ? `${accessToken.substring(0, 6)} * * * *` : "No access token found"}
+                Access Token:
+                {accessToken
+                  ? `${accessToken.substring(0, 6)} * * * *`
+                  : "No access token found"}
               </h3>
-              <div>
-                Vap Votes: {user?.persona?.yap_votes ?? 0}
-              </div>
+              <div>Vap Votes: {user?.persona?.yap_votes ?? 0}</div>
               <button className="button" onClick={logout}>
                 logout
               </button>
@@ -147,6 +148,9 @@ export function Content() {
               >
                 <option value="deva_support">Deva Support</option>
                 <option value="truejaian">Mediche</option>
+                {username && (
+                  <option value={username}>{user?.name}</option>
+                )}
                 <option value="no-user">No User</option>
               </select>
             </div>
