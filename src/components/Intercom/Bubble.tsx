@@ -126,13 +126,12 @@ export const ChatBubble = ({
       ) : (
         <div
           className={cn({
-            "": userPersona?.id === persona?.id,
             "deva-w-[180px] deva-overflow-hidden deva-overflow-ellipsis deva-whitespace-nowrap deva-text-sea-700 md:deva-w-full":
               userPersona?.id !== persona?.id,
           })}
         >
           {userPersona?.id !== persona?.id && persona?.username}
-          {userPersona?.id !== persona?.id && (
+          {persona && userPersona?.id !== persona?.id && (
             <span className="deva-text-[#6B7584]">
               &nbsp;{`!${persona?.username}`}
             </span>
