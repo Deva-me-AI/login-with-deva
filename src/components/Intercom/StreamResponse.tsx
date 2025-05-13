@@ -203,9 +203,15 @@ export const useStreamResponse = ({
 
 export const IncomingMessageIndicator = ({
   className,
-  avatar,
+  persona,
 }: {
-  avatar?: string | null;
+  persona?: {
+    username: string;
+    id: string;
+    avatar?: string;
+    display_name?: string;
+    user_id: string;
+  };
   className?: string;
 }) => {
   const [innerAnimate, setInnerAnimate] = useState(false);
@@ -213,58 +219,73 @@ export const IncomingMessageIndicator = ({
     <div
       data-testid="IncomingMessageIndicator"
       className={cn(
-        "deva-m-auto deva-mx-auto deva-flex deva-items-end deva-gap-3 deva-p-4 deva-py-2 deva-text-base md:deva-max-w-2xl md:deva-gap-3 lg:deva-max-w-2xl lg:deva-px-0 xl:deva-max-w-3xl",
+        "message-container group deva-w-full deva-text-gray-100",
         className,
       )}
     >
-      {avatar && (
-        <Avatar className="deva-h-8 deva-w-8">
-          <AvatarImage src={avatar} alt="Avatar" />
-          <AvatarFallback>AI</AvatarFallback>
-        </Avatar>
-      )}
-      <motion.div
-        initial={{ opacity: 0, y: 10, scale: 0.8 }}
-        animate={{ opacity: 1, y: 0, scale: 1.0 }}
-        exit={{ opacity: 0, y: 10, scale: 0.8 }}
-        onAnimationComplete={() => setInnerAnimate(true)}
-        onAnimationStart={() => setInnerAnimate(false)}
-        className="deva-table deva-rounded-full deva-bg-catskill-200 deva-px-6 deva-py-2"
-      >
-        <div className={cn({ "deva-animate-pulse": innerAnimate }, "deva-inline-block")}>
+      <div className="deva-m-auto deva-flex deva-items-end deva-gap-3 deva-p-4 deva-py-2 deva-text-base md:deva-max-w-2xl md:deva-gap-3 lg:deva-max-w-2xl lg:deva-px-0 xl:deva-max-w-3xl">
+        {persona && (
+          <Avatar>
+            <AvatarImage
+              src={persona?.avatar ?? "/icons/profile.svg"}
+              alt={persona?.username || "User"}
+            />
+            <AvatarFallback>{persona?.username?.[0] ?? "AI"}</AvatarFallback>
+          </Avatar>
+        )}
+        <motion.div
+          initial={{ opacity: 0, y: 10, scale: 0.8 }}
+          animate={{ opacity: 1, y: 0, scale: 1.0 }}
+          exit={{ opacity: 0, y: 10, scale: 0.8 }}
+          onAnimationComplete={() => setInnerAnimate(true)}
+          onAnimationStart={() => setInnerAnimate(false)}
+          className="deva-table deva-rounded-full deva-bg-catskill-200 deva-px-6 deva-py-2"
+        >
           <div
             className={cn(
-              {
-                "deva-animate-bounce": innerAnimate,
-                "[animation-delay:0.1s]": innerAnimate,
-              },
-              "deva-mr-2 deva-inline-block deva-h-2 deva-w-2 deva-rounded-full deva-bg-current",
+              { "deva-animate-pulse": innerAnimate },
+              "deva-inline-block",
             )}
-          ></div>
-        </div>
-        <div className="deva-inline-block">
+          >
+            <div
+              className={cn(
+                {
+                  "deva-animate-bounce": innerAnimate,
+                  "[animation-delay:0.1s]": innerAnimate,
+                },
+                "deva-mr-2 deva-inline-block deva-h-2 deva-w-2 deva-rounded-full deva-bg-current",
+              )}
+            ></div>
+          </div>
+          <div className="deva-inline-block">
+            <div
+              className={cn(
+                {
+                  "deva-animate-bounce": innerAnimate,
+                  "[animation-delay:0.3s]": innerAnimate,
+                },
+                "deva-mr-2 deva-inline-block deva-h-2 deva-w-2 deva-rounded-full deva-bg-current",
+              )}
+            ></div>
+          </div>
           <div
             className={cn(
-              {
-                "deva-animate-bounce": innerAnimate,
-                "[animation-delay:0.3s]": innerAnimate,
-              },
-              "deva-mr-2 deva-inline-block deva-h-2 deva-w-2 deva-rounded-full deva-bg-current",
+              { "deva-animate-pulse": innerAnimate },
+              "deva-inline-block",
             )}
-          ></div>
-        </div>
-        <div className={cn({ "deva-animate-pulse": innerAnimate }, "deva-inline-block")}>
-          <div
-            className={cn(
-              {
-                "deva-animate-bounce": innerAnimate,
-                "[animation-delay:0.5s]": innerAnimate,
-              },
-              "deva-mr-0 deva-inline-block deva-h-2 deva-w-2 deva-rounded-full deva-bg-current",
-            )}
-          ></div>
-        </div>
-      </motion.div>
+          >
+            <div
+              className={cn(
+                {
+                  "deva-animate-bounce": innerAnimate,
+                  "[animation-delay:0.5s]": innerAnimate,
+                },
+                "deva-mr-0 deva-inline-block deva-h-2 deva-w-2 deva-rounded-full deva-bg-current",
+              )}
+            ></div>
+          </div>
+        </motion.div>
+      </div>
     </div>
   );
 };
@@ -281,7 +302,11 @@ interface InProgressMessageProps {
   msg: {
     id: string;
     text: string;
-    reply?: { text?: string; persona?: Persona } | null;
+    reply?: {
+      text?: string;
+      persona?: Persona;
+      author_type: "USER" | "BOT" | "SYSTEM";
+    } | null;
   };
 }
 
@@ -295,21 +320,20 @@ export const InProgressMessage = ({
     <div
       data-message-id={msg.id}
       data-testid="PendingChatMessage"
-      className={cn(
-        "ChatMessage PendingChatMessage Message group w-full text-gray-100",
-        className,
-      )}
+      className={cn("deva-group deva-w-full deva-text-gray-100", className)}
     >
-      <div className="m-auto flex items-end gap-3 p-4 py-2 text-base md:max-w-2xl md:gap-3 lg:max-w-2xl lg:px-0 xl:max-w-3xl">
-        <Avatar className="deva-h-8 deva-w-8">
+      <div className="deva-m-auto deva-flex deva-items-end deva-gap-3 deva-p-4 deva-py-2 deva-text-base md:deva-max-w-2xl md:deva-gap-3 lg:deva-max-w-2xl lg:deva-px-0 xl:deva-max-w-3xl">
+        <Avatar>
           <AvatarImage
             src={persona?.avatar ?? "/icons/profile.svg"}
-            alt="Avatar"
+            alt={persona?.username || "Deva"}
           />
-          <AvatarFallback>AI</AvatarFallback>
+          <AvatarFallback>{persona?.username?.[0] ?? "Deva"}</AvatarFallback>
         </Avatar>
         <div className={`deva-flex deva-flex-row deva-items-center deva-gap-2`}>
-          <div className={cn("deva-flex deva-w-fit deva-items-center deva-gap-2")}>
+          <div
+            className={cn("deva-flex deva-w-fit deva-items-center deva-gap-2")}
+          >
             <div
               className={cn(
                 `deva-relative deva-m-auto deva-flex deva-w-fit deva-max-w-[600px] deva-flex-col deva-rounded-[20px] deva-px-4 deva-pr-12`,
@@ -352,7 +376,9 @@ export const MessageStreamError = ({
       <div
         className={`deva-flex deva-flex-row deva-items-center deva-gap-2 deva-rounded-xl deva-bg-red-500 deva-p-2 deva-text-white`}
       >
-        <div className={cn("deva-flex deva-w-fit deva-items-center deva-gap-2")}>
+        <div
+          className={cn("deva-flex deva-w-fit deva-items-center deva-gap-2")}
+        >
           <div
             className={cn(
               `deva-relative deva-m-auto deva-flex deva-w-fit deva-max-w-[600px] deva-flex-col deva-rounded-[20px] deva-px-2 deva-pr-12`,
@@ -396,20 +422,22 @@ export const StreamResponse = ({
   // If streaming is in progress and we have a message, show the in-progress message
   if (isStreaming && message) {
     return (
-      <InProgressMessage
-        msg={{
-          id: message.id ?? `${messageId}-stream`,
-          text: message.text ?? "",
-          // reply: message.reply,
-        }}
-        persona={persona}
-      />
+      <>
+        <InProgressMessage
+          msg={{
+            id: message.id ?? `01-stream`,
+            text: message.text ?? "",
+            reply: message.in_reply_to,
+          }}
+          persona={persona}
+        />
+      </>
     );
   }
 
   // If streaming is in progress but no message yet, show the typing indicator
   if (isStreaming && !message) {
-    return <IncomingMessageIndicator avatar={persona.avatar} />;
+    return <IncomingMessageIndicator persona={persona} />;
   }
 
   // If streaming is done and we have a message, show nothing (the actual message will be shown by the parent component)
