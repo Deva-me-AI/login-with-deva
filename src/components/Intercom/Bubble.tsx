@@ -29,7 +29,11 @@ interface Props {
   };
   response: string;
   createdAt: Date;
-  reply?: { text?: string; persona?: Persona } | null;
+  reply?: {
+    text?: string;
+    persona?: Persona;
+    author_type: "USER" | "BOT";
+  } | null;
   className?: string;
   hasPublishedVariant?: boolean;
 }
@@ -78,7 +82,10 @@ export const ChatBubble = ({
 
   return (
     <div
-      className={cn("deva-flex deva-flex-grow deva-flex-col deva-whitespace-pre-wrap", className)}
+      className={cn(
+        "deva-flex deva-flex-grow deva-flex-col deva-whitespace-pre-wrap",
+        className,
+      )}
     >
       {author_type === "BOT" ? (
         <div
@@ -87,7 +94,7 @@ export const ChatBubble = ({
           })}
         >
           <div className="deva-max-w-[6rem] deva-overflow-hidden deva-overflow-ellipsis md:deva-max-w-[15rem]">
-            {persona?.display_name ?? persona?.username}&nbsp;
+            {persona?.display_name ?? persona?.username ?? null}&nbsp;
           </div>
           <TooltipProvider>
             <Tooltip>
@@ -159,7 +166,7 @@ export const ChatBubble = ({
                 ? "You"
                 : (reply?.persona?.display_name ?? reply?.persona?.username)}
               &nbsp;
-              {!!reply?.persona?.user_id ? "🫶" : "🤖"}
+              {reply?.author_type === "USER" ? "🫶" : "🤖"}
             </div>
 
             <div className="deva-line-clamp-1">
@@ -180,7 +187,7 @@ export const ChatBubble = ({
 
       <div
         data-testid="ChatMessageText"
-        className="deva-mr-2 deva-flex deva-min-h-[20px] deva-flex-col deva-items-start deva-gap-4 [overflow-wrap:anywhere]"
+        className="deva-mr-4 deva-flex deva-min-h-[20px] deva-flex-col deva-items-start deva-gap-4 [overflow-wrap:anywhere]"
       >
         <Markdown>
           {highlightURLs(
@@ -191,24 +198,22 @@ export const ChatBubble = ({
                 HIGHLIGHT_REGEX,
                 ` <a href="/$1$2" class="deva-text-[#CEF049]">$1$2</a>`,
               ),
-            // .replace(
-            //   NOTE_REGEX,
-            //   (match, noteContent) =>
-            //     `<a href="/notes/${encodeURIComponent(noteContent)}" class="deva-text-[#CEF049]">[[${noteContent}]]</a>`
-            // )
           )}
         </Markdown>
       </div>
 
       <span
-        className={cn("deva-absolute deva-bottom-[0.6rem] deva-right-4 deva-h-5 deva-text-[14px]", {
-          // message on left (bot other others)
-          "deva-text-lynch-600":
-            persona?.id !== persona?.id || author_type === "BOT",
-          // message on right (user)
-          "deva-text-white deva-opacity-60":
-            persona?.id === persona?.id && author_type === "USER",
-        })}
+        className={cn(
+          "deva-absolute deva-bottom-[0.6rem] deva-right-4 deva-h-5 deva-text-[14px]",
+          {
+            // message on left (bot other others)
+            "deva-text-lynch-600":
+              persona?.id !== persona?.id || author_type === "BOT",
+            // message on right (user)
+            "deva-text-white deva-opacity-60":
+              persona?.id === persona?.id && author_type === "USER",
+          },
+        )}
       >
         {dateToTime(new Date(createdAt))}
       </span>
