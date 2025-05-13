@@ -38,7 +38,7 @@ export default defineConfig({
         entryFileNames: "[name].es.js",
       },
       watch: {
-        exclude: ["example/**/*"],
+        exclude: ["example/**/*", "example2/**/*"],
       },
     },
   },
@@ -46,7 +46,7 @@ export default defineConfig({
     react(),
     dts({
       rollupTypes: true,
-      exclude: ["example/**/*"],
+      exclude: ["example/**/*", "example2/**/*"],
     }),
   ],
   resolve: {
@@ -56,6 +56,6 @@ export default defineConfig({
   },
   // Add type declaration for image imports
   optimizeDeps: {
-    exclude: ["example/**/*"],
+    exclude: ["example/**/*", "example2/**/*"],
   },
 });

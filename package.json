@@ -11,6 +11,7 @@
     "dev:example": "cd example && pnpm run dev",
     "dev": "NODE_ENV=development vite build --watch",
     "example": "cd example && pnpm run dev",
+    "example2": "cd example2 && pnpm run dev",
     "example:link": "cd example && pnpm link ../",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",
     "format:write": "prettier --write \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",
