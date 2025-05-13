@@ -1,9 +1,7 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { ContextIcon } from "@/components/ui/icons";
 import { ChatBubble } from "./Bubble";
 import { ChatMenu } from "./Menu";
-// import { ContextPane } from "./ContextPane";
 import { AnimatePresence, motion } from "framer-motion";
 
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -26,16 +24,13 @@ export const Message = ({
 }: MessageProps) => {
   const [msgHovered, setMsgHovered] = useState(false);
   const [dropdown, setDropdown] = useState(false);
-  const [ctxHovered, setCtxHovered] = useState(false);
-  const [contextOpened, setContextOpened] = useState(false);
-  const [currentMessageText, setCurrentMessageText] = useState(message?.text);
-  const [setHref] = useState("");
-
-  const contextRef = useRef(null);
 
   return (
     <div
-      className={cn("message-container group deva-w-full deva-text-gray-100", className)}
+      className={cn(
+        "message-container group deva-w-full deva-text-gray-100",
+        className,
+      )}
       data-timestamp={message.created_at}
       onClick={() => {
         setMsgHovered((h) => !h);
@@ -97,43 +92,13 @@ export const Message = ({
             >
               {message ? (
                 <ChatBubble
-                  response={currentMessageText ?? ""}
+                  response={message.text}
                   author_type={message.author_type || "BOT"}
                   persona={message.persona}
                   createdAt={message.created_at as unknown as Date}
                   reply={message.in_reply_to}
                 />
               ) : null}
-
-              <div className="deva-flex deva-flex-row deva-items-center deva-gap-8">
-                {message.author_type === "BOT" && currentMessageText && (
-                  <div className="deva-flex deva-flex-col deva-gap-3 deva-pt-1">
-                    <button
-                      disabled={!message.retrievals?.length}
-                      className="deva-flex deva-w-fit deva-flex-row deva-items-center deva-gap-2.5 deva-text-sm deva-transition deva-duration-200 deva-ease-in-out"
-                      onMouseEnter={() => setCtxHovered(true)}
-                      onMouseLeave={() => setCtxHovered(false)}
-                      onClick={() => {
-                        setContextOpened(!contextOpened);
-                      }}
-                    >
-                      <div className="deva-border-midnight-700 deva-flex deva-h-6 deva-w-6 deva-items-center deva-justify-center deva-rounded-lg">
-                        <ContextIcon
-                          color={
-                            ctxHovered || contextOpened ? "#CAF033" : "#6B7584"
-                          }
-                        />
-                      </div>
-                      <span>
-                        {
-                          message?.retrievals?.filter((r) => !!r.content)
-                            ?.length
-                        }
-                      </span>
-                    </button>
-                  </div>
-                )}
-              </div>
             </div>
             <AnimatePresence>
               {!isMyMessage && msgHovered ? (
@@ -156,32 +121,6 @@ export const Message = ({
           </div>
         </div>
       </div>
-      <AnimatePresence>
-        {contextOpened ? (
-          <div
-            className="deva-m-auto deva-flex deva-w-full md:deva-max-w-2xl md:deva-gap-3 lg:deva-max-w-2xl xl:deva-max-w-3xl"
-            ref={contextRef}
-          >
-            <div className="deva-hidden deva-w-[30px] md:deva-block"></div>
-            <motion.div
-              ref={contextRef}
-              initial={{ opacity: 0, y: -30 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -30 }}
-              transition={{ duration: 0.3, ease: "easeInOut" }}
-              className="deva-bg-athens-100 deva-flex deva-w-full deva-flex-col deva-gap-6 deva-rounded-[20px] deva-px-6 deva-py-5"
-            >
-              {/*
-              <ContextPane
-                retrievals={message.retrievals ?? []}
-                handleClose={() => setContextOpened(false)}
-                setHref={setHref}
-              />
-              */}
-            </motion.div>
-          </div>
-        ) : null}
-      </AnimatePresence>
     </div>
   );
 };

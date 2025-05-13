@@ -74,7 +74,6 @@ export const useStreamResponse = ({
 
     controllerRef.current = new AbortController();
     const streamUrl = `${url}/api/sdk/chat/${threadId}/messages/${messageId}/query/stream`;
-    // const streamUrl = `http://localhost:8000/sdk/chat/${threadId}/messages/${messageId}/query/stream`;
 
     fetchEventSource(streamUrl, {
       method: "POST",
