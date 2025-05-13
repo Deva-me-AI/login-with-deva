@@ -32,7 +32,7 @@ interface Props {
   reply?: {
     text?: string;
     persona?: Persona;
-    author_type: "USER" | "BOT";
+    author_type: "USER" | "BOT" | "SYSTEM";
   } | null;
   className?: string;
   hasPublishedVariant?: boolean;
@@ -152,10 +152,10 @@ export const ChatBubble = ({
           className={cn(
             "-deva-mx-2 -deva-mr-10 deva-mb-2 deva-flex deva-min-h-[20px] deva-flex-col deva-items-start deva-border-0 deva-shadow-sm",
             {
-              "deva-mt-1 deva-bg-[#2e3238]": !(
+              "deva-mt-1": !(
                 userPersona?.id === persona?.id && author_type === "USER"
               ),
-              "deva-bg-[#2e46c0]":
+              "!deva-bg-[#2e46c0]":
                 userPersona?.id === persona?.id && author_type === "USER",
             },
           )}
