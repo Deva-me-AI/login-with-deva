@@ -26,7 +26,6 @@ const log = (...args: Parameters<typeof console.log>) => {
 export type DevaProviderProps = {
   clientId: string;
   redirectUri: string;
-  scopes: string[];
   children:
     | React.ReactNode
     | ((devaProps: ReturnType<typeof useDeva>) => React.ReactNode);
@@ -121,7 +120,6 @@ const useRevokeToken = (
 export function DevaProvider({
   clientId,
   redirectUri,
-  scopes,
   children,
   env,
 }: DevaProviderProps) {
@@ -231,7 +229,6 @@ export function DevaProvider({
     const u = new URL(openIdConfig?.authorization_endpoint ?? "");
 
     u.searchParams.append("client_id", clientId);
-    u.searchParams.append("scopes", scopes.join(" "));
     u.searchParams.append("redirect_uri", redirectUri);
 
     u.searchParams.append("response_type", "code");
@@ -242,7 +239,6 @@ export function DevaProvider({
   }, [
     clientId,
     redirectUri,
-    scopes,
     setCodeVerifier,
     clearState,
     setAuthInProgress,
@@ -387,7 +383,6 @@ export function DevaProvider({
       value={{
         clientId,
         redirectUri,
-        scopes,
 
         env,
 

@@ -6,7 +6,6 @@ function App() {
     <DevaProvider
       clientId={import.meta.env.VITE_DEVA_CLIENT_ID!}
       redirectUri={typeof window != "undefined" ? window.location.origin : ""}
-      scopes={["read", "write"]}
       env={import.meta.env.VITE_DEVA_ENV as Envs}
     >
       {({ user }) => {

@@ -5,7 +5,6 @@ import type { Envs } from "./config";
 export type DevaContext = {
   clientId: string;
   redirectUri: string;
-  scopes: string[];
 
   env: Envs;
 
@@ -29,7 +28,6 @@ export type DevaContext = {
 const defaultDevaContext: DevaContext = {
   clientId: "",
   redirectUri: "",
-  scopes: [],
 
   env: "development",
 
