@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useState } from "react";
 import { useDevaContext } from "@/DevaContext";
 import type { Message as IMessage, PostChatInput } from "@/server";
 import { useIntercom } from "./IntercomContext";
@@ -25,8 +25,7 @@ export const Input = ({
   const [messageId, setMessageId] = useState(crypto.randomUUID());
   const { scrollToBottom } = useIntercom();
 
-  const handleSubmit = async (e?: FormEvent) => {
-    e?.preventDefault();
+  const handleSubmit = async () => {
 
     if (!text.trim() || !threadId || !accessToken || isSubmitting) {
       return;
