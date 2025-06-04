@@ -14,7 +14,7 @@ import type {
 import { Skeleton } from "@/components/ui/skeleton";
 import { fetcher, useSWRFetcher } from "@/lib/fetcher";
 import { type Envs, envToUrl } from "@/config";
-import { PostInput } from "@/components/PostEditor/PostInput";
+import { RichTextbox } from "@/components/RichTextEditor/RichTextEditor";
 import { PostCard } from "@/components/Post/Post";
 import { SkeletonPost } from "./SkeletonPost";
 import { ChannelNotFound } from "./NotFound";
@@ -260,7 +260,7 @@ export function ChannelFeed({ handle }: ChannelFeedProps) {
               </AvatarFallback>
             </Avatar>
             <div className="deva-flex-1 deva-px-1">
-              <PostInput
+              <RichTextbox
                 id="new-post"
                 postId={postId}
                 value={newPostText}

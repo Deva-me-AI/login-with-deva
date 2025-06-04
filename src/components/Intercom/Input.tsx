@@ -4,7 +4,7 @@ import type { Message as IMessage, PostChatInput } from "@/server";
 import { useIntercom } from "./IntercomContext";
 import { fetcher } from "@/lib/fetcher";
 import { cn } from "@/lib/utils";
-import { PostInput } from "../PostEditor/PostInput";
+import { RichTextEditor } from "../RichTextEditor";
 import { Spinner } from "../ui/spinner";
 import { MoveUpRight } from "lucide-react";
 
@@ -87,7 +87,7 @@ export const Input = ({
               style={{ gridColumn: "2", gridRow: "1" }}
             >
               {threadId && (
-                <PostInput
+                <RichTextEditor
                   id="support-input-editor"
                   postId={messageId}
                   onSubmit={handleSubmit}

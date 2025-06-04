@@ -12,11 +12,11 @@ interface UseRichTextEditorProps {
   placeholder?: string;
   initialValue?: string;
   onChange?: (text: string) => void;
-  mentionConfig: {
-    deva: MentionOptions["suggestion"];
-    human: MentionOptions["suggestion"];
-    tagModel: MentionOptions["suggestion"];
-    note: MentionOptions["suggestion"];
+  mentionConfig?: {
+    deva?: MentionOptions["suggestion"];
+    human?: MentionOptions["suggestion"];
+    tagModel?: MentionOptions["suggestion"];
+    note?: MentionOptions["suggestion"];
   };
 }
 
@@ -53,22 +53,22 @@ export const useRichTextEditor = ({
         placeholder: () => placeholder,
         emptyNodeClass: "text-placeholder-editor text-sm",
       }),
-      Mention.configure({
+      ...(mentionConfig?.deva ? [Mention.configure({
         HTMLAttributes: { class: "text-[#CAF033]" },
         suggestion: mentionConfig.deva,
-      }),
-      HumanMention.configure({
+      })] : []),
+      ...(mentionConfig?.human ? [HumanMention.configure({
         HTMLAttributes: { class: "text-[#f0b733]" },
         suggestion: mentionConfig.human,
-      }),
-      TagModelMention.configure({
+      })] : []),
+      ...(mentionConfig?.tagModel ? [TagModelMention.configure({
         HTMLAttributes: { class: "text-[#f0b733]" },
         suggestion: mentionConfig.tagModel,
-      }),
-      NoteMention.configure({
+      })] : []),
+      ...(mentionConfig?.note ? [NoteMention.configure({
         HTMLAttributes: { class: "text-[#CAF033]" },
         suggestion: mentionConfig.note,
-      }),
+      })] : []),
     ],
     onUpdate: ({ editor }) => {
       const postText = editor.getText().toString();

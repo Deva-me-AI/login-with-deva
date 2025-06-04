@@ -1,4 +1,4 @@
-export { default as RichTextEditor } from './RichTextEditor';
+export { RichTextEditor } from './RichTextEditor';
 export { useRichTextEditor } from './useRichTextEditor';
 export { createMentionNode } from './mention-node-factory';
 export type { BaseMentionOptions } from './mention-node-factory';
