@@ -1,5 +1,4 @@
 import { EditorContent } from "@tiptap/react";
-import { SuggestionOptions } from "@tiptap/suggestion";
 import { useCallback, useEffect, KeyboardEvent } from "react";
 
 import { useRichTextEditor } from "./useRichTextEditor";
@@ -7,10 +6,6 @@ import { useIsVirtualKeyboardOpen } from "../../hooks/use-virtual-keyboard-open"
 
 interface IRichTextEditorProps {
   value?: string;
-  suggestioner?: Omit<SuggestionOptions<any>, "editor">;
-  humansSuggestioner?: Omit<SuggestionOptions<any>, "editor">;
-  tagModelSuggestioner?: Omit<SuggestionOptions<any>, "editor">;
-  noteSuggester?: Omit<SuggestionOptions<any>, "editor">;
   placeholder?: string;
   onChange?: (text: string) => void;
   onSubmit?: (text?: string) => void;
@@ -23,10 +18,6 @@ interface IRichTextEditorProps {
 
 export const RichTextEditor = ({
   value = "",
-  suggestioner,
-  humansSuggestioner,
-  tagModelSuggestioner,
-  noteSuggester,
   onChange,
   onSubmit,
   placeholder = "Write a message...",
@@ -45,12 +36,11 @@ export const RichTextEditor = ({
       "m-0 outline-none w-full resize-none border-0 bg-transparent p-0 pr-7 pl-3 focus:ring-0 focus-visible:ring-0 dark:bg-transparent",
     placeholder,
     onChange,
-    mentionConfig: suggestioner || humansSuggestioner || tagModelSuggestioner || noteSuggester ? {
-      deva: suggestioner,
-      human: humansSuggestioner,
-      tagModel: tagModelSuggestioner,
-      note: noteSuggester,
-    } : undefined,
+    mentionConfig: {
+      deva: undefined,
+      human: undefined,
+      tagModel: undefined,
+    },
   });
 
   const { isVirtualKeyboardOpen } = useIsVirtualKeyboardOpen();

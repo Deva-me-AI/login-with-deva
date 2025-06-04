@@ -5,19 +5,14 @@ import Placeholder from "@tiptap/extension-placeholder";
 import Mention, { type MentionOptions } from "./extensions/mention";
 import HumanMention from "./extensions/human-mention";
 import { TagModelMention } from "./extensions/tag-model-mention";
-import { NoteMention } from "./extensions/note-mention";
+import { useDevaContext } from "../../DevaContext";
+import { useSuggestion } from "../../hooks/use-suggestion";
 
 interface UseRichTextEditorProps {
   className?: string;
   placeholder?: string;
   initialValue?: string;
   onChange?: (text: string) => void;
-  mentionConfig?: {
-    deva?: MentionOptions["suggestion"];
-    human?: MentionOptions["suggestion"];
-    tagModel?: MentionOptions["suggestion"];
-    note?: MentionOptions["suggestion"];
-  };
 }
 
 export const useRichTextEditor = ({
@@ -25,9 +20,15 @@ export const useRichTextEditor = ({
   placeholder = "Write a message...",
   initialValue,
   onChange,
-  mentionConfig,
 }: UseRichTextEditorProps) => {
   const [text, setText] = useState(initialValue || "");
+  const { env } = useDevaContext();
+  const [devaQuery, setDevaQuery] = useState("");
+  const [humanQuery, setHumanQuery] = useState("");
+  
+  // Get suggestions for both mention types
+  const { suggestions: devaSuggestions } = useSuggestion(env, { query: devaQuery, type: "devaResponse" });
+  const { suggestions: humanSuggestions } = useSuggestion(env, { query: humanQuery, type: "mention" });
 
   const editor = useEditor({
     editorProps: {
@@ -53,22 +54,36 @@ export const useRichTextEditor = ({
         placeholder: () => placeholder,
         emptyNodeClass: "text-placeholder-editor text-sm",
       }),
-      ...(mentionConfig?.deva ? [Mention.configure({
+      Mention.configure({
         HTMLAttributes: { class: "text-[#CAF033]" },
-        suggestion: mentionConfig.deva,
-      })] : []),
-      ...(mentionConfig?.human ? [HumanMention.configure({
+        suggestion: {
+          items: ({ query }) => {
+            setDevaQuery(query);
+            return devaSuggestions.map(s => ({
+              id: s.id,
+              label: s.content,
+            }));
+          },
+          render: () => ({}),
+        },
+      }),
+      HumanMention.configure({
         HTMLAttributes: { class: "text-[#f0b733]" },
-        suggestion: mentionConfig.human,
-      })] : []),
-      ...(mentionConfig?.tagModel ? [TagModelMention.configure({
+        suggestion: {
+          items: ({ query }) => {
+            setHumanQuery(query);
+            return humanSuggestions.map(s => ({
+              id: s.id,
+              label: s.content,
+            }));
+          },
+          render: () => ({}),
+        },
+      }),
+      TagModelMention.configure({
         HTMLAttributes: { class: "text-[#f0b733]" },
-        suggestion: mentionConfig.tagModel,
-      })] : []),
-      ...(mentionConfig?.note ? [NoteMention.configure({
-        HTMLAttributes: { class: "text-[#CAF033]" },
-        suggestion: mentionConfig.note,
-      })] : []),
+        suggestion: undefined,
+      }),
     ],
     onUpdate: ({ editor }) => {
       const postText = editor.getText().toString();

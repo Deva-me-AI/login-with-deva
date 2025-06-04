@@ -9,4 +9,3 @@ export type { MentionOptions } from './extensions/mention';
 export { HumanMention, HumanMentionPluginKey } from './extensions/human-mention';
 export type { HumanMentionOptions } from './extensions/human-mention';
 export { TagModelMention, TagModelPluginKey } from './extensions/tag-model-mention';
-export { NoteMention, NoteMentionPluginKey } from './extensions/note-mention';
