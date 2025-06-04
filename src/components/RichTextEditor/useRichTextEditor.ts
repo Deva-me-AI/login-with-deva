@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
-import Mention, { type MentionOptions } from "./extensions/mention";
+import Mention, { type MentionOptions } from "./extensions/persona-mention";
 import HumanMention from "./extensions/human-mention";
 import { TagModelMention } from "./extensions/tag-model-mention";
 import { useDevaContext } from "../../DevaContext";
