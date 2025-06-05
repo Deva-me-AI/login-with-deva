@@ -4,7 +4,7 @@ import type { MentionAtomExtensionMatcher } from "remirror/extensions";
 import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useDevaContext } from "@/DevaContext";
-import { useSuggestion, type Suggestion } from "@/hooks/use-suggestion";
+import { useSuggestion } from "@/hooks/use-suggestion";
 
 
 type MentionTypes = "mention" | "devaResponse";

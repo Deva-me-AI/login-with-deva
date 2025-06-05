@@ -3,21 +3,20 @@ import { Node as ProseMirrorNode } from "prosemirror-model";
 import { PluginKey } from "prosemirror-state";
 import { createMentionNode } from "../mention-node-factory";
 
-export type MentionOptions = {
+export type PersonaMentionOptions = {
   HTMLAttributes: Record<string, any>;
   renderLabel: (props: {
-    options: MentionOptions;
+    options: PersonaMentionOptions;
     node: ProseMirrorNode;
   }) => string;
   suggestion: Omit<SuggestionOptions, "editor">;
 };
 
-export const MentionPluginKey = new PluginKey("mention");
+export const PersonaMentionPluginKey = new PluginKey("mention");
 
-export const Mention = createMentionNode({
+export const PersonaMention = createMentionNode({
   name: "mention",
   char: "@",
-  pluginKey: MentionPluginKey,
+  pluginKey: PersonaMentionPluginKey,
 });
 
-export default Mention;

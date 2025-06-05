@@ -1,29 +1,9 @@
 import { useSWRFetcher } from "@/lib/fetcher";
-import type { PagintedPersonas, PublicPersona } from "@/server";
+import type { PagintedPersonas } from "@/server";
 import { type Envs, envToUrl } from "@/config";
+import type { Suggestion, FetchSuggestionsOptions } from "@/types/suggestions";
 
-export type Suggestion = {
-  id: string;
-  // used by remirror as the text inside the mention and eventually bubbles up
-  // to our notes editor in getMentions
-  label: string;
-  // used to display the suggestion in the dropdown
-  // we use this to add context to the menu, although label is used internally
-  // by remirror
-  content: string;
-  // used by remirror to determine how much of the text to replace with the suggestion
-  // use partial to split the mention at the cursor and preserve the text after the cursor
-  // replacing the content before the cursor by label
-  replacementType?: "full" | "partial";
-  persona: PublicPersona;
-};
-
-interface SuggestionOptions {
-  query?: string;
-  type?: "mention" | "devaResponse";
-}
-
-export const useSuggestion = (env: Envs, options: SuggestionOptions = {}) => {
+export const useSuggestion = (env: Envs, options: FetchSuggestionsOptions = {}) => {
   const { query = "", type = "ALL" } = options;
   const url = envToUrl(env);
 

@@ -2,11 +2,11 @@ import { useState, useEffect } from "react";
 import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
-import Mention, { type MentionOptions } from "./extensions/persona-mention";
+import { PersonaMention } from "./extensions/persona-mention";
 import HumanMention from "./extensions/human-mention";
 import { TagModelMention } from "./extensions/tag-model-mention";
-import { useDevaContext } from "../../DevaContext";
-import { useSuggestion } from "../../hooks/use-suggestion";
+import usePersonaSuggester from "./use-persona-suggestor";
+import { useDevaContext } from "@/DevaContext";
 
 interface UseRichTextEditorProps {
   className?: string;
@@ -23,12 +23,6 @@ export const useRichTextEditor = ({
 }: UseRichTextEditorProps) => {
   const [text, setText] = useState(initialValue || "");
   const { env } = useDevaContext();
-  const [devaQuery, setDevaQuery] = useState("");
-  const [humanQuery, setHumanQuery] = useState("");
-  
-  // Get suggestions for both mention types
-  const { suggestions: devaSuggestions } = useSuggestion(env, { query: devaQuery, type: "devaResponse" });
-  const { suggestions: humanSuggestions } = useSuggestion(env, { query: humanQuery, type: "mention" });
 
   const editor = useEditor({
     editorProps: {
@@ -54,31 +48,13 @@ export const useRichTextEditor = ({
         placeholder: () => placeholder,
         emptyNodeClass: "text-placeholder-editor text-sm",
       }),
-      Mention.configure({
+      PersonaMention.configure({
         HTMLAttributes: { class: "text-[#CAF033]" },
-        suggestion: {
-          items: ({ query }) => {
-            setDevaQuery(query);
-            return devaSuggestions.map(s => ({
-              id: s.id,
-              label: s.content,
-            }));
-          },
-          render: () => ({}),
-        },
+        suggestion: usePersonaSuggester(env, "deva"),
       }),
       HumanMention.configure({
         HTMLAttributes: { class: "text-[#f0b733]" },
-        suggestion: {
-          items: ({ query }) => {
-            setHumanQuery(query);
-            return humanSuggestions.map(s => ({
-              id: s.id,
-              label: s.content,
-            }));
-          },
-          render: () => ({}),
-        },
+        suggestion: usePersonaSuggester(env, "human"),
       }),
       TagModelMention.configure({
         HTMLAttributes: { class: "text-[#f0b733]" },
@@ -98,7 +74,6 @@ export const useRichTextEditor = ({
 
     editor?.commands.setContent(text);
   }, [editor, text]);
-
 
   return {
     editor,

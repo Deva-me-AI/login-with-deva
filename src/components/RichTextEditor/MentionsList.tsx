@@ -5,7 +5,7 @@ import React, {
   useImperativeHandle,
   useState,
 } from "react";
-import { type Suggestion } from "@/hooks/use-suggestion";
+import type { Suggestion } from "@/types/suggestions";
 import { Spinner } from "@/components/ui/spinner";
 import { Badge } from "@/components/ui/badge";
 
@@ -24,14 +24,13 @@ const Chip = ({
 
 interface Props {
   items: Suggestion[];
-  fetchNext: (...args: any[]) => Promise<void>;
   loading: false;
   human?: boolean;
   command: ({ id }: { id: string }) => void;
 }
 
-export const MentionsList = forwardRef(function ProfileMentionList(
-  { items, command, fetchNext, loading, human }: Props,
+export const MentionsList = forwardRef(function MentionList(
+  { items, command, loading, human }: Props,
   ref,
 ) {
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -103,19 +102,6 @@ export const MentionsList = forwardRef(function ProfileMentionList(
     },
   }));
 
-  const handleScroll = async (e) => {
-    if (
-      Math.abs(
-        e.target.scrollHeight - e.target.clientHeight - e.target.scrollTop, // this is the distance from the bottom
-      ) <
-      32 * items.length
-    ) {
-      await fetchNext().then(() => {
-        setSelectedIndex(selectedIndex); // this is to prevent the scroll from jumping to the top
-      });
-    }
-  };
-
   return (
     <div
       className={"mention-suggestion-container max-h-[19rem] hide-scrollbar"}
@@ -123,12 +109,7 @@ export const MentionsList = forwardRef(function ProfileMentionList(
       <div
         data-testid="MentionList"
         id="mention-suggestion-items"
-        className={cn(
-          "mention-suggestion-items", // Important. Used elsewhere. Search codebase before modifying
-          "max-h-[19rem] overflow-y-scroll",
-          "hide-scrollbar",
-        )}
-        onScroll={handleScroll}
+        className={cn("max-h-[19rem] overflow-y-scroll", "hide-scrollbar")}
       >
         {items.map((suggestion: Suggestion, index) => {
           const displayName =
