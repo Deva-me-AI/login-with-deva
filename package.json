@@ -1,6 +1,6 @@
 {
-  "name": "@10planet-l1/deva-sdk",
-  "version": "0.5.0",
+  "name": "@10planet/deva-sdk",
+  "version": "0.5.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/10Planet-L1/deva-sdk.git"
@@ -16,7 +16,7 @@
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",
     "format:write": "prettier --write \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",
     "start": "next start",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit --project tsconfig.typecheck.json"
   },
   "type": "module",
   "main": "dist/index.es.js",
@@ -37,7 +37,13 @@
     }
   },
   "files": [
-    "dist/**/*"
+    "dist/index.es.js",
+    "dist/index.d.ts",
+    "dist/components.es.js",
+    "dist/components.d.ts",
+    "dist/config-*.js",
+    "dist/assets/deva-sdk.css",
+    "README.md"
   ],
   "dependencies": {
     "@microsoft/fetch-event-source": "^2.0.1",
