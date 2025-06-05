@@ -41,6 +41,7 @@
     "dist/index.d.ts",
     "dist/components.es.js",
     "dist/components.d.ts",
+    "dist/config-*.js",
     "dist/assets/deva-sdk.css",
     "README.md"
   ],
