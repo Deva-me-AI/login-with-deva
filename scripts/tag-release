@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# Get version from package.json
+VERSION=$(node -p "require('./package.json').version")
+TAG="v$VERSION"
+
+echo "Package version: $VERSION"
+echo "Tag: $TAG"
+
+# Check if tag already exists locally
+if git tag -l | grep -q "^$TAG$"; then
+    echo "Tag $TAG already exists locally"
+    exit 0
+fi
+
+# Check if tag exists on remote
+if git ls-remote --tags origin | grep -q "refs/tags/$TAG$"; then
+    echo "Tag $TAG already exists on remote"
+    exit 0
+fi
+
+# Create the tag
+echo "Creating tag $TAG..."
+
+if git tag "$TAG"; then
+    echo "Tag $TAG created successfully"
+    
+    # Push the tag to remote
+    echo "Pushing tag $TAG to remote..."
+    
+    if git push origin "$TAG"; then
+        echo "Tag $TAG pushed successfully"
+    else
+        echo "Failed to push tag $TAG"
+        exit 1
+    fi
+else
+    echo "Failed to create tag $TAG"
+    exit 1
+fi
