@@ -37,7 +37,12 @@
     }
   },
   "files": [
-    "dist/**/*"
+    "dist/index.es.js",
+    "dist/index.d.ts",
+    "dist/components.es.js",
+    "dist/components.d.ts",
+    "dist/assets/deva-sdk.css",
+    "README.md"
   ],
   "dependencies": {
     "@microsoft/fetch-event-source": "^2.0.1",
