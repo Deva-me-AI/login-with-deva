@@ -1,5 +1,19 @@
 # Deva SDK
 
+## Publishing
+
+To publish a new version to npm:
+
+1. Create and push a version tag:
+   ```bash
+   git tag v1.0.0
+   git push origin v1.0.0
+   ```
+
+2. The GitHub workflow will automatically build and publish to npm
+
+Note: Make sure the `NPM_TOKEN` secret is configured in the repository settings.
+
 ## Development
 
 The sdk functions on Client apps. You'll need to create a client app on deva.me. Make sure you fill in the redirect and origin uris. 
