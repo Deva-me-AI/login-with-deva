@@ -4,7 +4,6 @@ import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import { PersonaMention } from "./extensions/persona-mention";
 import { HumanMention } from "./extensions/human-mention";
-import { TagModelMention } from "./extensions/tag-model-mention";
 import usePersonaSuggester from "./use-persona-suggestor";
 import { useDevaContext } from "@/DevaContext";
 
@@ -48,19 +47,15 @@ export const useRichTextEditor = ({
       }),
       Placeholder.configure({
         placeholder: () => placeholder,
-        emptyNodeClass: "text-placeholder-editor text-sm",
+        emptyNodeClass: "deva-text-placeholder-editor deva-text-sm",
       }),
       PersonaMention.configure({
-        HTMLAttributes: { class: "text-[#CAF033]" },
+        HTMLAttributes: { class: "deva-text-jewel-500" },
         suggestion: usePersonaSuggester(id, env, "deva"),
       }),
       HumanMention.configure({
-        HTMLAttributes: { class: "text-[#f0b733]" },
+        HTMLAttributes: { class: "deva-text-orange-500" },
         suggestion: usePersonaSuggester(id, env, "human"),
-      }),
-      TagModelMention.configure({
-        HTMLAttributes: { class: "text-[#f0b733]" },
-        suggestion: undefined,
       }),
     ],
     onUpdate: ({ editor }) => {

@@ -4,7 +4,7 @@ import { PluginKey } from "prosemirror-state";
 import { createMentionNode } from "../mention-node-factory";
 
 export type HumanMentionOptions = {
-  HTMLAttributes: Record<string, any>;
+  HTMLAttributes: Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
   renderLabel: (props: {
     options: HumanMentionOptions;
     node: ProseMirrorNode;
@@ -19,5 +19,3 @@ export const HumanMention = createMentionNode({
   char: "!",
   pluginKey: HumanMentionPluginKey,
 });
-
-export default HumanMention;
