@@ -16,7 +16,6 @@ export function createMentionNode(config: {
   name: string;
   char: string;
   pluginKey: PluginKey;
-  renderLabelSuffix?: string;
 }) {
   return Node.create<BaseMentionOptions>({
     name: config.name,
@@ -25,8 +24,7 @@ export function createMentionNode(config: {
       return {
         HTMLAttributes: {},
         renderLabel({ options, node }) {
-          const label = `${options.suggestion.char}${node.attrs.label ?? node.attrs.id}`;
-          return config.renderLabelSuffix ? label + config.renderLabelSuffix : label;
+          return `${options.suggestion.char}${node.attrs.label ?? node.attrs.id}`;
         },
         suggestion: {
           char: config.char,
@@ -76,11 +74,11 @@ export function createMentionNode(config: {
           default: null,
           parseHTML: (element) => element.getAttribute("data-id"),
           renderHTML: (attributes) => {
-            if (!attributes._id) {
+            if (!attributes.id) {
               return {};
             }
             return {
-              "data-id": attributes?._id,
+              "data-id": attributes.id,
             };
           },
         },
