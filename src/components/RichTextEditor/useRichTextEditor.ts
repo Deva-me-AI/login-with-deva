@@ -3,12 +3,13 @@ import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import { PersonaMention } from "./extensions/persona-mention";
-import HumanMention from "./extensions/human-mention";
+import { HumanMention } from "./extensions/human-mention";
 import { TagModelMention } from "./extensions/tag-model-mention";
 import usePersonaSuggester from "./use-persona-suggestor";
 import { useDevaContext } from "@/DevaContext";
 
 interface UseRichTextEditorProps {
+  id: string;
   className?: string;
   placeholder?: string;
   initialValue?: string;
@@ -16,6 +17,7 @@ interface UseRichTextEditorProps {
 }
 
 export const useRichTextEditor = ({
+  id,
   className = "",
   placeholder = "Write a message...",
   initialValue,
@@ -50,11 +52,11 @@ export const useRichTextEditor = ({
       }),
       PersonaMention.configure({
         HTMLAttributes: { class: "text-[#CAF033]" },
-        suggestion: usePersonaSuggester(env, "deva"),
+        suggestion: usePersonaSuggester(id, env, "deva"),
       }),
       HumanMention.configure({
         HTMLAttributes: { class: "text-[#f0b733]" },
-        suggestion: usePersonaSuggester(env, "human"),
+        suggestion: usePersonaSuggester(id, env, "human"),
       }),
       TagModelMention.configure({
         HTMLAttributes: { class: "text-[#f0b733]" },

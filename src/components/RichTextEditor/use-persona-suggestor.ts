@@ -5,7 +5,7 @@ import { fetchSuggestions } from "@/lib/fetch-suggestions";
 import type { Envs } from "@/config";
 import type { SuggestionOptions } from "@tiptap/suggestion";
 
-const usePersonaSuggester = (env: Envs, type: "deva" | "human"): Omit<SuggestionOptions, "editor"> => {
+const usePersonaSuggester = (id: string, env: Envs, type: "deva" | "human"): Omit<SuggestionOptions, "editor"> => {
     let component: ReactRenderer | undefined;
     let popup: Instance[] | undefined;
 
@@ -38,7 +38,7 @@ const usePersonaSuggester = (env: Envs, type: "deva" | "human"): Omit<Suggestion
               return;
             }
 
-            popup = tippy("#postInput", {
+            popup = tippy(`#${id}`, {
               getReferenceClientRect: props.clientRect as () => DOMRect,
               appendTo: () => document.body,
               content: component.element,
@@ -113,14 +113,16 @@ const usePersonaSuggester = (env: Envs, type: "deva" | "human"): Omit<Suggestion
           },
 
           onExit() {
-            if (!popup) {
+            if (!popup || !popup[0]) {
               console.warn(
                 `%c${type}Suggestion/render#onExit`,
                 "color:salmon;",
                 "NO POPUP! Indicative of race condition in mention renderer.",
               );
+              return
+            } else {
+              popup[0].destroy();
             }
-            popup?.[0]?.destroy();
             component?.destroy();
             component = undefined;
           },
