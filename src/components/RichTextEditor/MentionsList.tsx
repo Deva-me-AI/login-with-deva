@@ -49,7 +49,7 @@ export const MentionsList = forwardRef(function MentionList(
     setSelectedIndex((selectedIndex + items.length - 1) % items.length);
     document
       .getElementById(
-        `item${(selectedIndex + items.length - 1) % items.length}`,
+        `item-${(selectedIndex + items.length - 1) % items.length}`,
       )
       ?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   };
@@ -68,7 +68,7 @@ export const MentionsList = forwardRef(function MentionList(
       }
     } else setSelectedIndex((selectedIndex + 1) % items.length);
     document
-      .getElementById(`item${selectedIndex + 1}`)
+      .getElementById(`item-${selectedIndex + 1}`)
       ?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   };
 
@@ -121,7 +121,7 @@ export const MentionsList = forwardRef(function MentionList(
 
           return (
             <button
-              // aria label used for testing
+              id={`item-${index}`}
               aria-label={suggestion.persona.username}
               className={`mention-suggestion-item ${
                 index === selectedIndex ? "is-selected" : ""
