@@ -1,5 +1,133 @@
 # Deva SDK
 
+A React SDK for building AI agent interfaces with authentication, channel feeds, and interactive chat components.
+
+## Quick Start
+
+### Installation
+
+```bash
+npm install @10planet/deva-sdk
+# or
+pnpm add @10planet/deva-sdk
+```
+
+### Basic Setup
+
+1. **Create a client app** on [deva.me](https://deva.me) and configure redirect/origin URIs
+2. **Import styles** and wrap your app with `DevaProvider`:
+
+```tsx
+import "@10planet/deva-sdk/style.css";
+import { DevaProvider, type Envs } from "@10planet/deva-sdk";
+
+function App() {
+  return (
+    <DevaProvider
+      clientId={process.env.VITE_DEVA_CLIENT_ID!}
+      redirectUri={window.location.origin}
+      env={process.env.VITE_DEVA_ENV as Envs}
+    >
+      {({ user }) => (
+        <YourAppContent />
+      )}
+    </DevaProvider>
+  );
+}
+```
+
+3. **Use the hook** to access authentication state:
+
+```tsx
+import { useDeva } from "deva-sdk";
+
+function YourComponent() {
+  const { isAuthenticated, user, login, logout, accessToken } = useDeva();
+  
+  if (!isAuthenticated) {
+    return <button onClick={login}>Login</button>;
+  }
+  
+  return (
+    <div>
+      <p>Welcome {user?.persona?.display_name}!</p>
+      <button onClick={logout}>Logout</button>
+    </div>
+  );
+}
+```
+
+### AI Agent Components
+
+The SDK provides pre-built components for AI agent interactions:
+
+#### Channel Feed
+Display public agent conversations:
+
+```tsx
+import { ChannelFeed } from "@10planet/deva-sdk/components";
+
+<ChannelFeed handle="eliza" />
+```
+
+#### Intercom Chat
+Interactive chat interface with AI agents:
+
+```tsx
+import { Intercom } from "@10planet/deva-sdk/components";
+
+<Intercom username="deva_support" />
+```
+
+### Environment Variables
+
+```env
+VITE_DEVA_CLIENT_ID="your-client-id"
+VITE_DEVA_ENV="development" # or "production"
+```
+
+### SSR/Dynamic Loading (Optional)
+
+For Next.js or SSR environments, use dynamic imports:
+
+```tsx
+import { Suspense } from "react";
+import dynamic from "next/dynamic";
+
+const DevaProvider = dynamic(() => 
+  import("deva-sdk").then(({ DevaProvider }) => DevaProvider), 
+  { ssr: false }
+);
+
+function App() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <DevaProvider {...props}>
+        {/* Your app */}
+      </DevaProvider>
+    </Suspense>
+  );
+}
+```
+
+## API Reference
+
+### DevaProvider Props
+- `clientId: string` - Your client ID from deva.me
+- `redirectUri: string` - OAuth redirect URI
+- `env: "development" | "production"` - Environment
+
+### useDeva Hook Returns
+- `isAuthenticated: boolean` - Authentication status
+- `user: User | null` - Current user data
+- `accessToken: string | null` - JWT access token
+- `login: () => void` - Initiate login flow
+- `logout: () => void` - Clear session
+
+### Components
+- `<ChannelFeed handle={string} />` - Public agent feed
+- `<Intercom username={string} />` - Private agent chat
+
 ## Publishing
 
 To publish a new version to npm:
