@@ -8,6 +8,8 @@ import React, {
 import type { Suggestion } from "@/types/suggestions";
 import { Spinner } from "@/components/ui/spinner";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback } from "../ui/avatar";
+import { AvatarImage } from "@radix-ui/react-avatar";
 
 const Chip = ({
   children,
@@ -104,12 +106,14 @@ export const MentionsList = forwardRef(function MentionList(
 
   return (
     <div
-      className={"mention-suggestion-container max-h-[19rem] hide-scrollbar"}
+      id="mention-suggestion-container"
+      className={"deva-hide-scrollbar deva-max-h-[19rem]"}
     >
       <div
-        data-testid="MentionList"
         id="mention-suggestion-items"
-        className={cn("max-h-[19rem] overflow-y-scroll", "hide-scrollbar")}
+        className={cn(
+          "deva-hide-scrollbar deva-max-h-[19rem] deva-overflow-y-scroll",
+        )}
       >
         {items.map((suggestion: Suggestion, index) => {
           const displayName =
@@ -122,9 +126,8 @@ export const MentionsList = forwardRef(function MentionList(
               className={`mention-suggestion-item ${
                 index === selectedIndex ? "is-selected" : ""
               }`}
-              key={suggestion.id + index}
+              key={suggestion.id}
               onClick={() => selectItem(index)}
-              id={`item${index}`}
               onMouseEnter={() => {
                 setSelectedIndex(index);
               }}
@@ -132,29 +135,32 @@ export const MentionsList = forwardRef(function MentionList(
                 setSelectedIndex(-1);
               }}
             >
-              <div className="flex flex-row gap-2 items-center overflow-hidden">
-                <img
-                  src={suggestion.persona.avatar || "/icons/profile.svg"}
-                  alt="Deva AI Agents Platform pfp"
-                  className="w-9 h-9 rounded-full"
-                />
-                <div className="flex flex-col gap-1 max-w-full w-full">
-                  <div className="flex items-center flex-nowrap">
-                    <div className="flex overflow-hidden text-ellipsis whitespace-nowrap">
+              <div className="deva-flex deva-flex-row deva-items-center deva-gap-2 deva-overflow-hidden">
+                <Avatar className="deva-h-9 deva-w-9 deva-rounded-full">
+                  <AvatarImage
+                    src={suggestion.persona.avatar || "/icons/profile.svg"}
+                    alt="User Avatar"
+                  />
+                  <AvatarFallback>
+                    {suggestion.persona.display_name?.charAt(0) ?? "U"}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="deva-flex deva-w-full deva-max-w-full deva-flex-col deva-gap-1">
+                  <div className="deva-flex deva-flex-nowrap deva-items-center">
+                    <div className="deva-flex deva-overflow-hidden deva-text-ellipsis deva-whitespace-nowrap">
                       {displayName}
                     </div>
                     {suggestion.persona.user_id ? "🫶" : "🤖"}
                   </div>
-                  <div className="text-lynch-600 text-sm flex items-center justify-between w-full">
+                  <div className="deva-text-lynch-600 deva-flex deva-w-full deva-items-center deva-justify-between deva-text-sm">
                     {/* NOTE: Exclamation marks imply human devas */}
-                    {/* {suggestion.personas?.[0]?.devaId || chat ? "@" : "!"} */}
-                    <span className="overflow-hidden text-ellipsis whitespace-nowrap max-w-[10rem]">
+                    <span className="deva-max-w-[10rem] deva-overflow-hidden deva-text-ellipsis deva-whitespace-nowrap">
                       {human ? "!" : "@"}
                       {suggestion.persona.username}
                     </span>
-                    <div className="flex">
+                    <div className="deva-flex">
                       <Chip color="neutral">
-                        <div className="flex flex-nowrap whitespace-nowrap">
+                        <div className="deva-flex deva-flex-nowrap deva-whitespace-nowrap">
                           Lvl{" "}
                           {human
                             ? suggestion.persona.user_level
@@ -162,8 +168,8 @@ export const MentionsList = forwardRef(function MentionList(
                         </div>
                       </Chip>
                       {!human && (
-                        <Chip color="jewel" className="ml-[5px]">
-                          <div className="flex flex-nowrap whitespace-nowrap">
+                        <Chip color="jewel" className="deva-ml-[5px]">
+                          <div className="deva-flex deva-flex-nowrap deva-whitespace-nowrap">
                             ₭{" "}
                             {Math.round(
                               Number(
@@ -184,13 +190,13 @@ export const MentionsList = forwardRef(function MentionList(
         })}
 
         {!items.length && !loading ? (
-          <div className="flex items-center justify-center w-full px-4 py-2 text-[#707583]">
+          <div className="deva-flex deva-w-full deva-items-center deva-justify-center deva-px-4 deva-py-2 deva-text-[#707583]">
             {"No results..."}
           </div>
         ) : null}
       </div>
       {loading && (
-        <div className="flex items-center justify-center w-full py-3">
+        <div className="deva-flex deva-w-full deva-items-center deva-justify-center deva-py-3">
           <Spinner />
         </div>
       )}
