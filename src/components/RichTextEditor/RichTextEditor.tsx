@@ -1,5 +1,5 @@
 import { EditorContent } from "@tiptap/react";
-import { useCallback, useEffect, KeyboardEvent } from "react";
+import { useCallback, useEffect, useRef, KeyboardEvent } from "react";
 
 import { useRichTextEditor } from "./useRichTextEditor";
 import { useIsVirtualKeyboardOpen } from "../../hooks/use-virtual-keyboard-open";
@@ -11,7 +11,7 @@ interface IRichTextEditorProps {
   onSubmit?: (text?: string) => void;
   disableSubmit?: boolean;
   // PostInput compatibility props
-  id?: string;
+  id: string;
   postId?: string;
   className?: string;
 }
@@ -39,6 +39,7 @@ export const RichTextEditor = ({
   });
 
   const { isVirtualKeyboardOpen } = useIsVirtualKeyboardOpen();
+  const postIdRef = useRef(postId);
 
   const handleOnSubmit = useCallback((e: KeyboardEvent) => {
     if (!isVirtualKeyboardOpen && e.key === "Enter" && !e.shiftKey && !disableSubmit) {
@@ -57,8 +58,9 @@ export const RichTextEditor = ({
 
   // Handle postId changes - reset content when postId changes (new post)
   useEffect(() => {
-    if (postId && editor) {
+    if (postId && editor && postIdRef.current !== postId) {
       editor.commands.setContent(value || "");
+      postIdRef.current = postId;
     }
   }, [postId, editor, value]);
 
