@@ -55,20 +55,11 @@ export const MentionsList = forwardRef(function MentionList(
   };
 
   const downHandler = () => {
-    if (selectedIndex + 1 >= items.length) {
-      // scroll to bottom
-      // this will trigger the handleScroll function to fetch more items
-      const scrollHeight = document.getElementById(
-        "mention-suggestion-items",
-      )?.scrollHeight;
-      if (scrollHeight) {
-        document
-          .getElementById("mention-suggestion-items")
-          ?.scrollTo(0, scrollHeight);
-      }
-    } else setSelectedIndex((selectedIndex + 1) % items.length);
+      const newIndex = (selectedIndex + 1) % items.length;
+    setSelectedIndex(newIndex);
+
     document
-      .getElementById(`item-${selectedIndex + 1}`)
+      .getElementById(`item-${newIndex}`)
       ?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   };
 
