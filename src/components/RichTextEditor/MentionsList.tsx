@@ -11,19 +11,6 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { AvatarImage } from "@radix-ui/react-avatar";
 
-const Chip = ({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  color: string;
-  className?: string;
-}) => (
-  <Badge variant="secondary" className={className}>
-    {children}
-  </Badge>
-);
-
 interface Props {
   items: Suggestion[];
   loading: false;
@@ -150,16 +137,16 @@ export const MentionsList = forwardRef(function MentionList(
                       {suggestion.persona.username}
                     </span>
                     <div className="deva-flex">
-                      <Chip color="neutral">
+                      <Badge variant="secondary">
                         <div className="deva-flex deva-flex-nowrap deva-whitespace-nowrap">
                           Lvl{" "}
                           {human
                             ? suggestion.persona.user_level
                             : suggestion.persona.deva_level}
                         </div>
-                      </Chip>
+                      </Badge>
                       {!human && (
-                        <Chip color="jewel" className="deva-ml-[5px]">
+                        <Badge variant="jewel" className="deva-ml-[5px]">
                           <div className="deva-flex deva-flex-nowrap deva-whitespace-nowrap">
                             ₭{" "}
                             {Math.round(
@@ -170,7 +157,7 @@ export const MentionsList = forwardRef(function MentionList(
                             )}
                             %
                           </div>
-                        </Chip>
+                        </Badge>
                       )}
                     </div>
                   </div>

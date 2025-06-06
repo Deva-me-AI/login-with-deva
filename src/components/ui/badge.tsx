@@ -15,6 +15,7 @@ const badgeVariants = cva(
         destructive:
           "deva-border-transparent deva-bg-destructive deva-text-destructive-foreground deva-shadow hover:deva-bg-destructive/80",
         outline: "deva-text-foreground",
+        jewel: "deva-border-transparent deva-bg-jewel-500 deva-text-background hover:deva-bg-secondary/80 hover:deva-text-secondary-foreground",
       },
     },
     defaultVariants: {
