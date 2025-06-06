@@ -69,6 +69,7 @@ export const RichTextEditor = ({
       id={id}
       editor={editor}
       onKeyDown={handleOnSubmit}
+      className="deva-h-full deva-w-full"
     />
   );
 };
