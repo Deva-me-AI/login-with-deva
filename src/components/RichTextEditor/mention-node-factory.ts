@@ -4,7 +4,7 @@ import { Node as ProseMirrorNode } from "prosemirror-model";
 import { PluginKey } from "prosemirror-state";
 
 export type BaseMentionOptions = {
-  HTMLAttributes: Record<string, any>;
+  HTMLAttributes: Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
   renderLabel: (props: {
     options: BaseMentionOptions;
     node: ProseMirrorNode;
@@ -49,7 +49,7 @@ export function createMentionNode(config: {
                 },
                 {
                   type: "text",
-                  text: " ",
+                  text: "\u00A0"
                 },
               ])
               .run();
