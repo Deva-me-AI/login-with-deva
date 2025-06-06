@@ -1,8 +1,8 @@
 import js from '@eslint/js'
 import globals from 'globals'
-import tseslint, { type ConfigArray } from 'typescript-eslint'
+import tseslint from 'typescript-eslint'
 
-const config: ConfigArray = tseslint.config(
+const config = tseslint.config(
   { ignores: ['dist', 'node_modules', 'example', 'example2'] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
