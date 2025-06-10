@@ -20,7 +20,7 @@ type Channel = "empty" | "eliza" | "null";
 type PersonaOption = "deva_support" | "truejaian" | "no-user";
 
 export function Content() {
-  const { isAuthenticated, accessToken, user, login, logout } = useDeva();
+  const { isAuthenticated, accessToken, user, login, logout, isReady } = useDeva();
   const username: string = user?.persona?.username;
   const params = new URLSearchParams(window.location.search);
   console.log("username: ", user);
@@ -77,7 +77,18 @@ export function Content() {
         }}
       >
         <Card>
-          {isAuthenticated ? (
+          {!isReady ? (
+            <h2
+              style={{
+                marginTop: ".5rem",
+                marginBottom: "1rem",
+                fontSize: "2.4em",
+                lineHeight: "1.25",
+              }}
+            >
+              Loading...
+            </h2>
+          ) : isAuthenticated ? (
             <>
               <h2
                 style={{

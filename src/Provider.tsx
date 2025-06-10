@@ -377,6 +377,7 @@ export function DevaProvider({
     user: userInfo ?? null,
     login,
     logout,
+    isReady: !isOpenIdConfigLoading && !authInProgress,
   };
   return (
     <DevaContext.Provider
@@ -398,6 +399,7 @@ export function DevaProvider({
 
         user: devaProps.user,
         isAuthenticated: devaProps.isAuthenticated,
+        isReady: devaProps.isReady,
 
         url,
       }}
