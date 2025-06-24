@@ -5,7 +5,7 @@ import animate from "tailwindcss-animate";
 export default {
   prefix: "deva-",
   darkMode: ["class"],
-  content: ["./src/**/*.tsx"],
+  content: ["./src/**/*.tsx", "./src/**/*.ts"],
   safelist: ["dark"],
   theme: {
     extend: {
@@ -69,6 +69,12 @@ export default {
           700: "#27292F",
           800: "#232329",
           900: "#0F1012",
+        },
+        jewel: {
+          500: "#CAF033",
+        },
+        orange: {
+          500: "#f0b733",
         },
       },
     },
