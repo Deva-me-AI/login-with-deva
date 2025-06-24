@@ -13,7 +13,7 @@ import { AvatarImage } from "@radix-ui/react-avatar";
 
 interface Props {
   items: Suggestion[];
-  loading: false;
+  loading: boolean;
   human?: boolean;
   command: ({ id }: { id: string }) => void;
 }
