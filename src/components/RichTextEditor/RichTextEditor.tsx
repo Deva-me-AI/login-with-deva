@@ -1,5 +1,5 @@
 import { EditorContent } from "@tiptap/react";
-import { useCallback, useEffect, useRef, KeyboardEvent } from "react";
+import { useCallback, useEffect, useRef, type KeyboardEvent } from "react";
 
 import { useRichTextEditor } from "./useRichTextEditor";
 import { useIsVirtualKeyboardOpen } from "../../hooks/use-virtual-keyboard-open";

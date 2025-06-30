@@ -117,7 +117,7 @@ const usePersonaSuggester = (
         },
 
         onExit() {
-          if (!popup || !popup[0]) {
+          if (!popup?.[0]) {
             console.warn(
               `%c${type}Suggestion/render#onExit`,
               "color:salmon;",

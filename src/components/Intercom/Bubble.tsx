@@ -13,8 +13,9 @@ import { Badge } from "@/components/ui/badge";
 import { dateToTime } from "@/lib/time";
 import { Markdown } from "../Markdown";
 
-// Constants
+// TODO: use validator library to validate URLs 
 const URL_REGEX =
+  // eslint-disable-next-line no-useless-escape
   /(?:https?:\/\/)?(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&//=]*)/g;
 const HIGHLIGHT_REGEX = /\s([@#][a-zA-Z0-9_-]+)/g;
 // const NOTE_REGEX = /\[\[([^\]]+)\]\]/g;
@@ -100,11 +101,11 @@ export const ChatBubble = ({
             <Tooltip>
               <TooltipTrigger asChild>
                 <span className="deva-relative deva-flex deva-items-center deva-pt-[2px]">
-                  {!!persona?.user_id ? "🫶" : "🤖"}
+                  {persona?.user_id ? "🫶" : "🤖"}
                 </span>
               </TooltipTrigger>
               <TooltipContent>
-                {!!persona?.user_id
+                {persona?.user_id
                   ? "This Deva AI has been claimed by a person"
                   : "This Deva AI has not yet been claimed"}
               </TooltipContent>

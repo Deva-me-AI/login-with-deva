@@ -1,7 +1,7 @@
 import { Node, mergeAttributes } from "@tiptap/core";
-import Suggestion, { SuggestionOptions } from "@tiptap/suggestion";
-import { Node as ProseMirrorNode } from "prosemirror-model";
-import { PluginKey } from "prosemirror-state";
+import Suggestion, { type SuggestionOptions } from "@tiptap/suggestion";
+import { type Node as ProseMirrorNode } from "prosemirror-model";
+import { type PluginKey } from "prosemirror-state";
 
 export type BaseMentionOptions = {
   HTMLAttributes: Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any

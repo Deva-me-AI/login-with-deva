@@ -369,7 +369,7 @@ export function DevaProvider({
       window.history.replaceState({}, document.title, window.location.pathname);
     }
     void refresh(true);
-  }, [isOpenIdConfigLoading]); 
+  }, [isOpenIdConfigLoading]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const devaProps = {
     isAuthenticated: !!accessToken && !isRefreshing,

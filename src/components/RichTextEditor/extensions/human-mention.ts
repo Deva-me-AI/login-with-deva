@@ -1,5 +1,5 @@
-import { SuggestionOptions } from "@tiptap/suggestion";
-import { Node as ProseMirrorNode } from "prosemirror-model";
+import { type SuggestionOptions } from "@tiptap/suggestion";
+import { type Node as ProseMirrorNode } from "prosemirror-model";
 import { PluginKey } from "prosemirror-state";
 import { createMentionNode } from "../mention-node-factory";
 
