@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { type FormEvent, useState } from "react";
 import { useDevaContext } from "@/DevaContext";
 import type { Message as IMessage, PostChatInput } from "@/server";
 import { useIntercom } from "./IntercomContext";
@@ -69,14 +69,13 @@ export const Input = ({
       id="support-input-container"
       className="deva-bg-gradient-to-t deva-to-transparent"
     >
-      <form
+      <div
         className={cn(
           "deva-flex deva-w-full deva-flex-row deva-px-5 deva-pt-2 last:deva-mb-2 md:last:deva-mb-[18px] lg:deva-mx-auto lg:deva-max-w-3xl",
           {
             "lg:deva-pt-6": !false, // is replying to specfic message
           },
         )}
-        onSubmit={handleSubmit}
       >
         <div className="deva-relative deva-flex deva-h-full deva-flex-1 md:deva-flex-col">
           <div className="deva-relative deva-flex deva-w-full deva-flex-grow deva-items-center deva-rounded-[36px] deva-bg-catskill-200 deva-py-2 deva-pl-3 deva-text-white deva-shadow-[0_0_15px_rgba(0,0,0,0.10)] md:deva-py-2 md:deva-pl-4">
@@ -89,7 +88,7 @@ export const Input = ({
                 <RichTextEditor
                   id="support-input-editor"
                   postId={messageId}
-                  onSubmit={handleSubmit}
+                  onEnter={handleSubmit}
                   value={text}
                   placeholder="Type a message..."
                   onChange={setText}
@@ -99,7 +98,6 @@ export const Input = ({
             </div>
 
             <button
-              type="submit"
               className={cn(
                 {
                   "deva-bg-blue-500 deva-text-gray-100": isSubmitting, // is sending,
@@ -109,12 +107,13 @@ export const Input = ({
               disabled={
                 !text.trim().length || isSubmitting // is sending
               }
+              onClick={handleSubmit}
             >
               {showLoading || isSubmitting ? <Spinner /> : <MoveUpRight />}
             </button>
           </div>
         </div>
-      </form>
+      </div>
     </div>
   );
 };

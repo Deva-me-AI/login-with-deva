@@ -9,7 +9,7 @@ interface IRichTextEditorProps {
   value?: string;
   placeholder?: string;
   onChange?: (text: string) => void;
-  onSubmit?: (text?: string) => void;
+  onEnter?: () => void;
   disableSubmit?: boolean;
   // PostInput compatibility props
   id: string;
@@ -20,7 +20,7 @@ interface IRichTextEditorProps {
 export const RichTextEditor = ({
   value = "",
   onChange,
-  onSubmit,
+  onEnter,
   placeholder = "Write a message...",
   disableSubmit = false,
   id,
@@ -45,11 +45,11 @@ export const RichTextEditor = ({
   const handleOnSubmit = useCallback((e: KeyboardEvent) => {
     if (!isVirtualKeyboardOpen && e.key === "Enter" && !e.shiftKey && !disableSubmit) {
       e.preventDefault();
-      if (onSubmit) {
-        onSubmit();
+      if (onEnter) {
+        onEnter();
       }
     }
-  }, [disableSubmit, isVirtualKeyboardOpen, onSubmit]);
+  }, [disableSubmit, isVirtualKeyboardOpen, onEnter]);
 
   useEffect(() => {
     if(!value?.length) {

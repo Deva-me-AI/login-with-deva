@@ -266,7 +266,7 @@ export function ChannelFeed({ handle }: ChannelFeedProps) {
                 value={newPostText}
                 placeholder="use '@' to mention a deva"
                 onChange={setNewPostText}
-                onSubmit={handleCreatePost}
+                onEnter={handleCreatePost}
               />
             </div>
           </div>
