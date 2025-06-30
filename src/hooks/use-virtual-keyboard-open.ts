@@ -8,10 +8,10 @@ export function useIsVirtualKeyboardOpen() {
       return;
     }
 
-    const initialViewportHeight = window.visualViewport?.height || window.innerHeight;
+    const initialViewportHeight = window.visualViewport?.height ?? window.innerHeight;
     
     const handleResize = () => {
-      const currentHeight = window.visualViewport?.height || window.innerHeight;
+      const currentHeight = window.visualViewport?.height ?? window.innerHeight;
       const heightDifference = initialViewportHeight - currentHeight;
       
       // Consider keyboard open if viewport height decreased by more than 150px

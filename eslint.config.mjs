@@ -25,6 +25,11 @@ const config = tseslint.config(
         project: true,
       },
     },
+    settings: {
+      react: {
+        version: "18.3.1",
+      },
+    },
     rules: {
       ...reactHooks.configs.recommended.rules,
       "@typescript-eslint/no-explicit-any": "warn",

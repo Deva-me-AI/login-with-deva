@@ -37,7 +37,8 @@ const CommandInput = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Input>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input>
 >(({ className, ...props }, ref) => (
-  <div className="deva-flex deva-items-center deva-border-b deva-px-3" cmdk-input-wrapper="">
+  // eslint-disable-next-line react/no-unknown-property
+  <div className="deva-flex deva-items-center deva-border-b deva-px-3" cmdk-input-wrapper=""> 
     <Search className="deva-mr-2 deva-h-4 deva-w-4 deva-shrink-0 deva-opacity-50" />
     <CommandPrimitive.Input
       ref={ref}

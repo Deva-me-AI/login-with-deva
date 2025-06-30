@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import React, {
+import {
   forwardRef,
   useEffect,
   useImperativeHandle,
@@ -53,7 +53,7 @@ export const MentionsList = forwardRef(function MentionList(
   useEffect(() => setSelectedIndex(0), [items]);
 
   useImperativeHandle(ref, () => ({
-    onKeyDown: ({ event }) => {
+    onKeyDown: ({ event }: { event: KeyboardEvent }) => {
       if (event.key === "ArrowUp") {
         upHandler();
         return true;
@@ -95,7 +95,7 @@ export const MentionsList = forwardRef(function MentionList(
       >
         {items.map((suggestion: Suggestion, index) => {
           const displayName =
-            suggestion.persona.display_name || suggestion.persona.username;
+            suggestion.persona.display_name ?? suggestion.persona.username;
 
           return (
             <button
@@ -116,7 +116,7 @@ export const MentionsList = forwardRef(function MentionList(
               <div className="deva-flex deva-flex-row deva-items-center deva-gap-2 deva-overflow-hidden">
                 <Avatar className="deva-h-9 deva-w-9 deva-rounded-full">
                   <AvatarImage
-                    src={suggestion.persona.avatar || "/icons/profile.svg"}
+                    src={suggestion.persona.avatar ?? "/icons/profile.svg"}
                     alt="User Avatar"
                   />
                   <AvatarFallback>

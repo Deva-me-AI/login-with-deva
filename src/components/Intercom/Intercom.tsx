@@ -171,7 +171,7 @@ const useDevaMessages = ({ threadId }: { threadId?: string }) => {
           (item) => item.id === message.id,
         );
 
-        let newItems;
+        let newItems: IMessage[];
         if (existingIndex >= 0) {
           newItems = [...existingItems];
           newItems[existingIndex] = message;
@@ -182,7 +182,7 @@ const useDevaMessages = ({ threadId }: { threadId?: string }) => {
         return {
           ...(res ?? ({} as PaginatedMessages)),
           items: newItems,
-        } as PaginatedMessages;
+        } satisfies PaginatedMessages;
       });
     },
     [internalMutate],

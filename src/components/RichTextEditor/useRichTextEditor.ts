@@ -22,7 +22,7 @@ export const useRichTextEditor = ({
   initialValue,
   onChange,
 }: UseRichTextEditorProps) => {
-  const [text, setText] = useState(initialValue || "");
+  const [text, setText] = useState(initialValue ?? "");
   const { env } = useDevaContext();
 
   const editor = useEditor({

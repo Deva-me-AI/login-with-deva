@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 
 // Match human and deva mentions only
-const HIGHLIGHT_REGEX = /(?:^|\s|[^\w.])([@]{1,3}|[!#])([a-zA-Z0-9_\-]+)/g;
+const HIGHLIGHT_REGEX = /(?:^|\s|[^\w.])([@]{1,3}|[!#])([a-zA-Z0-9_-]+)/g;
 
 // Keep NOTE_REGEX separate
 const NOTE_REGEX = /\[\[([^\]]+?)\]\]/g;

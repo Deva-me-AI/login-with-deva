@@ -1,5 +1,6 @@
 import { EditorContent } from "@tiptap/react";
-import { useCallback, useEffect, useRef, type KeyboardEvent } from "react";
+import { useCallback, useEffect, useRef } from "react";
+import type { KeyboardEvent } from "react";
 
 import { useRichTextEditor } from "./useRichTextEditor";
 import { useIsVirtualKeyboardOpen } from "../../hooks/use-virtual-keyboard-open";
@@ -32,7 +33,7 @@ export const RichTextEditor = ({
   } = useRichTextEditor({
     id,
     initialValue: value,
-    className: className || 
+    className: className ?? 
       "m-0 outline-none w-full resize-none border-0 bg-transparent p-0 pr-7 pl-3 focus:ring-0 focus-visible:ring-0 dark:bg-transparent",
     placeholder,
     onChange,

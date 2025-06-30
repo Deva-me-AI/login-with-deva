@@ -151,11 +151,11 @@ interface ChatDropdownMenuProps {
   msg: Message;
 }
 
-const ChatDropdownMenu: React.FC<ChatDropdownMenuProps> = ({
+const ChatDropdownMenu = ({
   handleClose,
   handleReply,
   // msg,
-}) => {
+}: ChatDropdownMenuProps) => {
   return (
     <DropdownMenu open={true} onOpenChange={handleClose}>
       <DropdownMenuContent
@@ -228,7 +228,7 @@ type MobileProps = {
   setReplyingTo?: (id?: string) => void;
 };
 
-const ChatMenuMobile = ({ setIsOpen, msg, setReplyingTo }: MobileProps) => {
+const ChatMenuMobile = ({ setIsOpen, msg: _msg, setReplyingTo: _setReplyingTo }: MobileProps) => {
   const options: IOption[] = [
     {
       icon: <ThumbsUp className="deva-h-5 deva-w-5" />,

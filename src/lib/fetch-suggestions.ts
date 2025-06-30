@@ -25,7 +25,7 @@ export async function fetchSuggestions(
       throw new Error(`Failed to fetch suggestions: ${response.statusText}`);
     }
 
-    const personasData: PagintedPersonas = await response.json();
+    const personasData = await response.json() as PagintedPersonas;
 
     // Transform PublicPersona items into Suggestion format
     const suggestions: Suggestion[] = (personasData?.items ?? []).map(

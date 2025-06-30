@@ -105,7 +105,7 @@ const usePersonaSuggester = (
 
           if (props.event.key === "Enter") {
             // @ts-expect-error onKeyDown is not defined in the type
-            const handled = component?.ref?.onKeyDown(props);
+            const handled = component?.ref?.onKeyDown(props) as boolean; // eslint-disable-line @typescript-eslint/no-unsafe-call
             if (handled) {
               // Don't try to hide - the selection process will handle cleanup
               return true;
@@ -113,7 +113,7 @@ const usePersonaSuggester = (
           }
 
           // @ts-expect-error onKeyDown is not defined in the type
-          return component?.ref?.onKeyDown(props);
+          return component?.ref?.onKeyDown(props) as boolean; // eslint-disable-line @typescript-eslint/no-unsafe-call
         },
 
         onExit() {
