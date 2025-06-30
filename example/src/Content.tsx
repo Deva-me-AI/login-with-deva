@@ -21,7 +21,7 @@ type PersonaOption = "deva_support" | "truejaian" | "no-user";
 
 export function Content() {
   const { isAuthenticated, accessToken, user, login, logout } = useDeva();
-  const username: string = user?.persona?.username;
+  const username: string = user?.persona?.username ?? "";
   const params = new URLSearchParams(window.location.search);
   console.log("username: ", user);
 
@@ -96,7 +96,7 @@ export function Content() {
               >
                 {user?.persona?.display_name ??
                   user?.persona?.username ??
-                  user?.preferred_username}
+                  user?.preferred_username ?? "Anonymous"}
               </h3>
               <h3
                 style={{

@@ -12,7 +12,7 @@ import type { OidcAccessTokenJWT, UserInfo } from "./server";
 import { jwtDecode } from "jwt-decode";
 import { useInterval } from "./hooks/use-timeout";
 import { type Envs, envToUrl } from "./config";
-import type { useDeva } from "./use-deva";
+import type { UseDevaReturn } from "./use-deva";
 
 // Check if we're running in a browser environment
 const isBrowser =
@@ -28,7 +28,7 @@ export type DevaProviderProps = {
   redirectUri: string;
   children:
     | React.ReactNode
-    | ((devaProps: ReturnType<typeof useDeva>) => React.ReactNode);
+    | ((devaProps: UseDevaReturn) => React.ReactNode);
   env: Envs;
 };
 
@@ -369,7 +369,7 @@ export function DevaProvider({
       window.history.replaceState({}, document.title, window.location.pathname);
     }
     void refresh(true);
-  }, [isOpenIdConfigLoading]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [isOpenIdConfigLoading]); 
 
   const devaProps = {
     isAuthenticated: !!accessToken && !isRefreshing,
