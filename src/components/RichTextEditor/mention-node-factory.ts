@@ -1,7 +1,13 @@
-import { Node, mergeAttributes } from "@tiptap/core";
-import Suggestion, { type SuggestionOptions } from "@tiptap/suggestion";
-import { type Node as ProseMirrorNode } from "prosemirror-model";
-import { type PluginKey } from "prosemirror-state";
+import { type Editor, type Range, Node, mergeAttributes } from "@tiptap/core";
+import Suggestion from "@tiptap/suggestion";
+import type { SuggestionOptions } from "@tiptap/suggestion";
+import type { Node as ProseMirrorNode } from "prosemirror-model";
+import type { PluginKey } from "prosemirror-state";
+
+export type MentionAttributes = {
+  id: string;
+  label: string;
+};
 
 export type BaseMentionOptions = {
   HTMLAttributes: Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -29,7 +35,7 @@ export function createMentionNode(config: {
         suggestion: {
           char: config.char,
           pluginKey: config.pluginKey,
-          command: ({ editor, range, props }) => {
+          command: ({ editor, range, props }: { editor: Editor; range: Range; props: MentionAttributes }) => {
             const { nodeAfter } = editor.view.state.selection.$to;
             const overrideSpace = nodeAfter?.text?.startsWith(" ");
 
@@ -72,8 +78,8 @@ export function createMentionNode(config: {
       return {
         id: {
           default: null,
-          parseHTML: (element) => element.getAttribute("data-id"),
-          renderHTML: (attributes) => {
+          parseHTML: (element: HTMLElement) => element.getAttribute("data-id"),
+          renderHTML: (attributes: MentionAttributes) => {
             if (!attributes.id) {
               return {};
             }
@@ -84,8 +90,8 @@ export function createMentionNode(config: {
         },
         label: {
           default: null,
-          parseHTML: (element) => element.getAttribute("data-label"),
-          renderHTML: (attributes) => {
+          parseHTML: (element: HTMLElement) => element.getAttribute("data-label"),
+          renderHTML: (attributes: MentionAttributes) => {
             if (!attributes.label) {
               return {};
             }
@@ -143,7 +149,7 @@ export function createMentionNode(config: {
               if (node.type.name === this.name) {
                 isMention = true;
                 tr.insertText(
-                  this.options.suggestion.char || "",
+                  this.options.suggestion.char ?? "",
                   pos,
                   pos + node.nodeSize,
                 );
