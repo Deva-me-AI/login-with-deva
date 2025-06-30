@@ -15,9 +15,11 @@
     "example:link": "cd example && pnpm link ../",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",
     "format:write": "prettier --write \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",
+    "lint": "eslint .",
+    "pretypecheck": "npm run lint",
     "start": "next start",
     "tc": "pnpm run typecheck",
-    "typecheck": "eslint . && tsc --noEmit --project tsconfig.typecheck.json"
+    "typecheck": "tsc --noEmit --project tsconfig.typecheck.json"
   },
   "type": "module",
   "main": "dist/index.es.js",
