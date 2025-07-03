@@ -23,13 +23,11 @@ jobs:
         uses: grll/claude-code-action@beta
         with:
           use_oauth: true
-          claude_client_id: ${{ secrets.CLAUDE_CLIENT_ID }}
-          claude_client_secret: ${{ secrets.CLAUDE_CLIENT_SECRET }}
           claude_access_token: ${{ secrets.CLAUDE_ACCESS_TOKEN }}
           claude_refresh_token: ${{ secrets.CLAUDE_REFRESH_TOKEN }}
+          claude_expires_at: ${{ secrets.CLAUDE_EXPIRES_AT }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          review_trigger: "@claude"
-          auto_review: false
-          max_comment_length: 3000
-          temperature: 0.3
+          trigger_phrase: "@claude"
+          max_turns: 10
+          timeout_minutes: 10
