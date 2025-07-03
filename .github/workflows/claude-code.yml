@@ -1,0 +1,35 @@
+name: Claude Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  issue_comment:
+    types: [created]
+
+jobs:
+  claude-review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Claude Code Review
+        uses: grll/claude-code-action@beta
+        with:
+          use_oauth: true
+          claude_client_id: ${{ secrets.CLAUDE_CLIENT_ID }}
+          claude_client_secret: ${{ secrets.CLAUDE_CLIENT_SECRET }}
+          claude_access_token: ${{ secrets.CLAUDE_ACCESS_TOKEN }}
+          claude_refresh_token: ${{ secrets.CLAUDE_REFRESH_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          review_trigger: "@claude"
+          auto_review: false
+          max_comment_length: 3000
+          temperature: 0.3
