@@ -7,7 +7,7 @@ interface TokenDigitInputProps {
   index: number;
   onChange: (index: number, value: string) => void;
   onKeyDown: (index: number, e: React.KeyboardEvent<HTMLInputElement>) => void;
-  inputRef: React.RefObject<HTMLInputElement>;
+  inputRef: React.RefObject<HTMLInputElement | null>;
   isVerifying: boolean;
 }
 

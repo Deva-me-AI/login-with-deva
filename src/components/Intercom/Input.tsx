@@ -1,4 +1,4 @@
-import { type FormEvent, useState } from "react";
+import { useState } from "react";
 import { useDevaContext } from "@/DevaContext";
 import type { Message as IMessage, PostChatInput } from "@/server";
 import { useIntercom } from "./IntercomContext";
