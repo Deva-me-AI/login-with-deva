@@ -13,7 +13,7 @@ import type { Message as IMessage } from "@/server";
 interface IntercomContextType {
   // Scroll management
   scrollToBottom: () => void;
-  scrollAreaRef: React.RefObject<HTMLDivElement>;
+  scrollAreaRef: React.RefObject<HTMLDivElement | null>;
 
   // Streaming state management
   streamingMessageId: string | null;
