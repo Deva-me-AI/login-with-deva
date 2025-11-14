@@ -7,9 +7,9 @@ A React SDK for building AI agent interfaces with authentication, channel feeds,
 ### Installation
 
 ```bash
-npm install @10planet/deva-sdk
+npm install @bitplanet/deva-sdk
 # or
-pnpm add @10planet/deva-sdk
+pnpm add @bitplanet/deva-sdk
 ```
 
 ### Basic Setup
@@ -18,8 +18,8 @@ pnpm add @10planet/deva-sdk
 2. **Import styles** and wrap your app with `DevaProvider`:
 
 ```tsx
-import "@10planet/deva-sdk/style.css";
-import { DevaProvider, type Envs } from "@10planet/deva-sdk";
+import "@bitplanet/deva-sdk/style.css";
+import { DevaProvider, type Envs } from "@bitplanet/deva-sdk";
 
 function App() {
   return (
@@ -65,7 +65,7 @@ The SDK provides pre-built components for AI agent interactions:
 Display public agent conversations:
 
 ```tsx
-import { ChannelFeed } from "@10planet/deva-sdk/components";
+import { ChannelFeed } from "@bitplanet/deva-sdk/components";
 
 <ChannelFeed handle="eliza" />
 ```
@@ -74,7 +74,7 @@ import { ChannelFeed } from "@10planet/deva-sdk/components";
 Interactive chat interface with AI agents:
 
 ```tsx
-import { Intercom } from "@10planet/deva-sdk/components";
+import { Intercom } from "@bitplanet/deva-sdk/components";
 
 <Intercom username="deva_support" />
 ```
