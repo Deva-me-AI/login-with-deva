@@ -72,7 +72,9 @@ export const useStreamResponse = ({
     setError(null);
     setIsDone(false);
 
-    controllerRef.current = new AbortController();
+    // Create a local AbortController for this effect run
+    const controller = new AbortController();
+    controllerRef.current = controller;
     const streamUrl = `${url}/api/sdk/chat/${threadId}/messages/${messageId}/query/stream`;
 
     fetchEventSource(streamUrl, {
@@ -82,7 +84,7 @@ export const useStreamResponse = ({
         "Content-Type": "application/json",
         Accept: "text/event-stream",
       },
-      signal: controllerRef.current.signal,
+      signal: controller.signal,
       openWhenHidden: true, // Keep connection open even when page is hidden
 
       onopen: async (response) => {
@@ -147,7 +149,7 @@ export const useStreamResponse = ({
       },
 
       onerror: (err: Error) => {
-        console.error("Stream error:", err);
+        console.error("[useStreamResponse] onerror called:", err);
         setError(new Error(err.message || "Error streaming message"));
         setIsStreaming(false);
       },
@@ -160,7 +162,7 @@ export const useStreamResponse = ({
       },
     })
       .catch((err) => {
-        console.error("Error setting up stream:", err);
+        console.error("[useStreamResponse] Error setting up stream:", err);
         setError(
           err instanceof Error
             ? err
@@ -169,16 +171,15 @@ export const useStreamResponse = ({
       })
       .finally(() => {
         setIsStreaming(false);
-        if (controllerRef.current) {
-          controllerRef.current.abort();
+        if (controllerRef.current === controller) {
           controllerRef.current = null;
         }
       });
 
-    // Cleanup function
+    // Cleanup function - uses local controller variable
     return () => {
-      if (controllerRef.current) {
-        controllerRef.current.abort();
+      controller.abort();
+      if (controllerRef.current === controller) {
         controllerRef.current = null;
       }
       setIsStreaming(false);

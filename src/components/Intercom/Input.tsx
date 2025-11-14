@@ -58,7 +58,7 @@ export const Input = ({
       // Scroll to bottom
       scrollToBottom();
     } catch (error) {
-      console.error("Error sending message:", error);
+      console.error('[Input.handleSubmit] Error sending message:', error);
     } finally {
       setIsSubmitting(false);
     }
