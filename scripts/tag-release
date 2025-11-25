@@ -128,6 +128,24 @@ if git ls-remote --tags origin | grep -q "refs/tags/$TAG$"; then
     exit 0
 fi
 
+# Push commits if needed
+if [ "$DRY_RUN" = true ]; then
+    echo "[DRY RUN] Would push commits to remote"
+else
+    # Check if there are unpushed commits
+    if [ -n "$(git log @{u}.. 2>/dev/null)" ]; then
+        echo "Pushing commits to remote..."
+        if git push; then
+            echo "Commits pushed successfully"
+        else
+            echo "Failed to push commits"
+            exit 1
+        fi
+    else
+        echo "No commits to push"
+    fi
+fi
+
 # Create the tag
 if [ "$DRY_RUN" = true ]; then
     echo "[DRY RUN] Would create tag $TAG"
