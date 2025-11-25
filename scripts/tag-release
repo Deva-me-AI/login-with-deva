@@ -2,20 +2,35 @@
 
 set -e  # Exit on error
 
+# Parse arguments
+DRY_RUN=false
+BUMP_TYPE=""
+
+for arg in "$@"; do
+    case "$arg" in
+        --dry-run)
+            DRY_RUN=true
+            ;;
+        major|minor|patch)
+            BUMP_TYPE="$arg"
+            ;;
+        *)
+            echo "Error: Unknown argument '$arg'"
+            echo "Usage: $0 <major|minor|patch> [--dry-run]"
+            exit 1
+            ;;
+    esac
+done
+
 # Validate argument
-if [ -z "$1" ]; then
+if [ -z "$BUMP_TYPE" ]; then
     echo "Error: Version bump type required"
-    echo "Usage: $0 <major|minor|patch>"
+    echo "Usage: $0 <major|minor|patch> [--dry-run]"
     exit 1
 fi
 
-BUMP_TYPE="$1"
-
-# Validate bump type
-if [[ ! "$BUMP_TYPE" =~ ^(major|minor|patch)$ ]]; then
-    echo "Error: Invalid bump type '$BUMP_TYPE'"
-    echo "Usage: $0 <major|minor|patch>"
-    exit 1
+if [ "$DRY_RUN" = true ]; then
+    echo "=== DRY RUN MODE ==="
 fi
 
 # Get current version from package.json
@@ -36,7 +51,7 @@ fi
 echo "Current version: $CURRENT_VERSION"
 
 # Check for uncommitted changes before we modify anything
-if ! git diff-index --quiet HEAD --; then
+if [ "$DRY_RUN" = false ] && ! git diff-index --quiet HEAD --; then
     echo "Warning: You have uncommitted changes. Consider committing them before tagging."
     read -p "Continue anyway? (y/N) " -n 1 -r
     echo
@@ -70,14 +85,17 @@ VERSION="${MAJOR}.${MINOR}.${PATCH}"
 echo "New version: $VERSION"
 
 # Update package.json
-node -e "
+if [ "$DRY_RUN" = true ]; then
+    echo "[DRY RUN] Would update package.json to version $VERSION"
+else
+    node -e "
 const fs = require('fs');
 const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 pkg.version = '$VERSION';
 fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
 "
-
-echo "Updated package.json to version $VERSION"
+    echo "Updated package.json to version $VERSION"
+fi
 
 TAG="v$VERSION"
 
@@ -85,9 +103,13 @@ echo "Package version: $VERSION"
 echo "Tag: $TAG"
 
 # Stage and commit the package.json change
-git add package.json
-git commit -m "chore(package): bump version to $VERSION"
-echo "Committed package.json version bump"
+if [ "$DRY_RUN" = true ]; then
+    echo "[DRY RUN] Would commit: chore(package): bump version to $VERSION"
+else
+    git add package.json
+    git commit -m "chore(package): bump version to $VERSION"
+    echo "Committed package.json version bump"
+fi
 
 # Check if tag already exists locally
 if git tag -l | grep -q "^$TAG$"; then
@@ -102,21 +124,32 @@ if git ls-remote --tags origin | grep -q "refs/tags/$TAG$"; then
 fi
 
 # Create the tag
-echo "Creating tag $TAG..."
+if [ "$DRY_RUN" = true ]; then
+    echo "[DRY RUN] Would create tag $TAG"
+    echo "[DRY RUN] Would push tag $TAG to remote"
+else
+    echo "Creating tag $TAG..."
 
-if git tag "$TAG"; then
-    echo "Tag $TAG created successfully"
-    
-    # Push the tag to remote
-    echo "Pushing tag $TAG to remote..."
-    
-    if git push origin "$TAG"; then
-        echo "Tag $TAG pushed successfully"
+    if git tag "$TAG"; then
+        echo "Tag $TAG created successfully"
+
+        # Push the tag to remote
+        echo "Pushing tag $TAG to remote..."
+
+        if git push origin "$TAG"; then
+            echo "Tag $TAG pushed successfully"
+        else
+            echo "Failed to push tag $TAG"
+            exit 1
+        fi
     else
-        echo "Failed to push tag $TAG"
+        echo "Failed to create tag $TAG"
         exit 1
     fi
-else
-    echo "Failed to create tag $TAG"
-    exit 1
+fi
+
+if [ "$DRY_RUN" = true ]; then
+    echo ""
+    echo "=== DRY RUN COMPLETE ==="
+    echo "No changes were made. Run without --dry-run to execute."
 fi
