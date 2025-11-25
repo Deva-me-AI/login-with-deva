@@ -128,7 +128,28 @@ export function DevaProvider({
   if (error) {
     console.error("[sdk/provider] error fetching openid info: ", error);
   }
+
   const fetchingTokensRef = useRef(false);
+  const hasWarnedRef = useRef(false);
+
+  // Warn when using development environment
+  useEffect(() => {
+    if (env === "development" && !hasWarnedRef.current) {
+      hasWarnedRef.current = true;
+      console.warn(
+        "\n" +
+          "========================================\n" +
+          "⚠️  WARNING: DEVELOPMENT ENVIRONMENT  ⚠️\n" +
+          "========================================\n" +
+          "You are currently using the DEVELOPMENT environment.\n" +
+          "This environment is for INTERNAL USE ONLY.\n" +
+          "\n" +
+          "If you are seeing this warning, you may have the wrong environment configured.\n" +
+          "Please verify your environment settings and use 'staging' or 'production' instead.\n" +
+          "========================================\n"
+      );
+    }
+  }, [env]);
   const [codeVerifier, setCodeVerifier] = useStorage("code_verifier", "");
   const [authInProgress, setAuthInProgress] = useStorage(
     "auth_in_progress",
