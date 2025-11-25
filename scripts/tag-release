@@ -24,8 +24,13 @@ done
 
 # Validate argument
 if [ -z "$BUMP_TYPE" ]; then
-    echo "Error: Version bump type required"
     echo "Usage: $0 <major|minor|patch> [--dry-run]"
+    echo ""
+    echo "Examples:"
+    echo "  $0 patch          # Bump patch version (e.g., 1.0.0 -> 1.0.1)"
+    echo "  $0 minor          # Bump minor version (e.g., 1.0.0 -> 1.1.0)"
+    echo "  $0 major          # Bump major version (e.g., 1.0.0 -> 2.0.0)"
+    echo "  $0 patch --dry-run   # Preview changes without executing"
     exit 1
 fi
 
