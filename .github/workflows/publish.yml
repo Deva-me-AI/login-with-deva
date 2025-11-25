@@ -6,13 +6,29 @@ on:
     tags:
       - 'v*'
   workflow_dispatch:
+    inputs:
+      dry-run:
+        description: 'Run without actually publishing to NPM'
+        type: boolean
+        required: false
+        default: true
+
+permissions:
+  contents: read
 
 jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+
   publish:
+    needs: ci
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # Push version changes
+      id-token: write # OIDC for npm publishing
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -20,11 +36,12 @@ jobs:
           version: 9.6.0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'pnpm'
           registry-url: 'https://registry.npmjs.org'
+          # node 24 ships with oidc support
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -35,7 +52,14 @@ jobs:
       - name: Build
         run: pnpm run build
 
+      - name: Publish (dry-run)
+        if: ${{ inputs.dry-run }}
+        run: pnpm publish --access public --dry-run
+
       - name: Publish
+        if: ${{ !inputs.dry-run }}
         run: pnpm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # OIDC authentication is used automatically by npm CLI 11.5.1+
+      # (pnpm delegates to npm for publishing)
+      # No NPM_TOKEN secret needed - authentication happens via OpenID Connect
+      # See: https://docs.npmjs.com/trusted-publishers/
