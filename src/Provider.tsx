@@ -233,7 +233,36 @@ export function DevaProvider({
     setAuthError(null);
   }, [clearState, revokeToken]);
 
+  const callRefreshApi = useRefreshToken(
+    clientId,
+    refreshToken,
+    openIdConfig?.token_endpoint,
+  );
+
   const login = useCallback(async () => {
+    if (accessToken && !epochTimeIsPast(expiresIn)) {
+      return;
+    }
+
+    if (refreshToken) {
+      if (isOpenIdConfigLoading) {
+        return;
+      }
+
+      setIsRefreshing(true);
+      try {
+        const res = await callRefreshApi();
+        if (res) {
+          handleTokenResponse(res);
+          return;
+        }
+      } catch (error) {
+        console.error("[sdk/provider]: Error refreshing token", error);
+      } finally {
+        setIsRefreshing(false);
+      }
+    }
+
     clearState();
     setAuthInProgress(true);
     if (isOpenIdConfigLoading) {
@@ -258,6 +287,12 @@ export function DevaProvider({
 
     window.location.assign(u.toString());
   }, [
+    accessToken,
+    expiresIn,
+    refreshToken,
+    callRefreshApi,
+    handleTokenResponse,
+    setIsRefreshing,
     clientId,
     redirectUri,
     setCodeVerifier,
@@ -266,12 +301,6 @@ export function DevaProvider({
     isOpenIdConfigLoading,
     openIdConfig,
   ]);
-
-  const callRefreshApi = useRefreshToken(
-    clientId,
-    refreshToken,
-    openIdConfig?.token_endpoint,
-  );
 
   const refresh = useCallback(
     async (init = false) => {
