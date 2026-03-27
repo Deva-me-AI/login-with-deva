@@ -244,6 +244,7 @@ export function DevaProvider({
       return;
     }
 
+    // Try silent refresh first before redirecting
     if (refreshToken) {
       if (isOpenIdConfigLoading) {
         return;
@@ -254,10 +255,27 @@ export function DevaProvider({
         const res = await callRefreshApi();
         if (res) {
           handleTokenResponse(res);
+          refreshFailCountRef.current = 0;
           return;
         }
       } catch (error) {
-        console.error("[sdk/provider]: Error refreshing token", error);
+        console.error("[sdk/provider]: Error refreshing token during login", error);
+      } finally {
+        setIsRefreshing(false);
+      }
+
+      // Refresh failed — retry once more after a short delay before giving up
+      try {
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        setIsRefreshing(true);
+        const retryRes = await callRefreshApi();
+        if (retryRes) {
+          handleTokenResponse(retryRes);
+          refreshFailCountRef.current = 0;
+          return;
+        }
+      } catch (error) {
+        console.error("[sdk/provider]: Retry refresh also failed", error);
       } finally {
         setIsRefreshing(false);
       }
@@ -302,6 +320,10 @@ export function DevaProvider({
     openIdConfig,
   ]);
 
+  // Track consecutive refresh failures for exponential backoff
+  const refreshFailCountRef = useRef(0);
+  const lastRefreshAttemptRef = useRef(0);
+
   const refresh = useCallback(
     async (init = false) => {
       if (!accessToken) {
@@ -310,7 +332,8 @@ export function DevaProvider({
       }
 
       if (!epochTimeIsPast(expiresIn) && !init) {
-        // log("access token not expired yet");
+        // Token still valid — reset failure counter
+        refreshFailCountRef.current = 0;
         return;
       }
 
@@ -325,15 +348,31 @@ export function DevaProvider({
         return;
       }
 
+      // Exponential backoff: don't hammer the token endpoint on repeated failures
+      const failCount = refreshFailCountRef.current;
+      if (failCount > 0 && !init) {
+        const backoffMs = Math.min(1000 * Math.pow(2, failCount), 5 * 60 * 1000); // max 5 min
+        const elapsed = Date.now() - lastRefreshAttemptRef.current;
+        if (elapsed < backoffMs) {
+          return;
+        }
+      }
+
+      lastRefreshAttemptRef.current = Date.now();
       setIsRefreshing(true);
       try {
         const res = await callRefreshApi();
 
         if (res) {
           handleTokenResponse(res);
+          refreshFailCountRef.current = 0; // success — reset backoff
+        } else {
+          refreshFailCountRef.current++;
+          log(`refresh returned empty response (attempt ${refreshFailCountRef.current})`);
         }
       } catch (error) {
-        console.error("[sdk/provider]: Error refreshing token", error);
+        refreshFailCountRef.current++;
+        console.error(`[sdk/provider]: Error refreshing token (attempt ${refreshFailCountRef.current})`, error);
       } finally {
         setIsRefreshing(false);
       }
@@ -349,12 +388,16 @@ export function DevaProvider({
     ],
   );
 
+  // Proactive refresh: try to renew the token 60 seconds before expiry,
+  // not after. The interval polls every ~10-20s; the refresh() function
+  // gates on epochTimeIsPast which has a 30s buffer, so combined we
+  // attempt renewal well before actual expiry.
   const stagger = 10000 * Math.random();
   useInterval(
     () => {
       void refresh();
     },
-    isBrowser && refreshToken ? 1000 + stagger : null,
+    isBrowser && refreshToken ? 10000 + stagger : null,
     [refresh],
   );
 
