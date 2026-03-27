@@ -1,6 +1,6 @@
 {
   "name": "@bitplanet/deva-sdk",
-  "version": "0.8.4",
+  "version": "0.8.5",
   "repository": {
     "type": "git",
     "url": "https://github.com/Bitplanet-L1/deva-sdk.git"
@@ -66,6 +66,7 @@
     "@tiptap/react": "^2.12.0",
     "@tiptap/starter-kit": "^2.12.0",
     "@tiptap/suggestion": "^2.12.0",
+    "ajv": "^8.18.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "1.0.0",
