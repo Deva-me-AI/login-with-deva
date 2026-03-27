@@ -20,7 +20,7 @@ next-env.d.ts
 
 # production
 /build
-/dist
+# /dist  # included for git-based installs
 
 # misc
 .DS_Store
