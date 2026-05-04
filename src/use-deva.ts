@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { DevaContext, type LoginOptions } from "./DevaContext";
+import { DevaContext } from "./DevaContext";
 import type { UserInfo } from "./server";
 
 export type UseDevaReturn = {
@@ -7,7 +7,7 @@ export type UseDevaReturn = {
   isReady: boolean;
   accessToken: string | null;
   user: UserInfo | null;
-  login: (options?: LoginOptions) => Promise<void>;
+  login: () => Promise<void>;
   logout: () => Promise<void>;
 };
 

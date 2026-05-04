@@ -6551,7 +6551,7 @@ export declare type DevaContext = {
     env: Envs;
     authInProgress: boolean;
     authError: string | null;
-    login: (options?: LoginOptions) => Promise<void>;
+    login: () => Promise<void>;
     logout: () => Promise<void>;
     idToken: string | null;
     accessToken: string | null;
@@ -6575,18 +6575,6 @@ declare type DevaProviderProps = {
 
 export declare type Envs = "development" | "staging" | "production";
 
-export declare type LoginOptions = {
-    /**
-     * OpenID Connect `prompt` parameter. Forwarded to the authorization
-     * endpoint and bypasses the in-memory "already authenticated" guard
-     * so a new OAuth flow runs even when a valid token is present.
-     *
-     * Use `"login"` to force the identity provider to show the sign-in
-     * screen (e.g. for an "Add account" / multi-account flow).
-     */
-    prompt?: "login" | "consent" | "none" | "select_account";
-};
-
 export declare const useDeva: () => UseDevaReturn;
 
 declare type UseDevaReturn = {
@@ -6594,7 +6582,7 @@ declare type UseDevaReturn = {
     isReady: boolean;
     accessToken: string | null;
     user: UserInfo | null;
-    login: (options?: LoginOptions) => Promise<void>;
+    login: () => Promise<void>;
     logout: () => Promise<void>;
 };
 

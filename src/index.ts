@@ -1,5 +1,5 @@
 import "./styles/globals.css";
-export { type DevaContext, type LoginOptions } from "./DevaContext";
+export { type DevaContext } from "./DevaContext";
 export { DevaProvider } from "./Provider";
 export { useDeva } from "./use-deva";
 export { type Envs } from "./config"

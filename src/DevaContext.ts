@@ -2,18 +2,6 @@ import { createContext, useContext } from "react";
 import type { UserInfo } from "./server";
 import type { Envs } from "./config";
 
-export type LoginOptions = {
-  /**
-   * OpenID Connect `prompt` parameter. Forwarded to the authorization
-   * endpoint and bypasses the in-memory "already authenticated" guard
-   * so a new OAuth flow runs even when a valid token is present.
-   *
-   * Use `"login"` to force the identity provider to show the sign-in
-   * screen (e.g. for an "Add account" / multi-account flow).
-   */
-  prompt?: "login" | "consent" | "none" | "select_account";
-};
-
 export type DevaContext = {
   clientId: string;
   redirectUri: string;
@@ -23,7 +11,7 @@ export type DevaContext = {
   authInProgress: boolean;
   authError: string | null;
 
-  login: (options?: LoginOptions) => Promise<void>;
+  login: () => Promise<void>;
   logout: () => Promise<void>;
 
   idToken: string | null;
