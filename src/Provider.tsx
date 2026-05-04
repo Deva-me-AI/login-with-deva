@@ -1,5 +1,5 @@
 import { useCallback, useState, useEffect, useRef } from "react";
-import { DevaContext } from "./DevaContext";
+import { DevaContext, type LoginOptions } from "./DevaContext";
 import {
   generateCodeVerifier,
   generateCodeChallenge,
@@ -239,13 +239,19 @@ export function DevaProvider({
     openIdConfig?.token_endpoint,
   );
 
-  const login = useCallback(async () => {
-    if (accessToken && !epochTimeIsPast(expiresIn)) {
+  const login = useCallback(async (options?: LoginOptions) => {
+    // When a `prompt` is supplied, the caller wants a fresh OAuth round-trip
+    // (e.g. "Add account"). Skip the already-authenticated guard and the
+    // silent-refresh path — both would otherwise short-circuit the redirect
+    // and re-authenticate the existing session.
+    const forceRedirect = options?.prompt !== undefined;
+
+    if (!forceRedirect && accessToken && !epochTimeIsPast(expiresIn)) {
       return;
     }
 
     // Try silent refresh first before redirecting
-    if (refreshToken) {
+    if (!forceRedirect && refreshToken) {
       if (isOpenIdConfigLoading) {
         return;
       }
@@ -302,6 +308,10 @@ export function DevaProvider({
     u.searchParams.append("response_type", "code");
     u.searchParams.append("code_challenge", codeChallenge);
     u.searchParams.append("code_challenge_method", "S256");
+
+    if (options?.prompt) {
+      u.searchParams.append("prompt", options.prompt);
+    }
 
     window.location.assign(u.toString());
   }, [

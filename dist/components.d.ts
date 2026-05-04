@@ -16,14 +16,23 @@ export declare function Toaster(): JSX.Element;
 export { }
 
 
+declare namespace v3 {
+    var DNS: string;
+    var URL: string;
+}
 
-declare module 'micromark-util-types' {
-  interface TokenTypeMap {
-    strikethroughSequence: 'strikethroughSequence'
-    strikethroughSequenceTemporary: 'strikethroughSequenceTemporary'
-    strikethrough: 'strikethrough'
-    strikethroughText: 'strikethroughText'
-  }
+
+declare namespace v5 {
+    var DNS: string;
+    var URL: string;
+}
+
+
+
+declare global {
+    interface Node {
+        pmViewDesc?: ViewDesc;
+    }
 }
 
 
@@ -64,6 +73,17 @@ declare module 'micromark-util-types' {
     gfmFootnoteDefinitionLabelString: 'gfmFootnoteDefinitionLabelString'
     gfmFootnoteDefinitionMarker: 'gfmFootnoteDefinitionMarker'
     gfmFootnoteDefinitionWhitespace: 'gfmFootnoteDefinitionWhitespace'
+  }
+}
+
+
+
+declare module 'micromark-util-types' {
+  interface TokenTypeMap {
+    strikethroughSequence: 'strikethroughSequence'
+    strikethroughSequenceTemporary: 'strikethroughSequenceTemporary'
+    strikethrough: 'strikethrough'
+    strikethroughText: 'strikethroughText'
   }
 }
 
@@ -218,4 +238,10 @@ declare module 'micromark-util-types' {
   interface Token {
     _spread?: boolean
   }
+}
+
+declare namespace _default {
+    namespace plugins {
+        let tailwindcss: {};
+    }
 }
