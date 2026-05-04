@@ -1,4 +1,3 @@
-import React from "react";
 import { renderToString } from "react-dom/server";
 import { describe, expect, expectTypeOf, it, vi } from "vitest";
 import {
@@ -34,13 +33,13 @@ describe("SDK public exports", () => {
 
   it("throws a clear error when useDeva is used outside provider", () => {
     expect(() => {
-      renderToString(<UseDevaProbe onRead={() => {}} />);
+      renderToString(<UseDevaProbe onRead={() => undefined} />);
     }).toThrowError("useDeva must be used within a DevaProvider");
   });
 
   it("returns auth/session helpers from context via useDeva", async () => {
-    const login = vi.fn(async () => {});
-    const logout = vi.fn(async () => {});
+    const login = vi.fn(async () => undefined);
+    const logout = vi.fn(async () => undefined);
     const contextValue: PublicDevaContext = {
       clientId: "client",
       redirectUri: "https://example.com/callback",
