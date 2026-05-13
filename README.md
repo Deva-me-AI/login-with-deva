@@ -97,10 +97,13 @@ VITE_DEVA_ENV="development"   # or "production"
 | Key | Type | Description |
 |-----|------|-------------|
 | `isAuthenticated` | `boolean` | Auth state |
+| `isReady` | `boolean` | Provider finished bootstrapping (initial token check + user fetch complete) |
 | `user` | `UserInfo \| null` | Current user |
 | `accessToken` | `string \| null` | JWT access token |
-| `login` | `() => void` | Initiate login |
-| `logout` | `() => void` | Clear session |
+| `login` | `() => Promise<void>` | Initiate login flow |
+| `logout` | `() => Promise<void>` | Clear session |
+
+Gate UI on `isReady` before rendering auth-dependent content, otherwise you'll briefly render the unauthenticated view for already-logged-in users during initial mount.
 
 ---
 

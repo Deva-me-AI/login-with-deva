@@ -39,6 +39,10 @@ Changes to SDK source trigger a rebuild in ~1s; the example app hot-reloads auto
 
 You'll also need the content server and deva.me running locally for full authentication functionality.
 
+### Alternate example app
+
+`example2/` is a second host app kept for scenarios the main `example/` doesn't cover (e.g., a richer page layout). Start it with `pnpm run example2`. The `pnpm run example:link` step links into `example/` only — re-run `pnpm link ../` from inside `example2/` if you also want it picking up your local SDK.
+
 ## Build
 
 ```bash
@@ -76,18 +80,31 @@ The SDK has two entry points, both built by Vite in library mode:
 src/
 ├── index.ts           # Main entry: provider + hook
 ├── components.ts      # Components entry: ChannelFeed, Intercom, Toaster
-├── Provider.tsx        # DevaProvider implementation
-├── DevaContext.ts      # React context type
-├── use-deva.ts         # useDeva hook
-├── config.ts           # Env type (Envs)
-├── server.ts           # UserInfo type
-├── hooks/              # Internal hooks
-├── components/         # ChannelFeed, Intercom, and UI primitives
-├── lib/                # Utilities
-├── login/              # OAuth login flow
-├── styles/             # Tailwind globals
-└── types/              # Shared types
+├── Provider.tsx       # DevaProvider implementation
+├── DevaContext.ts     # React context type
+├── use-deva.ts        # useDeva hook
+├── config.ts          # Env type (Envs)
+├── server/            # Content-server client + UserInfo type + open-api-schema.ts
+├── login/             # OAuth login flow
+├── hooks/             # Internal hooks
+├── components/        # ChannelFeed, Intercom, and UI primitives
+├── lib/               # Utilities
+├── styles/            # Tailwind globals (single CSS bundle)
+├── images/            # Bundled assets
+├── types/             # Shared types
+└── __tests__/         # Vitest unit tests
 ```
+
+## Regenerating the OpenAPI client
+
+`src/server/open-api-schema.ts` is generated from the content-server's `/openapi.json`. To refresh it after a backend schema change:
+
+```bash
+./scripts/create-client [USERNAME] [PASSWORD] [URI]
+# defaults: deva / password / http://localhost:8000
+```
+
+The script runs `openapi-typescript` against the running content-server. Commit the regenerated file with the SDK change that needs it — do not regenerate against staging/prod unless you know the schema is stable.
 
 ## Peer Dependencies
 

@@ -55,8 +55,10 @@ Never manually edit `package.json` version and push a tag separately — use the
 
 ## Common Mistakes
 
+- **Using `npm` instead of `pnpm`** — repo is pnpm-only. CI runs `pnpm install --frozen-lockfile`. `package-lock.json` was removed; do not regenerate it.
 - **Adding a new export to `src/lib/` directly** — exports must go through `src/index.ts` or `src/components.ts`
 - **Importing `react` at the top of files that run in SSR** — use lazy imports or check `typeof window` if needed
 - **Adding `react` or `react-dom` to `dependencies` instead of `peerDependencies`** — this would bundle React twice in the consumer's app
 - **Running `npm publish` locally** — the local build environment may differ; always use CI
 - **Forgetting `pnpm run example:link` after `pnpm run build`** — the example app won't pick up changes without re-linking
+- **Hand-editing `src/server/open-api-schema.ts`** — it's generated. Use `./scripts/create-client` to regenerate from a running content-server.
