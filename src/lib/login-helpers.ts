@@ -15,10 +15,12 @@ export function buildAuthorizeUrl(params: {
   clientId: string;
   redirectUri: string;
   codeChallenge: string;
-  prompt?: string;
+  prompt?: LoginOptions["prompt"];
   state?: string;
 }): string {
   const u = new URL(params.authorizationEndpoint);
+  // No `scope` param: matches the SDK's existing authorize URL; the IdP applies
+  // the client's configured default scopes.
   u.searchParams.append("client_id", params.clientId);
   u.searchParams.append("redirect_uri", params.redirectUri);
   u.searchParams.append("response_type", "code");
