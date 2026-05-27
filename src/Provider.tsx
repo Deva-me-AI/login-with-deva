@@ -11,7 +11,7 @@ import { fetcher, useSWRFetcher } from "./lib/fetcher";
 import type { OidcAccessTokenJWT, UserInfo } from "./server";
 import { jwtDecode } from "jwt-decode";
 import { useInterval } from "./hooks/use-timeout";
-import { type Envs, envToUrl } from "./config";
+import { type Envs, resolveDevaUrl } from "./config";
 import { buildAuthorizeUrl, resolvePersist, shouldForceRedirect } from "./lib/login-helpers";
 import type { UseDevaReturn } from "./use-deva";
 
@@ -32,6 +32,12 @@ export type DevaProviderProps = {
     | ((devaProps: UseDevaReturn) => React.ReactNode);
   env: Envs;
   /**
+   * Optional explicit base URL for the Deva IdP, overriding `env`. Point this
+   * at a local endeva on any host/port (e.g. "http://localhost:3001") for
+   * local development/testing. When omitted, the URL is derived from `env`.
+   */
+  baseUrl?: string;
+  /**
    * Called on the redirect return leg with the freshly-exchanged tokens and
    * the round-tripped `state`. Return `true` to tell the SDK NOT to persist
    * the tokens itself (the consumer is routing them, e.g. multi-account).
@@ -46,8 +52,7 @@ type OpenIdConfig = {
   revocation_endpoint: string;
 };
 
-const useOpenIdConfig = (env: Envs) => {
-  const baseUrl = envToUrl(env);
+const useOpenIdConfig = (baseUrl: string) => {
   const { data, error, isLoading } = useSWRFetcher<OpenIdConfig, Error>(
     isBrowser ? `${baseUrl}/.well-known/openid-configuration` : null,
   );
@@ -129,14 +134,15 @@ export function DevaProvider({
   redirectUri,
   children,
   env,
+  baseUrl,
   onLoginComplete,
 }: DevaProviderProps) {
-  const url = envToUrl(env);
+  const url = resolveDevaUrl(env, baseUrl);
   // Held in a ref so it can be read from the return-leg effect without
   // becoming a dependency (the effect intentionally runs once on config load).
   const onLoginCompleteRef = useRef(onLoginComplete);
   onLoginCompleteRef.current = onLoginComplete;
-  const { openIdConfig, isOpenIdConfigLoading, error } = useOpenIdConfig(env);
+  const { openIdConfig, isOpenIdConfigLoading, error } = useOpenIdConfig(url);
   if (error) {
     console.error("[sdk/provider] error fetching openid info: ", error);
   }
