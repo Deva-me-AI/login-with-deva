@@ -450,7 +450,13 @@ export function DevaProvider({
           `[sdk/provider]: ${error_description}\nExpected  to find a '?code=' parameter in the URL but found none`,
         );
         setAuthError(error_description);
-        clearState();
+        // Preserve an existing session on an authorize error/cancel (e.g. the
+        // user cancels an "Add account" redirect). A normal fresh login already
+        // cleared state on the way out, so accessToken is empty there and this
+        // still clears as before.
+        if (!accessToken) {
+          clearState();
+        }
         return;
       }
 
@@ -483,6 +489,11 @@ export function DevaProvider({
           });
           if (persist) {
             handleTokenResponse(res);
+          } else {
+            // Consumer handled storage (e.g. multi-account routing). Reset the
+            // double-exchange guard so a later login() in the same session
+            // (without a page reload) can exchange a new code.
+            fetchingTokensRef.current = false;
           }
         })
         .catch((error) => {
