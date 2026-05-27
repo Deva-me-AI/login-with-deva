@@ -6,6 +6,8 @@ import {
   type DevaContext as PublicDevaContext,
   type Envs,
   type UserInfo,
+  type LoginOptions,
+  type LoginCompletePayload,
 } from "../index";
 import { DevaContext } from "../DevaContext";
 
@@ -89,5 +91,19 @@ describe("SDK public exports", () => {
     );
 
     expect(html).toContain("|function|function");
+  });
+
+  it("exports LoginOptions and LoginCompletePayload and accepts login options", () => {
+    expectTypeOf<LoginOptions>().toMatchTypeOf<{
+      prompt?: "login" | "consent" | "none" | "select_account";
+      state?: string;
+    }>();
+    expectTypeOf<LoginCompletePayload>().toMatchTypeOf<{
+      access_token: string;
+      state: string | null;
+    }>();
+    expectTypeOf<PublicDevaContext["login"]>().parameter(0).toEqualTypeOf<
+      LoginOptions | undefined
+    >();
   });
 });

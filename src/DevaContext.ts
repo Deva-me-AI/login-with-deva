@@ -2,6 +2,31 @@ import { createContext, useContext } from "react";
 import type { UserInfo } from "./server";
 import type { Envs } from "./config";
 
+export type LoginOptions = {
+  /**
+   * OpenID Connect `prompt`. Forwarded to the authorization endpoint and
+   * bypasses the already-authenticated / silent-refresh guards so a fresh
+   * OAuth round-trip runs even when a valid token is present. Use `"login"`
+   * to force the sign-in screen (e.g. an "Add account" / multi-account flow).
+   */
+  prompt?: "login" | "consent" | "none" | "select_account";
+  /**
+   * Opaque value forwarded to the authorize URL as `state` and returned
+   * verbatim on the redirect. The SDK does not parse or interpret it.
+   */
+  state?: string;
+};
+
+/** Shape handed to `onLoginComplete` on the redirect return leg. */
+export type LoginCompletePayload = {
+  access_token: string;
+  refresh_token?: string;
+  id_token?: string;
+  expires_in?: number;
+  /** Whatever the consumer passed to `login({ state })`; null if none. */
+  state: string | null;
+};
+
 export type DevaContext = {
   clientId: string;
   redirectUri: string;
@@ -11,7 +36,7 @@ export type DevaContext = {
   authInProgress: boolean;
   authError: string | null;
 
-  login: () => Promise<void>;
+  login: (options?: LoginOptions) => Promise<void>;
   logout: () => Promise<void>;
 
   idToken: string | null;
