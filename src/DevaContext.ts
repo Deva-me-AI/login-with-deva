@@ -8,6 +8,12 @@ export type LoginOptions = {
    * bypasses the already-authenticated / silent-refresh guards so a fresh
    * OAuth round-trip runs even when a valid token is present. Use `"login"`
    * to force the sign-in screen (e.g. an "Add account" / multi-account flow).
+   *
+   * NOTE: any value here triggers a full-page redirect and bypasses the local
+   * session guards — this is NOT a silent/iframe check, so `"none"` still
+   * navigates away rather than probing silently. The Deva IdP currently only
+   * acts on `"login"` (forcing re-authentication / account choice); other
+   * values are forwarded as-is and may be ignored by the IdP.
    */
   prompt?: "login" | "consent" | "none" | "select_account";
   /**
@@ -20,6 +26,8 @@ export type LoginOptions = {
 /** Shape handed to `onLoginComplete` on the redirect return leg. */
 export type LoginCompletePayload = {
   access_token: string;
+  // refresh_token / id_token / expires_in are optional to decouple from the
+  // server token schema; the current Deva flow always populates them.
   refresh_token?: string;
   id_token?: string;
   expires_in?: number;

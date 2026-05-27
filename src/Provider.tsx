@@ -450,12 +450,16 @@ export function DevaProvider({
           `[sdk/provider]: ${error_description}\nExpected  to find a '?code=' parameter in the URL but found none`,
         );
         setAuthError(error_description);
-        // Preserve an existing session on an authorize error/cancel (e.g. the
-        // user cancels an "Add account" redirect). A normal fresh login already
-        // cleared state on the way out, so accessToken is empty there and this
-        // still clears as before.
         if (!accessToken) {
+          // Normal fresh login error: nothing to preserve, clear everything
+          // (this also resets authInProgress and the PKCE verifier).
           clearState();
+        } else {
+          // Forced redirect cancelled (e.g. user backed out of "Add account"):
+          // preserve the existing session, but still reset the transient flow
+          // state so the SDK doesn't get stuck with authInProgress = true.
+          setAuthInProgress(false);
+          setCodeVerifier("");
         }
         return;
       }
@@ -492,8 +496,10 @@ export function DevaProvider({
           } else {
             // Consumer handled storage (e.g. multi-account routing). Reset the
             // double-exchange guard so a later login() in the same session
-            // (without a page reload) can exchange a new code.
+            // (without a page reload) can exchange a new code, and clear the
+            // spent PKCE verifier (handleTokenResponse would normally do this).
             fetchingTokensRef.current = false;
+            setCodeVerifier("");
           }
         })
         .catch((error) => {
