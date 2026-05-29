@@ -1,5 +1,5 @@
 import { useCallback, useState, useEffect, useRef } from "react";
-import { DevaContext } from "./DevaContext";
+import { DevaContext, type LoginOptions, type LoginCompletePayload } from "./DevaContext";
 import {
   generateCodeVerifier,
   generateCodeChallenge,
@@ -11,7 +11,8 @@ import { fetcher, useSWRFetcher } from "./lib/fetcher";
 import type { OidcAccessTokenJWT, UserInfo } from "./server";
 import { jwtDecode } from "jwt-decode";
 import { useInterval } from "./hooks/use-timeout";
-import { type Envs, envToUrl } from "./config";
+import { type Envs, resolveDevaUrl } from "./config";
+import { buildAuthorizeUrl, resolvePersist, shouldForceRedirect } from "./lib/login-helpers";
 import type { UseDevaReturn } from "./use-deva";
 
 // Check if we're running in a browser environment
@@ -30,6 +31,18 @@ export type DevaProviderProps = {
     | React.ReactNode
     | ((devaProps: UseDevaReturn) => React.ReactNode);
   env: Envs;
+  /**
+   * Optional explicit base URL for the Deva IdP, overriding `env`. Point this
+   * at a local endeva on any host/port (e.g. "http://localhost:3001") for
+   * local development/testing. When omitted, the URL is derived from `env`.
+   */
+  baseUrl?: string;
+  /**
+   * Called on the redirect return leg with the freshly-exchanged tokens and
+   * the round-tripped `state`. Return `true` to tell the SDK NOT to persist
+   * the tokens itself (the consumer is routing them, e.g. multi-account).
+   */
+  onLoginComplete?: (payload: LoginCompletePayload) => boolean | void;
 };
 
 type OpenIdConfig = {
@@ -39,8 +52,7 @@ type OpenIdConfig = {
   revocation_endpoint: string;
 };
 
-const useOpenIdConfig = (env: Envs) => {
-  const baseUrl = envToUrl(env);
+const useOpenIdConfig = (baseUrl: string) => {
   const { data, error, isLoading } = useSWRFetcher<OpenIdConfig, Error>(
     isBrowser ? `${baseUrl}/.well-known/openid-configuration` : null,
   );
@@ -122,9 +134,15 @@ export function DevaProvider({
   redirectUri,
   children,
   env,
+  baseUrl,
+  onLoginComplete,
 }: DevaProviderProps) {
-  const url = envToUrl(env);
-  const { openIdConfig, isOpenIdConfigLoading, error } = useOpenIdConfig(env);
+  const url = resolveDevaUrl(env, baseUrl);
+  // Held in a ref so it can be read from the return-leg effect without
+  // becoming a dependency (the effect intentionally runs once on config load).
+  const onLoginCompleteRef = useRef(onLoginComplete);
+  onLoginCompleteRef.current = onLoginComplete;
+  const { openIdConfig, isOpenIdConfigLoading, error } = useOpenIdConfig(url);
   if (error) {
     console.error("[sdk/provider] error fetching openid info: ", error);
   }
@@ -239,13 +257,18 @@ export function DevaProvider({
     openIdConfig?.token_endpoint,
   );
 
-  const login = useCallback(async () => {
-    if (accessToken && !epochTimeIsPast(expiresIn)) {
+  const login = useCallback(async (options?: LoginOptions) => {
+    // When a `prompt` is supplied the caller wants a fresh OAuth round-trip
+    // (e.g. "Add account"). Skip the already-authenticated guard and the
+    // silent-refresh path — both would otherwise short-circuit the redirect.
+    const forceRedirect = shouldForceRedirect(options);
+
+    if (!forceRedirect && accessToken && !epochTimeIsPast(expiresIn)) {
       return;
     }
 
     // Try silent refresh first before redirecting
-    if (refreshToken) {
+    if (!forceRedirect && refreshToken) {
       if (isOpenIdConfigLoading) {
         return;
       }
@@ -281,7 +304,13 @@ export function DevaProvider({
       }
     }
 
-    clearState();
+    // On a forced redirect, keep the current session intact: if the user
+    // cancels at deva.me they return with their original account unchanged,
+    // and we avoid writing empty token values a consumer storage mirror
+    // would propagate into the active account's namespace.
+    if (!forceRedirect) {
+      clearState();
+    }
     setAuthInProgress(true);
     if (isOpenIdConfigLoading) {
       return;
@@ -294,16 +323,16 @@ export function DevaProvider({
     setCodeVerifier(codeVerifier);
 
     // Redirect to the login page
-    const u = new URL(openIdConfig?.authorization_endpoint ?? "");
+    const authorizeUrl = buildAuthorizeUrl({
+      authorizationEndpoint: openIdConfig?.authorization_endpoint ?? "",
+      clientId,
+      redirectUri,
+      codeChallenge,
+      prompt: options?.prompt,
+      state: options?.state,
+    });
 
-    u.searchParams.append("client_id", clientId);
-    u.searchParams.append("redirect_uri", redirectUri);
-
-    u.searchParams.append("response_type", "code");
-    u.searchParams.append("code_challenge", codeChallenge);
-    u.searchParams.append("code_challenge_method", "S256");
-
-    window.location.assign(u.toString());
+    window.location.assign(authorizeUrl);
   }, [
     accessToken,
     expiresIn,
@@ -417,6 +446,7 @@ export function DevaProvider({
       setIsRefreshing(false);
       const params = new URLSearchParams(window.location.search);
       code = params.get("code") ?? "";
+      const returnedState = params.get("state");
 
       if (!code) {
         const error_description =
@@ -426,7 +456,17 @@ export function DevaProvider({
           `[sdk/provider]: ${error_description}\nExpected  to find a '?code=' parameter in the URL but found none`,
         );
         setAuthError(error_description);
-        clearState();
+        if (!accessToken) {
+          // Normal fresh login error: nothing to preserve, clear everything
+          // (this also resets authInProgress and the PKCE verifier).
+          clearState();
+        } else {
+          // Forced redirect cancelled (e.g. user backed out of "Add account"):
+          // preserve the existing session, but still reset the transient flow
+          // state so the SDK doesn't get stuck with authInProgress = true.
+          setAuthInProgress(false);
+          setCodeVerifier("");
+        }
         return;
       }
 
@@ -452,7 +492,22 @@ export function DevaProvider({
           grant_type: "authorization_code",
         }),
       })
-        .then(handleTokenResponse)
+        .then((res) => {
+          const persist = resolvePersist(onLoginCompleteRef.current, {
+            ...res,
+            state: returnedState,
+          });
+          if (persist) {
+            handleTokenResponse(res);
+          } else {
+            // Consumer handled storage (e.g. multi-account routing). Reset the
+            // double-exchange guard so a later login() in the same session
+            // (without a page reload) can exchange a new code, and clear the
+            // spent PKCE verifier (handleTokenResponse would normally do this).
+            fetchingTokensRef.current = false;
+            setCodeVerifier("");
+          }
+        })
         .catch((error) => {
           console.error("[sdk/provider]: error in fetching", error);
           setAuthError("An error occurred while fetching tokens");
