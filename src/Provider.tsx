@@ -520,7 +520,15 @@ export function DevaProvider({
   }, [isOpenIdConfigLoading]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const devaProps = {
-    isAuthenticated: !!accessToken && !isRefreshing,
+    // A present access token means authenticated. Do NOT couple this to
+    // `isRefreshing`: the proactive background refresh sets isRefreshing=true
+    // for the token round-trip (~once per access-token lifetime, ~15min), and
+    // gating isAuthenticated on it transiently de-authenticated the whole app
+    // mid-refresh — consumers (e.g. neweco.ai) flipped their auth-gated UI to
+    // the logged-out view and back, the "page refreshes every ~15min" bug.
+    // The user becomes unauthenticated only when the token is cleared
+    // (terminal refresh failure / logout), which nulls accessToken. See #19.
+    isAuthenticated: !!accessToken,
     accessToken: accessToken,
     user: userInfo ?? null,
     login,
