@@ -1,14 +1,14 @@
-import { jsx as oe } from "react/jsx-runtime";
-import { useState as U, useCallback as p, useEffect as v, useLayoutEffect as se, useRef as S, useContext as ae } from "react";
-import { f as Y, D as G, u as q, e as K } from "./config-CL6PuR8K.js";
-const ce = () => {
+import { jsx as ie } from "react/jsx-runtime";
+import { useState as F, useCallback as m, useEffect as T, useLayoutEffect as ue, useRef as S, useContext as de } from "react";
+import { f as X, D as Z, u as ee, r as fe } from "./config-DtnqZvjP.js";
+const le = () => {
   const e = new Uint8Array(32);
-  return crypto.getRandomValues(e), Q(e);
-}, Q = (e) => btoa(String.fromCharCode(...new Uint8Array(e))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""), ie = async (e) => {
-  const t = new TextEncoder().encode(e), o = await crypto.subtle.digest("SHA-256", t);
-  return Q(o);
-}, ue = (e) => Math.round(Date.now() / 1e3 + Number(e)), H = (e) => Math.round(Date.now()) / 1e3 + 60 >= e, D = typeof window < "u", de = (e, r) => {
-  if (!D)
+  return crypto.getRandomValues(e), re(e);
+}, re = (e) => btoa(String.fromCharCode(...new Uint8Array(e))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""), he = async (e) => {
+  const t = new TextEncoder().encode(e), n = await crypto.subtle.digest("SHA-256", t);
+  return re(n);
+}, pe = (e) => Math.round(Date.now() / 1e3 + Number(e)), Q = (e) => Math.round(Date.now()) / 1e3 + 60 >= e, $ = typeof window < "u", ge = (e, r) => {
+  if (!$)
     return r;
   try {
     const t = sessionStorage.getItem(e);
@@ -17,58 +17,58 @@ const ce = () => {
     return console.error(t), r;
   }
 };
-function k(e, r) {
-  const [t, o] = U(
-    () => de(e, r)
-  ), u = p(
-    (n) => {
+function E(e, r) {
+  const [t, n] = F(
+    () => ge(e, r)
+  ), f = m(
+    (s) => {
       try {
-        o(n), D && sessionStorage.setItem(e, JSON.stringify(n));
-      } catch (a) {
-        console.error(a);
+        n(s), $ && sessionStorage.setItem(e, JSON.stringify(s));
+      } catch (c) {
+        console.error(c);
       }
     },
     [e]
   );
-  return v(() => {
-    if (!D)
+  return T(() => {
+    if (!$)
       return;
-    const n = sessionStorage.getItem(e);
-    if (n)
+    const s = sessionStorage.getItem(e);
+    if (s)
       try {
-        o(JSON.parse(n));
-      } catch (a) {
-        console.error(a);
+        n(JSON.parse(s));
+      } catch (c) {
+        console.error(c);
       }
-  }, []), v(() => {
-    if (!D)
+  }, []), T(() => {
+    if (!$)
       return;
-    const n = (a) => {
-      if (a.storageArea === window.sessionStorage && a.key === e)
-        if (a.newValue === null)
-          o(r);
+    const s = (c) => {
+      if (c.storageArea === window.sessionStorage && c.key === e)
+        if (c.newValue === null)
+          n(r);
         else
           try {
-            o(JSON.parse(a.newValue));
+            n(JSON.parse(c.newValue));
           } catch {
             console.warn(
-              `Failed to handle storageEvent's newValue='${a.newValue}' for key '${e}'`
+              `Failed to handle storageEvent's newValue='${c.newValue}' for key '${e}'`
             );
           }
     };
-    return window.addEventListener("storage", n, !1), () => window.removeEventListener("storage", n, !1);
-  }, [e, r]), [t, u];
+    return window.addEventListener("storage", s, !1), () => window.removeEventListener("storage", s, !1);
+  }, [e, r]), [t, f];
 }
-class T extends Error {
+class A extends Error {
 }
-T.prototype.name = "InvalidTokenError";
-function fe(e) {
+A.prototype.name = "InvalidTokenError";
+function we(e) {
   return decodeURIComponent(atob(e).replace(/(.)/g, (r, t) => {
-    let o = t.charCodeAt(0).toString(16).toUpperCase();
-    return o.length < 2 && (o = "0" + o), "%" + o;
+    let n = t.charCodeAt(0).toString(16).toUpperCase();
+    return n.length < 2 && (n = "0" + n), "%" + n;
   }));
 }
-function le(e) {
+function me(e) {
   let r = e.replace(/-/g, "+").replace(/_/g, "/");
   switch (r.length % 4) {
     case 0:
@@ -83,58 +83,68 @@ function le(e) {
       throw new Error("base64 string is not of the correct length");
   }
   try {
-    return fe(r);
+    return we(r);
   } catch {
     return atob(r);
   }
 }
-function he(e, r) {
+function ye(e, r) {
   if (typeof e != "string")
-    throw new T("Invalid token specified: must be a string");
+    throw new A("Invalid token specified: must be a string");
   r || (r = {});
-  const t = r.header === !0 ? 0 : 1, o = e.split(".")[t];
-  if (typeof o != "string")
-    throw new T(`Invalid token specified: missing part #${t + 1}`);
-  let u;
+  const t = r.header === !0 ? 0 : 1, n = e.split(".")[t];
+  if (typeof n != "string")
+    throw new A(`Invalid token specified: missing part #${t + 1}`);
+  let f;
   try {
-    u = le(o);
-  } catch (n) {
-    throw new T(`Invalid token specified: invalid base64 for part #${t + 1} (${n.message})`);
+    f = me(n);
+  } catch (s) {
+    throw new A(`Invalid token specified: invalid base64 for part #${t + 1} (${s.message})`);
   }
   try {
-    return JSON.parse(u);
-  } catch (n) {
-    throw new T(`Invalid token specified: invalid json for part #${t + 1} (${n.message})`);
+    return JSON.parse(f);
+  } catch (s) {
+    throw new A(`Invalid token specified: invalid json for part #${t + 1} (${s.message})`);
   }
 }
-const pe = typeof window < "u" ? se : v;
-function ge(e, r, t = [], o, u) {
-  const n = S(e);
-  pe(() => {
-    n.current = e;
-  }, t), v(() => {
+const ke = typeof window < "u" ? ue : T;
+function ve(e, r, t = [], n, f) {
+  const s = S(e);
+  ke(() => {
+    s.current = e;
+  }, t), T(() => {
     if (!r && r !== 0)
       return;
-    const a = o(() => {
-      n.current();
+    const c = n(() => {
+      s.current();
     }, r);
     return () => {
-      u(a);
+      f(c);
     };
   }, [r]);
 }
-function we(e, r, t = []) {
-  ge(e, r, t, setInterval, clearInterval);
+function _e(e, r, t = []) {
+  ve(e, r, t, setInterval, clearInterval);
 }
-const V = typeof window < "u" && typeof document < "u", b = (...e) => {
+function Re(e) {
+  return (e == null ? void 0 : e.prompt) !== void 0;
+}
+function Ee(e) {
+  const r = new URL(e.authorizationEndpoint);
+  return r.searchParams.append("client_id", e.clientId), r.searchParams.append("redirect_uri", e.redirectUri), r.searchParams.append("response_type", "code"), r.searchParams.append("code_challenge", e.codeChallenge), r.searchParams.append("code_challenge_method", "S256"), e.prompt && r.searchParams.append("prompt", e.prompt), e.state && r.searchParams.append("state", e.state), r.toString();
+}
+function Se(e, r) {
+  return (e == null ? void 0 : e(r)) !== !0;
+}
+const J = typeof window < "u" && typeof document < "u", I = (...e) => {
   console.log("[sdk/provider]", ...e);
-}, me = (e) => {
-  const r = K(e), { data: t, error: o, isLoading: u } = q(
-    V ? `${r}/.well-known/openid-configuration` : null
+}, Te = (e) => {
+  const { data: r, error: t, isLoading: n } = ee(
+    J ? `${e}/.well-known/openid-configuration` : null
   );
-  return { openIdConfig: t, isOpenIdConfigLoading: u, error: o };
-}, ye = (e, r) => {
-  const { data: t, error: o, isLoading: u } = q(
+  return { openIdConfig: r, isOpenIdConfigLoading: n, error: t };
+}, Pe = (e, r) => {
+  const { data: t, error: n, isLoading: f } = ee(
     r ? e : !1,
     {
       headers: {
@@ -144,15 +154,15 @@ const V = typeof window < "u" && typeof document < "u", b = (...e) => {
   );
   return {
     userInfo: t,
-    isUserInfoLoading: u,
-    userInfoError: o
+    isUserInfoLoading: f,
+    userInfoError: n
   };
-}, ke = (e, r, t) => p(async () => {
+}, be = (e, r, t) => m(async () => {
   if (!r || !t) {
-    b("no refresh token or token endpoint");
+    I("no refresh token or token endpoint");
     return;
   }
-  return Y(t, {
+  return X(t, {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded"
@@ -162,7 +172,7 @@ const V = typeof window < "u" && typeof document < "u", b = (...e) => {
       refresh_token: r
     })
   });
-}, [r, e, t]), ve = (e, r, t) => p(async () => {
+}, [r, e, t]), Ae = (e, r, t) => m(async () => {
   !t || !e || await fetch(t, {
     method: "POST",
     headers: {
@@ -174,17 +184,21 @@ const V = typeof window < "u" && typeof document < "u", b = (...e) => {
     })
   });
 }, [e, r, t]);
-function Se({
+function De({
   clientId: e,
   redirectUri: r,
   children: t,
-  env: o
+  env: n,
+  baseUrl: f,
+  onLoginComplete: s
 }) {
-  const u = K(o), { openIdConfig: n, isOpenIdConfigLoading: a, error: M } = me(o);
-  M && console.error("[sdk/provider] error fetching openid info: ", M);
-  const J = S(!1), F = S(!1);
-  v(() => {
-    o === "development" && !F.current && (F.current = !0, console.warn(
+  const c = fe(n, f), j = S(s);
+  j.current = s;
+  const { openIdConfig: a, isOpenIdConfigLoading: k, error: B } = Te(c);
+  B && console.error("[sdk/provider] error fetching openid info: ", B);
+  const U = S(!1), W = S(!1);
+  T(() => {
+    n === "development" && !W.current && (W.current = !0, console.warn(
       `
 ========================================
 ⚠️  WARNING: DEVELOPMENT ENVIRONMENT  ⚠️
@@ -197,179 +211,189 @@ Please verify your environment settings and use 'staging' or 'production' instea
 ========================================
 `
     ));
-  }, [o]);
-  const [X, w] = k("code_verifier", ""), [O, _] = k(
+  }, [n]);
+  const [te, w] = E("code_verifier", ""), [C, v] = E(
     "auth_in_progress",
     !1
-  ), [Z, P] = k("id_token", null), [f, A] = k(
+  ), [ne, N] = E("id_token", null), [l, x] = E(
     "access_token",
     null
-  ), [g, I] = k(
+  ), [y, D] = E(
     "refresh_token",
     null
-  ), [m, L] = k("expires_in", 0), [N, l] = U(!0), y = p(
-    (c) => {
-      let d = m;
-      A(c.access_token), P(c.id_token);
+  ), [_, O] = E("expires_in", 0), [V, h] = F(!0), R = m(
+    (o) => {
+      let u = _;
+      x(o.access_token), N(o.id_token);
       try {
-        const i = he(c.id_token);
-        d = Math.round(Number(i.exp) - Date.now() / 1e3);
+        const i = ye(o.id_token);
+        u = Math.round(Number(i.exp) - Date.now() / 1e3);
       } catch (i) {
         console.warn(
           `[sdk/provider]: Failed to decode idToken: ${i.message}`
         );
       }
-      const s = c.expires_in ?? d;
-      L(ue(s)), I(c.refresh_token), w("");
+      const d = o.expires_in ?? u;
+      O(pe(d)), D(o.refresh_token), w("");
     },
     [
-      A,
-      P,
-      L,
-      I,
+      x,
+      N,
+      O,
+      D,
       w,
-      m
+      _
     ]
-  ), [ee, C] = U(null), { userInfo: re } = ye(
-    n == null ? void 0 : n.userinfo_endpoint,
-    N ? null : f
-  ), R = p(() => {
-    w(""), _(!1), A(""), P(""), L(0), I("");
+  ), [oe, M] = F(null), { userInfo: se } = Pe(
+    a == null ? void 0 : a.userinfo_endpoint,
+    V ? null : l
+  ), P = m(() => {
+    w(""), v(!1), x(""), N(""), O(0), D("");
   }, [
     w,
-    _,
-    A,
-    P,
-    L,
-    I
-  ]), j = ve(
-    f,
+    v,
+    x,
+    N,
+    O,
+    D
+  ]), H = Ae(
+    l,
     e,
-    n == null ? void 0 : n.revocation_endpoint
-  ), z = p(async () => {
-    await j(), R(), C(null);
-  }, [R, j]), E = ke(
+    a == null ? void 0 : a.revocation_endpoint
+  ), Y = m(async () => {
+    await H(), P(), M(null);
+  }, [P, H]), b = be(
     e,
-    g,
-    n == null ? void 0 : n.token_endpoint
-  ), B = p(async () => {
-    if (f && !H(m))
+    y,
+    a == null ? void 0 : a.token_endpoint
+  ), G = m(async (o) => {
+    const u = Re(o);
+    if (!u && l && !Q(_))
       return;
-    if (g) {
-      if (a)
+    if (!u && y) {
+      if (k)
         return;
-      l(!0);
+      h(!0);
       try {
-        const i = await E();
-        if (i) {
-          y(i), h.current = 0;
+        const g = await b();
+        if (g) {
+          R(g), p.current = 0;
           return;
         }
-      } catch (i) {
-        console.error("[sdk/provider]: Error refreshing token during login", i);
+      } catch (g) {
+        console.error("[sdk/provider]: Error refreshing token during login", g);
       } finally {
-        l(!1);
+        h(!1);
       }
       try {
-        await new Promise((ne) => setTimeout(ne, 2e3)), l(!0);
-        const i = await E();
-        if (i) {
-          y(i), h.current = 0;
+        await new Promise((ce) => setTimeout(ce, 2e3)), h(!0);
+        const g = await b();
+        if (g) {
+          R(g), p.current = 0;
           return;
         }
-      } catch (i) {
-        console.error("[sdk/provider]: Retry refresh also failed", i);
+      } catch (g) {
+        console.error("[sdk/provider]: Retry refresh also failed", g);
       } finally {
-        l(!1);
+        h(!1);
       }
     }
-    if (R(), _(!0), a)
+    if (u || P(), v(!0), k)
       return;
-    const c = ce(), d = await ie(c);
-    w(c);
-    const s = new URL((n == null ? void 0 : n.authorization_endpoint) ?? "");
-    s.searchParams.append("client_id", e), s.searchParams.append("redirect_uri", r), s.searchParams.append("response_type", "code"), s.searchParams.append("code_challenge", d), s.searchParams.append("code_challenge_method", "S256"), window.location.assign(s.toString());
+    const d = le(), i = await he(d);
+    w(d);
+    const K = Ee({
+      authorizationEndpoint: (a == null ? void 0 : a.authorization_endpoint) ?? "",
+      clientId: e,
+      redirectUri: r,
+      codeChallenge: i,
+      prompt: o == null ? void 0 : o.prompt,
+      state: o == null ? void 0 : o.state
+    });
+    window.location.assign(K);
   }, [
-    f,
-    m,
-    g,
-    E,
-    y,
     l,
+    _,
+    y,
+    b,
+    R,
+    h,
     e,
     r,
     w,
-    R,
-    _,
-    a,
-    n
-  ]), h = S(0), W = S(0), $ = p(
-    async (c = !1) => {
-      if (!f) {
-        b("no access token");
+    P,
+    v,
+    k,
+    a
+  ]), p = S(0), q = S(0), z = m(
+    async (o = !1) => {
+      if (!l) {
+        I("no access token");
         return;
       }
-      if (!H(m) && !c) {
-        h.current = 0;
+      if (!Q(_) && !o) {
+        p.current = 0;
         return;
       }
-      if (N && !c) {
-        b("already refreshing");
+      if (V && !o) {
+        I("already refreshing");
         return;
       }
-      if (!g) {
-        b("no refresh token");
+      if (!y) {
+        I("no refresh token");
         return;
       }
-      const d = h.current;
-      if (d > 0 && !c) {
-        const s = Math.min(1e3 * Math.pow(2, d), 3e5);
-        if (Date.now() - W.current < s)
+      const u = p.current;
+      if (u > 0 && !o) {
+        const d = Math.min(1e3 * Math.pow(2, u), 3e5);
+        if (Date.now() - q.current < d)
           return;
       }
-      W.current = Date.now(), l(!0);
+      q.current = Date.now(), h(!0);
       try {
-        const s = await E();
-        s ? (y(s), h.current = 0) : (h.current++, b(`refresh returned empty response (attempt ${h.current})`));
-      } catch (s) {
-        h.current++, console.error(`[sdk/provider]: Error refreshing token (attempt ${h.current})`, s);
+        const d = await b();
+        d ? (R(d), p.current = 0) : (p.current++, I(`refresh returned empty response (attempt ${p.current})`));
+      } catch (d) {
+        p.current++, console.error(`[sdk/provider]: Error refreshing token (attempt ${p.current})`, d);
       } finally {
-        l(!1);
+        h(!1);
       }
     },
     [
-      f,
-      g,
-      E,
+      l,
       y,
-      N,
-      m,
-      l
+      b,
+      R,
+      V,
+      _,
+      h
     ]
-  ), te = 1e4 * Math.random();
-  we(
+  ), ae = 1e4 * Math.random();
+  _e(
     () => {
-      $();
+      z();
     },
-    V && g ? 1e4 + te : null,
-    [$]
-  ), v(() => {
-    let c = "";
-    if (V && !a) {
-      if (O) {
-        l(!1);
-        const d = new URLSearchParams(window.location.search);
-        if (c = d.get("code") ?? "", !c) {
-          const s = d.get("error_description") ?? "An unknown error occurred";
+    J && y ? 1e4 + ae : null,
+    [z]
+  ), T(() => {
+    let o = "";
+    if (J && !k) {
+      if (C) {
+        h(!1);
+        const u = new URLSearchParams(window.location.search);
+        o = u.get("code") ?? "";
+        const d = u.get("state");
+        if (!o) {
+          const i = u.get("error_description") ?? "An unknown error occurred";
           console.error(
-            `[sdk/provider]: ${s}
+            `[sdk/provider]: ${i}
 Expected  to find a '?code=' parameter in the URL but found none`
-          ), C(s), R();
+          ), M(i), l ? (v(!1), w("")) : P();
           return;
         }
-        if (_(!1), J.current)
+        if (v(!1), U.current)
           return;
-        J.current = !0, Y((n == null ? void 0 : n.token_endpoint) ?? "", {
+        U.current = !0, X((a == null ? void 0 : a.token_endpoint) ?? "", {
           method: "POST",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
@@ -377,50 +401,63 @@ Expected  to find a '?code=' parameter in the URL but found none`
           body: new URLSearchParams({
             client_id: e,
             redirect_uri: r,
-            code: c,
-            code_verifier: X,
+            code: o,
+            code_verifier: te,
             grant_type: "authorization_code"
           })
-        }).then(y).catch((s) => {
-          console.error("[sdk/provider]: error in fetching", s), C("An error occurred while fetching tokens");
+        }).then((i) => {
+          Se(j.current, {
+            ...i,
+            state: d
+          }) ? R(i) : (U.current = !1, w(""));
+        }).catch((i) => {
+          console.error("[sdk/provider]: error in fetching", i), M("An error occurred while fetching tokens");
         }), window.history.replaceState({}, document.title, window.location.pathname);
       }
-      $(!0);
+      z(!0);
     }
-  }, [a]);
-  const x = {
-    isAuthenticated: !!f && !N,
-    accessToken: f,
-    user: re ?? null,
-    login: B,
-    logout: z,
-    isReady: !a && !O
+  }, [k]);
+  const L = {
+    // A present access token means authenticated. Do NOT couple this to
+    // `isRefreshing`: the proactive background refresh sets isRefreshing=true
+    // for the token round-trip (~once per access-token lifetime, ~15min), and
+    // gating isAuthenticated on it transiently de-authenticated the whole app
+    // mid-refresh — consumers (e.g. neweco.ai) flipped their auth-gated UI to
+    // the logged-out view and back, the "page refreshes every ~15min" bug.
+    // The user becomes unauthenticated only when the token is cleared
+    // (terminal refresh failure / logout), which nulls accessToken. See #19.
+    isAuthenticated: !!l,
+    accessToken: l,
+    user: se ?? null,
+    login: G,
+    logout: Y,
+    isReady: !k && !C
   };
-  return /* @__PURE__ */ oe(
-    G.Provider,
+  return /* @__PURE__ */ ie(
+    Z.Provider,
     {
       value: {
         clientId: e,
         redirectUri: r,
-        env: o,
-        login: B,
-        logout: z,
-        authInProgress: O,
-        authError: ee,
-        idToken: Z,
-        accessToken: f,
-        refreshToken: g,
-        user: x.user,
-        isAuthenticated: x.isAuthenticated,
-        isReady: x.isReady,
-        url: u
+        env: n,
+        login: G,
+        logout: Y,
+        authInProgress: C,
+        authError: oe,
+        idToken: ne,
+        accessToken: l,
+        refreshToken: y,
+        user: L.user,
+        isAuthenticated: L.isAuthenticated,
+        isReady: L.isReady,
+        url: c
       },
-      children: typeof t == "function" ? t(x) : t
+      children: typeof t == "function" ? t(L) : t
     }
   );
 }
-const Te = () => {
-  const e = ae(G);
+const Oe = () => {
+  const e = de(Z);
   if (!e)
     throw new Error("useDeva must be used within a DevaProvider");
   return {
@@ -433,6 +470,6 @@ const Te = () => {
   };
 };
 export {
-  Se as DevaProvider,
-  Te as useDeva
+  De as DevaProvider,
+  Oe as useDeva
 };

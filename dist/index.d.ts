@@ -6551,7 +6551,7 @@ export declare type DevaContext = {
     env: Envs;
     authInProgress: boolean;
     authError: string | null;
-    login: () => Promise<void>;
+    login: (options?: LoginOptions) => Promise<void>;
     logout: () => Promise<void>;
     idToken: string | null;
     accessToken: string | null;
@@ -6564,16 +6564,59 @@ export declare type DevaContext = {
 
 export declare const DevaContext: Context<DevaContext | null>;
 
-export declare function DevaProvider({ clientId, redirectUri, children, env, }: DevaProviderProps): JSX.Element;
+export declare function DevaProvider({ clientId, redirectUri, children, env, baseUrl, onLoginComplete, }: DevaProviderProps): JSX.Element;
 
 declare type DevaProviderProps = {
     clientId: string;
     redirectUri: string;
     children: React.ReactNode | ((devaProps: UseDevaReturn) => React.ReactNode);
     env: Envs;
+    /**
+     * Optional explicit base URL for the Deva IdP, overriding `env`. Point this
+     * at a local endeva on any host/port (e.g. "http://localhost:3001") for
+     * local development/testing. When omitted, the URL is derived from `env`.
+     */
+    baseUrl?: string;
+    /**
+     * Called on the redirect return leg with the freshly-exchanged tokens and
+     * the round-tripped `state`. Return `true` to tell the SDK NOT to persist
+     * the tokens itself (the consumer is routing them, e.g. multi-account).
+     */
+    onLoginComplete?: (payload: LoginCompletePayload) => boolean | void;
 };
 
 export declare type Envs = "development" | "staging" | "production";
+
+/** Shape handed to `onLoginComplete` on the redirect return leg. */
+export declare type LoginCompletePayload = {
+    access_token: string;
+    refresh_token?: string;
+    id_token?: string;
+    expires_in?: number;
+    /** Whatever the consumer passed to `login({ state })`; null if none. */
+    state: string | null;
+};
+
+export declare type LoginOptions = {
+    /**
+     * OpenID Connect `prompt`. Forwarded to the authorization endpoint and
+     * bypasses the already-authenticated / silent-refresh guards so a fresh
+     * OAuth round-trip runs even when a valid token is present. Use `"login"`
+     * to force the sign-in screen (e.g. an "Add account" / multi-account flow).
+     *
+     * NOTE: any value here triggers a full-page redirect and bypasses the local
+     * session guards — this is NOT a silent/iframe check, so `"none"` still
+     * navigates away rather than probing silently. The Deva IdP currently only
+     * acts on `"login"` (forcing re-authentication / account choice); other
+     * values are forwarded as-is and may be ignored by the IdP.
+     */
+    prompt?: "login" | "consent" | "none" | "select_account";
+    /**
+     * Opaque value forwarded to the authorize URL as `state` and returned
+     * verbatim on the redirect. The SDK does not parse or interpret it.
+     */
+    state?: string;
+};
 
 export declare const useDeva: () => UseDevaReturn;
 
@@ -6582,7 +6625,7 @@ declare type UseDevaReturn = {
     isReady: boolean;
     accessToken: string | null;
     user: UserInfo | null;
-    login: () => Promise<void>;
+    login: (options?: LoginOptions) => Promise<void>;
     logout: () => Promise<void>;
 };
 
@@ -6593,78 +6636,6 @@ export declare type UserInfo = components["schemas"]["UserInfo"] & {
 declare type UserPersonaInfo = components["schemas"]["UserPersonaInfo"];
 
 export { }
-
-
-declare namespace v3 {
-    var DNS: string;
-    var URL: string;
-}
-
-
-declare namespace v5 {
-    var DNS: string;
-    var URL: string;
-}
-
-
-
-declare global {
-    interface Node {
-        pmViewDesc?: ViewDesc;
-    }
-}
-
-
-
-/**
- * Augment types.
- */
-declare module 'micromark-util-types' {
-  /**
-   * Compile data.
-   */
-  interface CompileData {
-    gfmFootnoteDefinitions?: Record<string, string>
-    gfmFootnoteDefinitionStack?: Array<string>
-    gfmFootnoteCallCounts?: Record<string, number>
-    gfmFootnoteCallOrder?: Array<string>
-  }
-
-  /**
-   * Parse context.
-   */
-  interface ParseContext {
-    gfmFootnotes?: Array<string>
-  }
-
-  /**
-   * Token types.
-   */
-  interface TokenTypeMap {
-    gfmFootnoteCall: 'gfmFootnoteCall'
-    gfmFootnoteCallLabelMarker: 'gfmFootnoteCallLabelMarker'
-    gfmFootnoteCallMarker: 'gfmFootnoteCallMarker'
-    gfmFootnoteCallString: 'gfmFootnoteCallString'
-    gfmFootnoteDefinition: 'gfmFootnoteDefinition'
-    gfmFootnoteDefinitionIndent: 'gfmFootnoteDefinitionIndent'
-    gfmFootnoteDefinitionLabel: 'gfmFootnoteDefinitionLabel'
-    gfmFootnoteDefinitionLabelMarker: 'gfmFootnoteDefinitionLabelMarker'
-    gfmFootnoteDefinitionLabelString: 'gfmFootnoteDefinitionLabelString'
-    gfmFootnoteDefinitionMarker: 'gfmFootnoteDefinitionMarker'
-    gfmFootnoteDefinitionWhitespace: 'gfmFootnoteDefinitionWhitespace'
-  }
-}
-
-
-
-declare module 'micromark-util-types' {
-  interface TokenTypeMap {
-    strikethroughSequence: 'strikethroughSequence'
-    strikethroughSequenceTemporary: 'strikethroughSequenceTemporary'
-    strikethrough: 'strikethrough'
-    strikethroughText: 'strikethroughText'
-  }
-}
 
 
 
@@ -6730,27 +6701,65 @@ declare module 'mdast' {
 
 
 
-declare module 'mdast-util-to-markdown' {
-  interface ConstructNameMap {
-    /**
-     * Footnote definition.
-     *
-     * ```markdown
-     * > | [^a]: B.
-     *     ^^^^^^^^
-     * ```
-     */
-    footnoteDefinition: 'footnoteDefinition'
+declare module 'micromark-util-types' {
+  interface TokenTypeMap {
+    strikethroughSequence: 'strikethroughSequence'
+    strikethroughSequenceTemporary: 'strikethroughSequenceTemporary'
+    strikethrough: 'strikethrough'
+    strikethroughText: 'strikethroughText'
+  }
+}
 
-    /**
-     * Footnote reference.
-     *
-     * ```markdown
-     * > | A[^b].
-     *      ^^^^
-     * ```
-     */
-    footnoteReference: 'footnoteReference'
+
+
+/**
+ * Augment types.
+ */
+declare module 'micromark-util-types' {
+  /**
+   * Compile data.
+   */
+  interface CompileData {
+    gfmFootnoteDefinitions?: Record<string, string>
+    gfmFootnoteDefinitionStack?: Array<string>
+    gfmFootnoteCallCounts?: Record<string, number>
+    gfmFootnoteCallOrder?: Array<string>
+  }
+
+  /**
+   * Parse context.
+   */
+  interface ParseContext {
+    gfmFootnotes?: Array<string>
+  }
+
+  /**
+   * Token types.
+   */
+  interface TokenTypeMap {
+    gfmFootnoteCall: 'gfmFootnoteCall'
+    gfmFootnoteCallLabelMarker: 'gfmFootnoteCallLabelMarker'
+    gfmFootnoteCallMarker: 'gfmFootnoteCallMarker'
+    gfmFootnoteCallString: 'gfmFootnoteCallString'
+    gfmFootnoteDefinition: 'gfmFootnoteDefinition'
+    gfmFootnoteDefinitionIndent: 'gfmFootnoteDefinitionIndent'
+    gfmFootnoteDefinitionLabel: 'gfmFootnoteDefinitionLabel'
+    gfmFootnoteDefinitionLabelMarker: 'gfmFootnoteDefinitionLabelMarker'
+    gfmFootnoteDefinitionLabelString: 'gfmFootnoteDefinitionLabelString'
+    gfmFootnoteDefinitionMarker: 'gfmFootnoteDefinitionMarker'
+    gfmFootnoteDefinitionWhitespace: 'gfmFootnoteDefinitionWhitespace'
+  }
+}
+
+
+
+declare module 'micromark-util-types' {
+  interface TokenTypeMap {
+    listItem: 'listItem'
+  }
+
+  interface Token {
+    _spread?: boolean
   }
 }
 
@@ -6809,18 +6818,26 @@ declare module 'mdast-util-to-markdown' {
 
 
 
-declare module 'micromark-util-types' {
-  interface TokenTypeMap {
-    listItem: 'listItem'
-  }
+declare module 'mdast-util-to-markdown' {
+  interface ConstructNameMap {
+    /**
+     * Footnote definition.
+     *
+     * ```markdown
+     * > | [^a]: B.
+     *     ^^^^^^^^
+     * ```
+     */
+    footnoteDefinition: 'footnoteDefinition'
 
-  interface Token {
-    _spread?: boolean
+    /**
+     * Footnote reference.
+     *
+     * ```markdown
+     * > | A[^b].
+     *      ^^^^
+     * ```
+     */
+    footnoteReference: 'footnoteReference'
   }
-}
-
-declare namespace _default {
-    namespace plugins {
-        let tailwindcss: {};
-    }
 }
