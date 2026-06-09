@@ -1,6 +1,6 @@
 import { jsx as ie } from "react/jsx-runtime";
-import { useState as F, useCallback as m, useEffect as T, useLayoutEffect as ue, useRef as S, useContext as de } from "react";
-import { f as X, D as Z, u as ee, r as fe } from "./config-DtnqZvjP.js";
+import { useState as z, useCallback as m, useEffect as T, useLayoutEffect as ue, useRef as S, useContext as de } from "react";
+import { f as X, D as Z, u as ee, r as fe } from "./config-atmkCy3Z.js";
 const le = () => {
   const e = new Uint8Array(32);
   return crypto.getRandomValues(e), re(e);
@@ -18,7 +18,7 @@ const le = () => {
   }
 };
 function E(e, r) {
-  const [t, n] = F(
+  const [t, n] = z(
     () => ge(e, r)
   ), f = m(
     (s) => {
@@ -136,11 +136,11 @@ function Ee(e) {
 function Se(e, r) {
   return (e == null ? void 0 : e(r)) !== !0;
 }
-const J = typeof window < "u" && typeof document < "u", I = (...e) => {
+const F = typeof window < "u" && typeof document < "u", I = (...e) => {
   console.log("[sdk/provider]", ...e);
 }, Te = (e) => {
   const { data: r, error: t, isLoading: n } = ee(
-    J ? `${e}/.well-known/openid-configuration` : null
+    F ? `${e}/.well-known/openid-configuration` : null
   );
   return { openIdConfig: r, isOpenIdConfigLoading: n, error: t };
 }, Pe = (e, r) => {
@@ -150,7 +150,8 @@ const J = typeof window < "u" && typeof document < "u", I = (...e) => {
       headers: {
         Authorization: `Bearer ${r}`
       }
-    }
+    },
+    { keepPreviousData: !0 }
   );
   return {
     userInfo: t,
@@ -184,7 +185,7 @@ const J = typeof window < "u" && typeof document < "u", I = (...e) => {
     })
   });
 }, [e, r, t]);
-function De({
+function xe({
   clientId: e,
   redirectUri: r,
   children: t,
@@ -192,13 +193,13 @@ function De({
   baseUrl: f,
   onLoginComplete: s
 }) {
-  const c = fe(n, f), j = S(s);
-  j.current = s;
-  const { openIdConfig: a, isOpenIdConfigLoading: k, error: B } = Te(c);
-  B && console.error("[sdk/provider] error fetching openid info: ", B);
-  const U = S(!1), W = S(!1);
+  const c = fe(n, f), J = S(s);
+  J.current = s;
+  const { openIdConfig: a, isOpenIdConfigLoading: k, error: j } = Te(c);
+  j && console.error("[sdk/provider] error fetching openid info: ", j);
+  const U = S(!1), B = S(!1);
   T(() => {
-    n === "development" && !W.current && (W.current = !0, console.warn(
+    n === "development" && !B.current && (B.current = !0, console.warn(
       `
 ========================================
 ⚠️  WARNING: DEVELOPMENT ENVIRONMENT  ⚠️
@@ -215,16 +216,16 @@ Please verify your environment settings and use 'staging' or 'production' instea
   const [te, w] = E("code_verifier", ""), [C, v] = E(
     "auth_in_progress",
     !1
-  ), [ne, N] = E("id_token", null), [l, x] = E(
+  ), [ne, N] = E("id_token", null), [l, D] = E(
     "access_token",
     null
-  ), [y, D] = E(
+  ), [y, x] = E(
     "refresh_token",
     null
-  ), [_, O] = E("expires_in", 0), [V, h] = F(!0), R = m(
+  ), [_, O] = E("expires_in", 0), [W, h] = z(!0), R = m(
     (o) => {
       let u = _;
-      x(o.access_token), N(o.id_token);
+      D(o.access_token), N(o.id_token);
       try {
         const i = ye(o.id_token);
         u = Math.round(Number(i.exp) - Date.now() / 1e3);
@@ -234,34 +235,34 @@ Please verify your environment settings and use 'staging' or 'production' instea
         );
       }
       const d = o.expires_in ?? u;
-      O(pe(d)), D(o.refresh_token), w("");
+      O(pe(d)), x(o.refresh_token), w("");
     },
     [
-      x,
+      D,
       N,
       O,
-      D,
+      x,
       w,
       _
     ]
-  ), [oe, M] = F(null), { userInfo: se } = Pe(
+  ), [oe, V] = z(null), { userInfo: se } = Pe(
     a == null ? void 0 : a.userinfo_endpoint,
-    V ? null : l
+    l
   ), P = m(() => {
-    w(""), v(!1), x(""), N(""), O(0), D("");
+    w(""), v(!1), D(""), N(""), O(0), x("");
   }, [
     w,
     v,
-    x,
+    D,
     N,
     O,
-    D
+    x
   ]), H = Ae(
     l,
     e,
     a == null ? void 0 : a.revocation_endpoint
   ), Y = m(async () => {
-    await H(), P(), M(null);
+    await H(), P(), V(null);
   }, [P, H]), b = be(
     e,
     y,
@@ -325,7 +326,7 @@ Please verify your environment settings and use 'staging' or 'production' instea
     v,
     k,
     a
-  ]), p = S(0), q = S(0), z = m(
+  ]), p = S(0), q = S(0), M = m(
     async (o = !1) => {
       if (!l) {
         I("no access token");
@@ -335,7 +336,7 @@ Please verify your environment settings and use 'staging' or 'production' instea
         p.current = 0;
         return;
       }
-      if (V && !o) {
+      if (W && !o) {
         I("already refreshing");
         return;
       }
@@ -364,20 +365,20 @@ Please verify your environment settings and use 'staging' or 'production' instea
       y,
       b,
       R,
-      V,
+      W,
       _,
       h
     ]
   ), ae = 1e4 * Math.random();
   _e(
     () => {
-      z();
+      M();
     },
-    J && y ? 1e4 + ae : null,
-    [z]
+    F && y ? 1e4 + ae : null,
+    [M]
   ), T(() => {
     let o = "";
-    if (J && !k) {
+    if (F && !k) {
       if (C) {
         h(!1);
         const u = new URLSearchParams(window.location.search);
@@ -388,7 +389,7 @@ Please verify your environment settings and use 'staging' or 'production' instea
           console.error(
             `[sdk/provider]: ${i}
 Expected  to find a '?code=' parameter in the URL but found none`
-          ), M(i), l ? (v(!1), w("")) : P();
+          ), V(i), l ? (v(!1), w("")) : P();
           return;
         }
         if (v(!1), U.current)
@@ -406,15 +407,15 @@ Expected  to find a '?code=' parameter in the URL but found none`
             grant_type: "authorization_code"
           })
         }).then((i) => {
-          Se(j.current, {
+          Se(J.current, {
             ...i,
             state: d
           }) ? R(i) : (U.current = !1, w(""));
         }).catch((i) => {
-          console.error("[sdk/provider]: error in fetching", i), M("An error occurred while fetching tokens");
+          console.error("[sdk/provider]: error in fetching", i), V("An error occurred while fetching tokens");
         }), window.history.replaceState({}, document.title, window.location.pathname);
       }
-      z(!0);
+      M(!0);
     }
   }, [k]);
   const L = {
@@ -470,6 +471,6 @@ const Oe = () => {
   };
 };
 export {
-  De as DevaProvider,
+  xe as DevaProvider,
   Oe as useDeva
 };

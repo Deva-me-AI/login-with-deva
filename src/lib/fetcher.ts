@@ -1,4 +1,4 @@
-import useSWR, { type Key } from "swr";
+import useSWR, { type Key, type SWRConfiguration } from "swr";
 
 export const fetcher = <T>(...args: Parameters<typeof fetch>): Promise<T> =>
   fetch(...args).then((res) => {
@@ -12,6 +12,11 @@ export const fetcher = <T>(...args: Parameters<typeof fetch>): Promise<T> =>
 export const useSWRFetcher = <T = any, Error = any>(
   key: Key,
   init?: RequestInit,
+  config?: SWRConfiguration<T, Error>,
 ) => {
-  return useSWR<T, Error>(key, async (url: string) => fetcher<T>(url, init));
+  return useSWR<T, Error>(
+    key,
+    async (url: string) => fetcher<T>(url, init),
+    config,
+  );
 };

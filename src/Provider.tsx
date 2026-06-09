@@ -70,6 +70,7 @@ const useUserInfo = (
         Authorization: `Bearer ${authToken}`,
       },
     },
+    { keepPreviousData: true },
   );
 
   return {
@@ -221,7 +222,7 @@ export function DevaProvider({
 
   const { userInfo } = useUserInfo(
     openIdConfig?.userinfo_endpoint,
-    isRefreshing ? null : accessToken,
+    accessToken,
   );
 
   const clearState = useCallback(() => {
