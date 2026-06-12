@@ -3,6 +3,7 @@ import {
   buildAuthorizeUrl,
   resolvePersist,
   shouldForceRedirect,
+  verifyOAuthState,
 } from "../lib/login-helpers";
 
 describe("shouldForceRedirect", () => {
@@ -23,6 +24,7 @@ describe("buildAuthorizeUrl", () => {
     clientId: "client-1",
     redirectUri: "https://app.example/callback",
     codeChallenge: "challenge-abc",
+    state: "sdk-state-123",
   };
 
   it("always includes the PKCE code-flow params", () => {
@@ -36,10 +38,10 @@ describe("buildAuthorizeUrl", () => {
     expect(u.searchParams.get("code_challenge_method")).toBe("S256");
   });
 
-  it("omits prompt and state when not provided", () => {
+  it("omits prompt when not provided", () => {
     const u = new URL(buildAuthorizeUrl(base));
     expect(u.searchParams.has("prompt")).toBe(false);
-    expect(u.searchParams.has("state")).toBe(false);
+    expect(u.searchParams.get("state")).toBe("sdk-state-123");
   });
 
   it("appends prompt and state when provided", () => {
@@ -48,6 +50,54 @@ describe("buildAuthorizeUrl", () => {
     );
     expect(u.searchParams.get("prompt")).toBe("login");
     expect(u.searchParams.get("state")).toBe("s-123");
+  });
+
+  it("requires SDK-owned state", () => {
+    expect(() => buildAuthorizeUrl({ ...base, state: "" })).toThrowError(
+      "OAuth state is required",
+    );
+  });
+});
+
+describe("verifyOAuthState", () => {
+  it("accepts an exact state match and returns caller state", () => {
+    expect(
+      verifyOAuthState({
+        returnedState: "sdk-state",
+        expectedState: "sdk-state",
+        callerState: "caller-state",
+      }),
+    ).toEqual({ ok: true, callerState: "caller-state" });
+  });
+
+  it("rejects a missing stored state", () => {
+    expect(
+      verifyOAuthState({
+        returnedState: "sdk-state",
+        expectedState: null,
+        callerState: null,
+      }),
+    ).toEqual({ ok: false, error: "Missing stored OAuth state" });
+  });
+
+  it("rejects a missing returned state", () => {
+    expect(
+      verifyOAuthState({
+        returnedState: null,
+        expectedState: "sdk-state",
+        callerState: null,
+      }),
+    ).toEqual({ ok: false, error: "Missing OAuth state" });
+  });
+
+  it("rejects a mismatched returned state", () => {
+    expect(
+      verifyOAuthState({
+        returnedState: "attacker-state",
+        expectedState: "sdk-state",
+        callerState: null,
+      }),
+    ).toEqual({ ok: false, error: "OAuth state mismatch" });
   });
 });
 

@@ -11,13 +11,9 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { dateToTime } from "@/lib/time";
+import { linkMentionsForMarkdown } from "@/lib/markdown-format";
 import { Markdown } from "../Markdown";
 
-// TODO: use validator library to validate URLs 
-const URL_REGEX =
-  // eslint-disable-next-line no-useless-escape
-  /(?:https?:\/\/)?(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&//=]*)/g;
-const HIGHLIGHT_REGEX = /\s([@#][a-zA-Z0-9_-]+)/g;
 // const NOTE_REGEX = /\[\[([^\]]+)\]\]/g;
 
 interface Props {
@@ -69,17 +65,6 @@ export const ChatBubble = ({
 }: Props) => {
   const { user } = useDevaContext();
   const userPersona = user?.persona;
-
-  // Function to replace matches with clickable HTML links
-  function highlightURLs(text = "") {
-    return text.replace(URL_REGEX, (match) => {
-      let url = match;
-      if (!url.startsWith("http")) {
-        url = "http://" + url;
-      }
-      return `<a href="${url}" class="deva-text-[#CEF049]">${match}</a>`;
-    });
-  }
 
   return (
     <div
@@ -171,16 +156,7 @@ export const ChatBubble = ({
             </div>
 
             <div className="deva-line-clamp-1">
-              <Markdown>
-                {highlightURLs(
-                  reply.text
-                    ?.trim()
-                    .replace(
-                      HIGHLIGHT_REGEX,
-                      ` <a href="/$1$2" class="deva-text-[#CEF049]">$1$2</a>`,
-                    ),
-                )}
-              </Markdown>
+              <Markdown>{linkMentionsForMarkdown(reply.text.trim())}</Markdown>
             </div>
           </CardContent>
         </Card>
@@ -191,15 +167,7 @@ export const ChatBubble = ({
         className="deva-mr-4 deva-flex deva-min-h-[20px] deva-flex-col deva-items-start deva-gap-4 [overflow-wrap:anywhere]"
       >
         <Markdown>
-          {highlightURLs(
-            response
-              .toString()
-              .trim()
-              .replace(
-                HIGHLIGHT_REGEX,
-                ` <a href="/$1$2" class="deva-text-[#CEF049]">$1$2</a>`,
-              ),
-          )}
+          {linkMentionsForMarkdown(response.toString().trim())}
         </Markdown>
       </div>
 

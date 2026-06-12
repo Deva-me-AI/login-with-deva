@@ -1,28 +1,18 @@
 import { useMemo } from "react";
+import {
+  linkMentionsForMarkdown,
+  type MarkdownNote,
+  replaceNoteLinksForMarkdown,
+} from "@/lib/markdown-format";
 
-// Match human and deva mentions only
-const HIGHLIGHT_REGEX = /(?:^|\s|[^\w.])([@]{1,3}|[!#])([a-zA-Z0-9_-]+)/g;
-
-// Keep NOTE_REGEX separate
-const NOTE_REGEX = /\[\[([^\]]+?)\]\]/g;
-
-type Note = {
-  title: string;
-  id: string;
-};
+type Note = MarkdownNote;
 
 export const replaceNoteLinks = (
   text: string,
   notes: { title: string; id: string }[],
   baseUrl = "",
 ): string => {
-  return text.replace(NOTE_REGEX, (_match, noteContent: string) => {
-    const noteObject = notes.find((note) => note.title === noteContent);
-    if (noteObject) {
-      return `<a href="${baseUrl}/notes/${noteObject.id}" class="deva-text-accent">${noteContent}</a>`;
-    }
-    return noteContent;
-  });
+  return replaceNoteLinksForMarkdown(text, notes, baseUrl);
 };
 
 export const calcLongText = (
@@ -30,14 +20,7 @@ export const calcLongText = (
   postNotes: Note[],
   baseUrl = "",
 ): string =>
-  replaceNoteLinks(
-    text.replace(
-      HIGHLIGHT_REGEX,
-      ` <a href="${baseUrl}/$1$2" class="deva-text-accent">$1$2</a>`,
-    ),
-    postNotes,
-    baseUrl,
-  );
+  replaceNoteLinks(linkMentionsForMarkdown(text, baseUrl), postNotes, baseUrl);
 
 export const calcShortText = (
   text: string,

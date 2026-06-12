@@ -17,8 +17,9 @@ export type LoginOptions = {
    */
   prompt?: "login" | "consent" | "none" | "select_account";
   /**
-   * Opaque value forwarded to the authorize URL as `state` and returned
-   * verbatim on the redirect. The SDK does not parse or interpret it.
+   * Opaque caller data returned to `onLoginComplete`. The SDK protects the
+   * OAuth callback with its own generated `state` nonce and stores this value
+   * locally until that nonce is verified.
    */
   state?: string;
 };

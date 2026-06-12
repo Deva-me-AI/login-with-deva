@@ -16,8 +16,12 @@ export function buildAuthorizeUrl(params: {
   redirectUri: string;
   codeChallenge: string;
   prompt?: LoginOptions["prompt"];
-  state?: string;
+  state: string;
 }): string {
+  if (!params.state) {
+    throw new Error("OAuth state is required");
+  }
+
   const u = new URL(params.authorizationEndpoint);
   // No `scope` param: matches the SDK's existing authorize URL; the IdP applies
   // the client's configured default scopes.
@@ -27,8 +31,28 @@ export function buildAuthorizeUrl(params: {
   u.searchParams.append("code_challenge", params.codeChallenge);
   u.searchParams.append("code_challenge_method", "S256");
   if (params.prompt) u.searchParams.append("prompt", params.prompt);
-  if (params.state) u.searchParams.append("state", params.state);
+  u.searchParams.append("state", params.state);
   return u.toString();
+}
+
+export function verifyOAuthState(params: {
+  returnedState: string | null;
+  expectedState: string | null;
+  callerState: string | null;
+}): { ok: true; callerState: string | null } | { ok: false; error: string } {
+  if (!params.expectedState) {
+    return { ok: false, error: "Missing stored OAuth state" };
+  }
+
+  if (!params.returnedState) {
+    return { ok: false, error: "Missing OAuth state" };
+  }
+
+  if (params.returnedState !== params.expectedState) {
+    return { ok: false, error: "OAuth state mismatch" };
+  }
+
+  return { ok: true, callerState: params.callerState };
 }
 
 /**

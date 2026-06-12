@@ -1,5 +1,9 @@
 import { useCallback, useState, useEffect, useRef } from "react";
-import { DevaContext, type LoginOptions, type LoginCompletePayload } from "./DevaContext";
+import {
+  DevaContext,
+  type LoginOptions,
+  type LoginCompletePayload,
+} from "./DevaContext";
 import {
   generateCodeVerifier,
   generateCodeChallenge,
@@ -12,7 +16,12 @@ import type { OidcAccessTokenJWT, UserInfo } from "./server";
 import { jwtDecode } from "jwt-decode";
 import { useInterval } from "./hooks/use-timeout";
 import { type Envs, resolveDevaUrl } from "./config";
-import { buildAuthorizeUrl, resolvePersist, shouldForceRedirect } from "./lib/login-helpers";
+import {
+  buildAuthorizeUrl,
+  resolvePersist,
+  shouldForceRedirect,
+  verifyOAuthState,
+} from "./lib/login-helpers";
 import type { UseDevaReturn } from "./use-deva";
 
 // Check if we're running in a browser environment
@@ -27,9 +36,7 @@ const log = (...args: Parameters<typeof console.log>) => {
 export type DevaProviderProps = {
   clientId: string;
   redirectUri: string;
-  children:
-    | React.ReactNode
-    | ((devaProps: UseDevaReturn) => React.ReactNode);
+  children: React.ReactNode | ((devaProps: UseDevaReturn) => React.ReactNode);
   env: Envs;
   /**
    * Optional explicit base URL for the Deva IdP, overriding `env`. Point this
@@ -165,11 +172,19 @@ export function DevaProvider({
           "\n" +
           "If you are seeing this warning, you may have the wrong environment configured.\n" +
           "Please verify your environment settings and use 'staging' or 'production' instead.\n" +
-          "========================================\n"
+          "========================================\n",
       );
     }
   }, [env]);
   const [codeVerifier, setCodeVerifier] = useStorage("code_verifier", "");
+  const [oauthState, setOauthState] = useStorage<string | null>(
+    "oauth_state",
+    null,
+  );
+  const [oauthCallerState, setOauthCallerState] = useStorage<string | null>(
+    "oauth_caller_state",
+    null,
+  );
   const [authInProgress, setAuthInProgress] = useStorage(
     "auth_in_progress",
     false,
@@ -207,6 +222,8 @@ export function DevaProvider({
       setExpiresIn(epochAtSecondsFromNow(tokenExpiresIn));
       setRefreshToken(res.refresh_token);
       setCodeVerifier("");
+      setOauthState(null);
+      setOauthCallerState(null);
     },
     [
       setAccessToken,
@@ -214,6 +231,8 @@ export function DevaProvider({
       setExpiresIn,
       setRefreshToken,
       setCodeVerifier,
+      setOauthState,
+      setOauthCallerState,
       expiresIn,
     ],
   );
@@ -225,16 +244,21 @@ export function DevaProvider({
     accessToken,
   );
 
-  const clearState = useCallback(() => {
+  const clearTransientAuthState = useCallback(() => {
     setCodeVerifier("");
     setAuthInProgress(false);
+    setOauthState(null);
+    setOauthCallerState(null);
+  }, [setCodeVerifier, setAuthInProgress, setOauthState, setOauthCallerState]);
+
+  const clearState = useCallback(() => {
+    clearTransientAuthState();
     setAccessToken("");
     setIdToken("");
     setExpiresIn(0);
     setRefreshToken("");
   }, [
-    setCodeVerifier,
-    setAuthInProgress,
+    clearTransientAuthState,
     setAccessToken,
     setIdToken,
     setExpiresIn,
@@ -258,97 +282,108 @@ export function DevaProvider({
     openIdConfig?.token_endpoint,
   );
 
-  const login = useCallback(async (options?: LoginOptions) => {
-    // When a `prompt` is supplied the caller wants a fresh OAuth round-trip
-    // (e.g. "Add account"). Skip the already-authenticated guard and the
-    // silent-refresh path — both would otherwise short-circuit the redirect.
-    const forceRedirect = shouldForceRedirect(options);
+  const login = useCallback(
+    async (options?: LoginOptions) => {
+      // When a `prompt` is supplied the caller wants a fresh OAuth round-trip
+      // (e.g. "Add account"). Skip the already-authenticated guard and the
+      // silent-refresh path — both would otherwise short-circuit the redirect.
+      const forceRedirect = shouldForceRedirect(options);
 
-    if (!forceRedirect && accessToken && !epochTimeIsPast(expiresIn)) {
-      return;
-    }
+      if (!forceRedirect && accessToken && !epochTimeIsPast(expiresIn)) {
+        return;
+      }
 
-    // Try silent refresh first before redirecting
-    if (!forceRedirect && refreshToken) {
+      // Try silent refresh first before redirecting
+      if (!forceRedirect && refreshToken) {
+        if (isOpenIdConfigLoading) {
+          return;
+        }
+
+        setIsRefreshing(true);
+        try {
+          const res = await callRefreshApi();
+          if (res) {
+            handleTokenResponse(res);
+            refreshFailCountRef.current = 0;
+            return;
+          }
+        } catch (error) {
+          console.error(
+            "[sdk/provider]: Error refreshing token during login",
+            error,
+          );
+        } finally {
+          setIsRefreshing(false);
+        }
+
+        // Refresh failed — retry once more after a short delay before giving up
+        try {
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+          setIsRefreshing(true);
+          const retryRes = await callRefreshApi();
+          if (retryRes) {
+            handleTokenResponse(retryRes);
+            refreshFailCountRef.current = 0;
+            return;
+          }
+        } catch (error) {
+          console.error("[sdk/provider]: Retry refresh also failed", error);
+        } finally {
+          setIsRefreshing(false);
+        }
+      }
+
+      // On a forced redirect, keep the current session intact: if the user
+      // cancels at deva.me they return with their original account unchanged,
+      // and we avoid writing empty token values a consumer storage mirror
+      // would propagate into the active account's namespace.
+      if (!forceRedirect) {
+        clearState();
+      }
+      setAuthInProgress(true);
       if (isOpenIdConfigLoading) {
         return;
       }
 
-      setIsRefreshing(true);
-      try {
-        const res = await callRefreshApi();
-        if (res) {
-          handleTokenResponse(res);
-          refreshFailCountRef.current = 0;
-          return;
-        }
-      } catch (error) {
-        console.error("[sdk/provider]: Error refreshing token during login", error);
-      } finally {
-        setIsRefreshing(false);
-      }
+      const codeVerifier = generateCodeVerifier();
+      const state = generateCodeVerifier();
+      const codeChallenge = await generateCodeChallenge(codeVerifier);
 
-      // Refresh failed — retry once more after a short delay before giving up
-      try {
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        setIsRefreshing(true);
-        const retryRes = await callRefreshApi();
-        if (retryRes) {
-          handleTokenResponse(retryRes);
-          refreshFailCountRef.current = 0;
-          return;
-        }
-      } catch (error) {
-        console.error("[sdk/provider]: Retry refresh also failed", error);
-      } finally {
-        setIsRefreshing(false);
-      }
-    }
+      // Store values in session storage
+      setCodeVerifier(codeVerifier);
+      setOauthState(state);
+      setOauthCallerState(options?.state ?? null);
 
-    // On a forced redirect, keep the current session intact: if the user
-    // cancels at deva.me they return with their original account unchanged,
-    // and we avoid writing empty token values a consumer storage mirror
-    // would propagate into the active account's namespace.
-    if (!forceRedirect) {
-      clearState();
-    }
-    setAuthInProgress(true);
-    if (isOpenIdConfigLoading) {
-      return;
-    }
+      // Redirect to the login page
+      const authorizeUrl = buildAuthorizeUrl({
+        authorizationEndpoint: openIdConfig?.authorization_endpoint ?? "",
+        clientId,
+        redirectUri,
+        codeChallenge,
+        prompt: options?.prompt,
+        state,
+      });
 
-    const codeVerifier = generateCodeVerifier();
-    const codeChallenge = await generateCodeChallenge(codeVerifier);
-
-    // Store values in session storage
-    setCodeVerifier(codeVerifier);
-
-    // Redirect to the login page
-    const authorizeUrl = buildAuthorizeUrl({
-      authorizationEndpoint: openIdConfig?.authorization_endpoint ?? "",
+      window.location.assign(authorizeUrl);
+    },
+    [
+      accessToken,
+      expiresIn,
+      refreshToken,
+      callRefreshApi,
+      handleTokenResponse,
+      setIsRefreshing,
       clientId,
       redirectUri,
-      codeChallenge,
-      prompt: options?.prompt,
-      state: options?.state,
-    });
-
-    window.location.assign(authorizeUrl);
-  }, [
-    accessToken,
-    expiresIn,
-    refreshToken,
-    callRefreshApi,
-    handleTokenResponse,
-    setIsRefreshing,
-    clientId,
-    redirectUri,
-    setCodeVerifier,
-    clearState,
-    setAuthInProgress,
-    isOpenIdConfigLoading,
-    openIdConfig,
-  ]);
+      setCodeVerifier,
+      setOauthState,
+      setOauthCallerState,
+      clearState,
+      setAuthInProgress,
+      isOpenIdConfigLoading,
+      openIdConfig,
+    ],
+  );
 
   // Track consecutive refresh failures for exponential backoff
   const refreshFailCountRef = useRef(0);
@@ -381,7 +416,10 @@ export function DevaProvider({
       // Exponential backoff: don't hammer the token endpoint on repeated failures
       const failCount = refreshFailCountRef.current;
       if (failCount > 0 && !init) {
-        const backoffMs = Math.min(1000 * Math.pow(2, failCount), 5 * 60 * 1000); // max 5 min
+        const backoffMs = Math.min(
+          1000 * Math.pow(2, failCount),
+          5 * 60 * 1000,
+        ); // max 5 min
         const elapsed = Date.now() - lastRefreshAttemptRef.current;
         if (elapsed < backoffMs) {
           return;
@@ -398,11 +436,16 @@ export function DevaProvider({
           refreshFailCountRef.current = 0; // success — reset backoff
         } else {
           refreshFailCountRef.current++;
-          log(`refresh returned empty response (attempt ${refreshFailCountRef.current})`);
+          log(
+            `refresh returned empty response (attempt ${refreshFailCountRef.current})`,
+          );
         }
       } catch (error) {
         refreshFailCountRef.current++;
-        console.error(`[sdk/provider]: Error refreshing token (attempt ${refreshFailCountRef.current})`, error);
+        console.error(
+          `[sdk/provider]: Error refreshing token (attempt ${refreshFailCountRef.current})`,
+          error,
+        );
       } finally {
         setIsRefreshing(false);
       }
@@ -465,9 +508,30 @@ export function DevaProvider({
           // Forced redirect cancelled (e.g. user backed out of "Add account"):
           // preserve the existing session, but still reset the transient flow
           // state so the SDK doesn't get stuck with authInProgress = true.
-          setAuthInProgress(false);
-          setCodeVerifier("");
+          clearTransientAuthState();
         }
+        return;
+      }
+
+      const stateVerification = verifyOAuthState({
+        returnedState,
+        expectedState: oauthState,
+        callerState: oauthCallerState,
+      });
+
+      if (!stateVerification.ok) {
+        console.error(`[sdk/provider]: ${stateVerification.error}`);
+        setAuthError("Invalid OAuth state");
+        if (!accessToken) {
+          clearState();
+        } else {
+          clearTransientAuthState();
+        }
+        window.history.replaceState(
+          {},
+          document.title,
+          window.location.pathname,
+        );
         return;
       }
 
@@ -496,7 +560,7 @@ export function DevaProvider({
         .then((res) => {
           const persist = resolvePersist(onLoginCompleteRef.current, {
             ...res,
-            state: returnedState,
+            state: stateVerification.callerState,
           });
           if (persist) {
             handleTokenResponse(res);
@@ -506,7 +570,7 @@ export function DevaProvider({
             // (without a page reload) can exchange a new code, and clear the
             // spent PKCE verifier (handleTokenResponse would normally do this).
             fetchingTokensRef.current = false;
-            setCodeVerifier("");
+            clearTransientAuthState();
           }
         })
         .catch((error) => {

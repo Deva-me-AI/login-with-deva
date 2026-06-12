@@ -1,9 +1,5 @@
-import {
-  type FunctionComponent,
-  type ReactNode,
-} from "react";
+import { type FunctionComponent, type ReactNode } from "react";
 import ReactMarkdown from "react-markdown";
-import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
 
 // Define proper types for markdown component props
@@ -17,6 +13,47 @@ type MarkdownComponent = FunctionComponent<MarkdownComponentProps>;
 
 // Type for the components dictionary
 type MarkdownComponentsDict = Record<string, MarkdownComponent>;
+
+const SAFE_PROTOCOLS = new Set(["http:", "https:", "mailto:"]);
+
+function normalizeMarkdownUrl(href: string): string {
+  return Array.from(href.trim())
+    .filter((char) => {
+      const code = char.charCodeAt(0);
+      return code > 0x1f && code !== 0x7f && !/\s/.test(char);
+    })
+    .join("");
+}
+
+export function sanitizeMarkdownUrl(href?: string): string {
+  if (!href) {
+    return "";
+  }
+
+  const normalizedHref = normalizeMarkdownUrl(href);
+
+  if (
+    normalizedHref.startsWith("#") ||
+    (normalizedHref.startsWith("/") && !normalizedHref.startsWith("//")) ||
+    normalizedHref.startsWith("./") ||
+    normalizedHref.startsWith("../")
+  ) {
+    return normalizedHref;
+  }
+
+  try {
+    const parsedUrl = new URL(normalizedHref, "https://deva.invalid");
+    const hasExplicitProtocol = /^[a-z][a-z\d+.-]*:/i.test(normalizedHref);
+
+    if (!hasExplicitProtocol) {
+      return normalizedHref.startsWith("//") ? "" : normalizedHref;
+    }
+
+    return SAFE_PROTOCOLS.has(parsedUrl.protocol) ? normalizedHref : "";
+  } catch {
+    return "";
+  }
+}
 
 export const MD_COMPONENTS: MarkdownComponentsDict = {
   h1: function MDh1(props) {
@@ -51,8 +88,26 @@ export const MD_COMPONENTS: MarkdownComponentsDict = {
   },
   a: function MDa(props) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { node, ...rest } = props;
-    return <a className="deva-text-[#cef049]" {...rest} />;
+    const { node, href, title, children } = props as MarkdownComponentProps & {
+      href?: string;
+      title?: string;
+    };
+    const safeHref = sanitizeMarkdownUrl(href);
+
+    if (!safeHref) {
+      return <span>{children}</span>;
+    }
+
+    return (
+      <a
+        className="deva-text-[#cef049]"
+        href={safeHref}
+        rel="noopener noreferrer"
+        title={title}
+      >
+        {children}
+      </a>
+    );
   },
   ul: function MDul(props) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -74,7 +129,8 @@ export const MD_COMPONENTS: MarkdownComponentsDict = {
 export const Markdown = ({ children }: { children: string }) => {
   return (
     <ReactMarkdown
-      rehypePlugins={[rehypeRaw, remarkGfm]}
+      remarkPlugins={[remarkGfm]}
+      urlTransform={sanitizeMarkdownUrl}
       components={MD_COMPONENTS}
     >
       {children}
