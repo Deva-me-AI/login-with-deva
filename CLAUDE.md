@@ -1,8 +1,8 @@
-# deva-sdk — Claude Guidelines
+# login-with-deva — Claude Guidelines
 
 ## What This Repo Is
 
-A React component library and hook collection published as `@bitplanet/deva-sdk` on npm. Built with Vite in library mode. Exports two entry points: `index` (provider + hook) and `components` (ChannelFeed, Intercom, Toaster).
+A React component library and hook collection published as `@deva-me/login-with-deva` on npm. Built with Vite in library mode. Exports two entry points: `index` (provider + hook) and `components` (ChannelFeed, Intercom, Toaster).
 
 ## Key Files to Read First
 
@@ -31,7 +31,7 @@ This is a React library. Use refs and React's event system. No `document.querySe
 
 ### CSS goes in `src/styles/globals.css`
 
-The CSS is bundled separately as `dist/assets/deva-sdk.css` and exported as `@bitplanet/deva-sdk/style.css`. Keep component-specific styles in the same CSS file via Tailwind classes. Don't use CSS modules or CSS-in-JS.
+The CSS is bundled separately as `dist/assets/login-with-deva.css` and exported as `@deva-me/login-with-deva/style.css`. Keep component-specific styles in the same CSS file via Tailwind classes. Don't use CSS modules or CSS-in-JS.
 
 ### Types are part of the API
 

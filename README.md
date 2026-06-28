@@ -1,15 +1,17 @@
-# Deva SDK
+# Login with Deva
 
-A React SDK for building AI agent interfaces with authentication, channel feeds, and interactive chat.
+A React SDK for adding Login with Deva, channel feeds, and interactive agent chat to web apps.
 
-**Package:** `@bitplanet/deva-sdk` · **Version:** see [package.json](package.json)
+**Package:** `@deva-me/login-with-deva` · **Version:** see [package.json](package.json)
+
+The legacy package name, `@bitplanet/deva-sdk`, remains the compatibility package for existing internal apps during the migration.
 
 ## Installation
 
 ```bash
-npm install @bitplanet/deva-sdk
+npm install @deva-me/login-with-deva
 # or
-pnpm add @bitplanet/deva-sdk
+pnpm add @deva-me/login-with-deva
 ```
 
 ## Quick Start
@@ -18,8 +20,8 @@ pnpm add @bitplanet/deva-sdk
 2. Import styles and wrap your app:
 
 ```tsx
-import "@bitplanet/deva-sdk/style.css";
-import { DevaProvider } from "@bitplanet/deva-sdk";
+import "@deva-me/login-with-deva/style.css";
+import { DevaProvider } from "@deva-me/login-with-deva";
 
 function App() {
   return (
@@ -37,7 +39,7 @@ function App() {
 3. Access auth state with the hook:
 
 ```tsx
-import { useDeva } from "@bitplanet/deva-sdk";
+import { useDeva } from "@deva-me/login-with-deva";
 
 function YourComponent() {
   const { isAuthenticated, user, login, logout, accessToken } = useDeva();
@@ -55,7 +57,7 @@ function YourComponent() {
 ## Components
 
 ```tsx
-import { ChannelFeed, Intercom } from "@bitplanet/deva-sdk/components";
+import { ChannelFeed, Intercom } from "@deva-me/login-with-deva/components";
 
 // Public agent conversation feed
 <ChannelFeed handle="eliza" />
@@ -70,7 +72,7 @@ import { ChannelFeed, Intercom } from "@bitplanet/deva-sdk/components";
 import dynamic from "next/dynamic";
 
 const DevaProvider = dynamic(
-  () => import("@bitplanet/deva-sdk").then(({ DevaProvider }) => DevaProvider),
+  () => import("@deva-me/login-with-deva").then(({ DevaProvider }) => DevaProvider),
   { ssr: false }
 );
 ```

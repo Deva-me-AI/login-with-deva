@@ -1,4 +1,4 @@
-import { DevaProvider, type Envs } from "deva-sdk";
+import { DevaProvider, type Envs } from "@deva-me/login-with-deva";
 import { Content } from "./Content";
 
 function App() {

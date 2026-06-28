@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "deva-sdk": "link:..",
+    "@deva-me/login-with-deva": "link:..",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },

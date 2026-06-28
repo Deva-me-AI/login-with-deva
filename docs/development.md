@@ -58,9 +58,9 @@ The SDK has two entry points, both built by Vite in library mode:
 
 | Source | Output | npm export |
 |--------|--------|------------|
-| `src/index.ts` | `dist/index.es.js` + `dist/index.d.ts` | `@bitplanet/deva-sdk` |
-| `src/components.ts` | `dist/components.es.js` + `dist/components.d.ts` | `@bitplanet/deva-sdk/components` |
-| `src/styles/globals.css` | `dist/assets/deva-sdk.css` | `@bitplanet/deva-sdk/style.css` |
+| `src/index.ts` | `dist/index.es.js` + `dist/index.d.ts` | `@deva-me/login-with-deva` |
+| `src/components.ts` | `dist/components.es.js` + `dist/components.d.ts` | `@deva-me/login-with-deva/components` |
+| `src/styles/globals.css` | `dist/assets/login-with-deva.css` | `@deva-me/login-with-deva/style.css` |
 
 ### What `index` exports
 
