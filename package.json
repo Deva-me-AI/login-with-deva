@@ -1,9 +1,14 @@
 {
-  "name": "@bitplanet/deva-sdk",
+  "name": "@deva-me/login-with-deva",
   "version": "0.10.2",
+  "description": "Login with Deva React SDK for authentication, channel feeds, and interactive agent chat.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Bitplanet-L1/deva-sdk.git"
+    "url": "https://github.com/Deva-me-AI/login-with-deva.git"
+  },
+  "homepage": "https://github.com/Deva-me-AI/login-with-deva#readme",
+  "bugs": {
+    "url": "https://github.com/Deva-me-AI/login-with-deva/issues"
   },
   "scripts": {
     "build": "vite build",
@@ -34,7 +39,7 @@
       "require": "./dist/index.es.js"
     },
     "./package.json": "./package.json",
-    "./style.css": "./dist/assets/deva-sdk.css",
+    "./style.css": "./dist/assets/login-with-deva.css",
     "./components": {
       "types": "./dist/components.d.ts",
       "import": "./dist/components.es.js",
@@ -47,9 +52,12 @@
     "dist/components.es.js",
     "dist/components.d.ts",
     "dist/config-*.js",
-    "dist/assets/deva-sdk.css",
+    "dist/assets/login-with-deva.css",
     "README.md"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "@microsoft/fetch-event-source": "^2.0.1",
     "@radix-ui/react-avatar": "^1.1.3",

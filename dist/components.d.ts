@@ -16,6 +16,78 @@ export declare function Toaster(): JSX.Element;
 export { }
 
 
+declare namespace v5 {
+    var DNS: string;
+    var URL: string;
+}
+
+
+declare namespace v3 {
+    var DNS: string;
+    var URL: string;
+}
+
+
+
+declare global {
+    interface Node {
+        pmViewDesc?: ViewDesc;
+    }
+}
+
+
+
+/**
+ * Augment types.
+ */
+declare module 'micromark-util-types' {
+  /**
+   * Compile data.
+   */
+  interface CompileData {
+    gfmFootnoteDefinitions?: Record<string, string>
+    gfmFootnoteDefinitionStack?: Array<string>
+    gfmFootnoteCallCounts?: Record<string, number>
+    gfmFootnoteCallOrder?: Array<string>
+  }
+
+  /**
+   * Parse context.
+   */
+  interface ParseContext {
+    gfmFootnotes?: Array<string>
+  }
+
+  /**
+   * Token types.
+   */
+  interface TokenTypeMap {
+    gfmFootnoteCall: 'gfmFootnoteCall'
+    gfmFootnoteCallLabelMarker: 'gfmFootnoteCallLabelMarker'
+    gfmFootnoteCallMarker: 'gfmFootnoteCallMarker'
+    gfmFootnoteCallString: 'gfmFootnoteCallString'
+    gfmFootnoteDefinition: 'gfmFootnoteDefinition'
+    gfmFootnoteDefinitionIndent: 'gfmFootnoteDefinitionIndent'
+    gfmFootnoteDefinitionLabel: 'gfmFootnoteDefinitionLabel'
+    gfmFootnoteDefinitionLabelMarker: 'gfmFootnoteDefinitionLabelMarker'
+    gfmFootnoteDefinitionLabelString: 'gfmFootnoteDefinitionLabelString'
+    gfmFootnoteDefinitionMarker: 'gfmFootnoteDefinitionMarker'
+    gfmFootnoteDefinitionWhitespace: 'gfmFootnoteDefinitionWhitespace'
+  }
+}
+
+
+
+declare module 'micromark-util-types' {
+  interface TokenTypeMap {
+    strikethroughSequence: 'strikethroughSequence'
+    strikethroughSequenceTemporary: 'strikethroughSequenceTemporary'
+    strikethrough: 'strikethrough'
+    strikethroughText: 'strikethroughText'
+  }
+}
+
+
 
 // Register nodes in content.
 declare module 'hast' {
@@ -79,65 +151,27 @@ declare module 'mdast' {
 
 
 
-declare module 'micromark-util-types' {
-  interface TokenTypeMap {
-    strikethroughSequence: 'strikethroughSequence'
-    strikethroughSequenceTemporary: 'strikethroughSequenceTemporary'
-    strikethrough: 'strikethrough'
-    strikethroughText: 'strikethroughText'
-  }
-}
+declare module 'mdast-util-to-markdown' {
+  interface ConstructNameMap {
+    /**
+     * Footnote definition.
+     *
+     * ```markdown
+     * > | [^a]: B.
+     *     ^^^^^^^^
+     * ```
+     */
+    footnoteDefinition: 'footnoteDefinition'
 
-
-
-/**
- * Augment types.
- */
-declare module 'micromark-util-types' {
-  /**
-   * Compile data.
-   */
-  interface CompileData {
-    gfmFootnoteDefinitions?: Record<string, string>
-    gfmFootnoteDefinitionStack?: Array<string>
-    gfmFootnoteCallCounts?: Record<string, number>
-    gfmFootnoteCallOrder?: Array<string>
-  }
-
-  /**
-   * Parse context.
-   */
-  interface ParseContext {
-    gfmFootnotes?: Array<string>
-  }
-
-  /**
-   * Token types.
-   */
-  interface TokenTypeMap {
-    gfmFootnoteCall: 'gfmFootnoteCall'
-    gfmFootnoteCallLabelMarker: 'gfmFootnoteCallLabelMarker'
-    gfmFootnoteCallMarker: 'gfmFootnoteCallMarker'
-    gfmFootnoteCallString: 'gfmFootnoteCallString'
-    gfmFootnoteDefinition: 'gfmFootnoteDefinition'
-    gfmFootnoteDefinitionIndent: 'gfmFootnoteDefinitionIndent'
-    gfmFootnoteDefinitionLabel: 'gfmFootnoteDefinitionLabel'
-    gfmFootnoteDefinitionLabelMarker: 'gfmFootnoteDefinitionLabelMarker'
-    gfmFootnoteDefinitionLabelString: 'gfmFootnoteDefinitionLabelString'
-    gfmFootnoteDefinitionMarker: 'gfmFootnoteDefinitionMarker'
-    gfmFootnoteDefinitionWhitespace: 'gfmFootnoteDefinitionWhitespace'
-  }
-}
-
-
-
-declare module 'micromark-util-types' {
-  interface TokenTypeMap {
-    listItem: 'listItem'
-  }
-
-  interface Token {
-    _spread?: boolean
+    /**
+     * Footnote reference.
+     *
+     * ```markdown
+     * > | A[^b].
+     *      ^^^^
+     * ```
+     */
+    footnoteReference: 'footnoteReference'
   }
 }
 
@@ -196,26 +230,18 @@ declare module 'mdast-util-to-markdown' {
 
 
 
-declare module 'mdast-util-to-markdown' {
-  interface ConstructNameMap {
-    /**
-     * Footnote definition.
-     *
-     * ```markdown
-     * > | [^a]: B.
-     *     ^^^^^^^^
-     * ```
-     */
-    footnoteDefinition: 'footnoteDefinition'
-
-    /**
-     * Footnote reference.
-     *
-     * ```markdown
-     * > | A[^b].
-     *      ^^^^
-     * ```
-     */
-    footnoteReference: 'footnoteReference'
+declare module 'micromark-util-types' {
+  interface TokenTypeMap {
+    listItem: 'listItem'
   }
+
+  interface Token {
+    _spread?: boolean
+  }
+}
+
+declare namespace _default {
+    namespace plugins {
+        let tailwindcss: {};
+    }
 }

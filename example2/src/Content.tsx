@@ -1,7 +1,7 @@
 "use client";
 
-import { useDeva } from "deva-sdk";
-import { ChannelFeed, Intercom } from "deva-sdk/components";
+import { useDeva } from "@deva-me/login-with-deva";
+import { ChannelFeed, Intercom } from "@deva-me/login-with-deva/components";
 import { type ReactNode, useState, useEffect } from "react";
 
 // Dynamically import components
@@ -125,7 +125,7 @@ export function Content() {
               </button>
             </>
           ) : (
-            <button className="button" onClick={login}>
+            <button className="button" onClick={() => void login()}>
               login
             </button>
           )}

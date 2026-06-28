@@ -1,5 +1,4 @@
-import { ComponentType } from "react";
-import Loadable from "@docusaurus/react-loadable";
+import { lazy, type ComponentType } from "react";
 
 const isServerSide = typeof window === "undefined";
 const Loading = ({
@@ -37,8 +36,5 @@ export const noSSR = <P extends object>(
     return () => <Loading error={null} isLoading pastDelay={false} />;
   }
 
-  return Loadable({
-    loader,
-    loading: Loading,
-  });
+  return lazy(async () => ({ default: await loader() })) as unknown as ComponentType<P>;
 };

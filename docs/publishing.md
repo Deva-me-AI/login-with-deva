@@ -1,10 +1,16 @@
 # Publishing
 
-The package publishes to npm as `@bitplanet/deva-sdk` via a tag-triggered GitHub Actions workflow. No manual `npm publish` is needed.
+The package publishes to npm as `@deva-me/login-with-deva` via a tag-triggered GitHub Actions workflow. No manual `npm publish` is needed after npm trusted publishing is configured for this repository.
 
 ## Authentication
 
 Publishing uses **OIDC (OpenID Connect) trusted publishing** — the npm registry trusts the GitHub Actions workflow identity directly. There is no `NPM_TOKEN` secret configured. The workflow has `id-token: write` permission to enable this.
+
+Before the first real publish under the new package name, configure npm trusted publishing for:
+
+- Package: `@deva-me/login-with-deva`
+- Repository: `Deva-me-AI/login-with-deva`
+- Workflow: `.github/workflows/publish.yml`
 
 ## Release Workflow
 
@@ -66,7 +72,7 @@ The workflow is at `.github/workflows/publish.yml`. CI is at `.github/workflows/
 
 ```bash
 # Allow 2–3 minutes for npm CDN propagation
-npm info @bitplanet/deva-sdk version
+npm info @deva-me/login-with-deva version
 ```
 
 ## Manual Trigger (Dry-Run Preview)
@@ -86,7 +92,7 @@ The `files` field in `package.json` controls what's included:
 ```
 dist/index.es.js       dist/index.d.ts
 dist/components.es.js  dist/components.d.ts
-dist/assets/deva-sdk.css
+dist/assets/login-with-deva.css
 README.md
 ```
 
@@ -99,4 +105,4 @@ Source files, tests, the example app, and dev config are excluded.
 | `tag-release` warns about uncommitted changes | `git stash` or commit before running |
 | Tag already exists | Delete locally: `git tag -d v0.9.2`; delete remotely: `git push origin :v0.9.2` |
 | npm publish 404 in workflow | Verify workflow uses `node-version: 24` (npm 11 required for OIDC) |
-| New version not visible on npm | Wait 2–3 min for CDN; run `npm info @bitplanet/deva-sdk` |
+| New version not visible on npm | Wait 2–3 min for CDN; run `npm info @deva-me/login-with-deva` |

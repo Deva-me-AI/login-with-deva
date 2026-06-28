@@ -1,15 +1,15 @@
 "use client";
 
-import "deva-sdk/style.css";
+import "@deva-me/login-with-deva/style.css";
 import "./index.css";
 import "./App.css";
-import { type Envs } from "deva-sdk";
+import { type Envs } from "@deva-me/login-with-deva";
 import { Suspense, type ReactNode } from "react";
 import { noSSR } from "./dynamic";
 
 // Dynamically import components
 const DevaProvider = noSSR(() =>
-  import("deva-sdk").then(({ DevaProvider }) => DevaProvider),
+  import("@deva-me/login-with-deva").then(({ DevaProvider }) => DevaProvider),
 );
 const Content = noSSR(() => import("./Content").then(({ Content }) => Content));
 
@@ -49,7 +49,7 @@ function App() {
                     wordWrap: "break-word",
                   }}
                 >
-                  Deva-Sdk
+                  Login with Deva
                 </h1>
               </header>
               <Content />

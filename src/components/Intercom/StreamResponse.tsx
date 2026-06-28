@@ -11,7 +11,7 @@ import { useIntercom } from "./IntercomContext";
 const debug = false;
 const log = (...args: Parameters<typeof console.log>) => {
   if (debug) {
-    console.log("[deva-sdk/stream_response", ...args);
+    console.log("[login-with-deva/stream_response", ...args);
   }
 };
 

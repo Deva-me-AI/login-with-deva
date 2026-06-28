@@ -8,7 +8,7 @@ importers:
 
   .:
     dependencies:
-      deva-sdk:
+      '@deva-me/login-with-deva':
         specifier: link:..
         version: link:..
       react:
