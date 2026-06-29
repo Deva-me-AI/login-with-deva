@@ -11,7 +11,7 @@ import {
   epochTimeIsPast,
 } from "./lib/crypto";
 import { useStorage } from "./hooks/use-storage";
-import { fetcher, useSWRFetcher } from "./lib/fetcher";
+import { buildAuthedKey, fetcher, useSWRFetcher } from "./lib/fetcher";
 import type { OidcAccessTokenJWT, UserInfo } from "./server";
 import { jwtDecode } from "jwt-decode";
 import { useInterval } from "./hooks/use-timeout";
@@ -20,6 +20,7 @@ import {
   buildAuthorizeUrl,
   resolvePersist,
   shouldForceRedirect,
+  shouldForceRefreshOnBootstrap,
   verifyOAuthState,
 } from "./lib/login-helpers";
 import type { UseDevaReturn } from "./use-deva";
@@ -71,7 +72,10 @@ const useUserInfo = (
   authToken: string | null,
 ) => {
   const { data, error, isLoading } = useSWRFetcher<UserInfo, Error>(
-    authToken ? userInfoUrl : false,
+    // Tuple key carries the token: when the background refresh rotates the
+    // token, the key changes and SWR refetches userinfo with the new token
+    // instead of staying stuck on the revoked one (agent-key-web#56).
+    buildAuthedKey(userInfoUrl, authToken),
     {
       headers: {
         Authorization: `Bearer ${authToken}`,
@@ -581,7 +585,15 @@ export function DevaProvider({
       // clear search params
       window.history.replaceState({}, document.title, window.location.pathname);
     }
-    void refresh(true);
+    if (shouldForceRefreshOnBootstrap({ accessToken, expiresIn })) {
+      void refresh(true);
+    } else {
+      // No token, or the restored token is still valid — don't rotate it.
+      // Rotating a valid token revokes it and races the userinfo request, so
+      // `user` goes null and consumer circuit breakers loop (agent-key-web#56).
+      // The proactive interval renews the token before it expires instead.
+      setIsRefreshing(false);
+    }
   }, [isOpenIdConfigLoading]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const devaProps = {
