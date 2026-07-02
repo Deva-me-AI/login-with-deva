@@ -3,8 +3,10 @@ import {
   buildAuthorizeUrl,
   resolvePersist,
   shouldForceRedirect,
+  shouldForceRefreshOnBootstrap,
   verifyOAuthState,
 } from "../lib/login-helpers";
+import { epochAtSecondsFromNow } from "../lib/crypto";
 
 describe("shouldForceRedirect", () => {
   it("is false when no options or no prompt", () => {
@@ -121,5 +123,34 @@ describe("resolvePersist", () => {
     const cb = vi.fn(() => true);
     resolvePersist(cb, payload);
     expect(cb).toHaveBeenCalledWith(payload);
+  });
+});
+
+describe("shouldForceRefreshOnBootstrap", () => {
+  it("is false when there is no access token to refresh", () => {
+    expect(
+      shouldForceRefreshOnBootstrap({ accessToken: null, expiresIn: 0 }),
+    ).toBe(false);
+  });
+
+  it("is false when the restored token is still valid (do not rotate it)", () => {
+    // Forcing a refresh on a still-valid token rotates+revokes it server-side
+    // (single-use refresh tokens), racing the in-flight userinfo request and
+    // leaving `user` null -> consumer circuit breaker loops (agent-key-web#56).
+    expect(
+      shouldForceRefreshOnBootstrap({
+        accessToken: "AT1",
+        expiresIn: epochAtSecondsFromNow(3600),
+      }),
+    ).toBe(false);
+  });
+
+  it("is true when the restored token has already expired", () => {
+    expect(
+      shouldForceRefreshOnBootstrap({
+        accessToken: "AT1",
+        expiresIn: epochAtSecondsFromNow(-3600),
+      }),
+    ).toBe(true);
   });
 });

@@ -1,4 +1,5 @@
 import type { LoginCompletePayload, LoginOptions } from "../DevaContext";
+import { epochTimeIsPast } from "./crypto";
 
 /**
  * A `prompt` means the caller wants a fresh OAuth round-trip (e.g. "Add
@@ -7,6 +8,21 @@ import type { LoginCompletePayload, LoginOptions } from "../DevaContext";
  */
 export function shouldForceRedirect(options?: LoginOptions): boolean {
   return options?.prompt !== undefined;
+}
+
+/**
+ * On provider bootstrap, only force a token refresh when we hold a token that
+ * has actually expired. Force-refreshing a still-valid token rotates and
+ * revokes it server-side (refresh tokens are single-use), which races the
+ * in-flight userinfo request and leaves `user` null -> consumer circuit
+ * breakers loop the login flow (agent-key-web#56). A still-valid token is
+ * renewed by the proactive background interval instead.
+ */
+export function shouldForceRefreshOnBootstrap(params: {
+  accessToken: string | null;
+  expiresIn: number;
+}): boolean {
+  return !!params.accessToken && epochTimeIsPast(params.expiresIn);
 }
 
 /** Build the OIDC authorization-code + PKCE authorize URL. */
