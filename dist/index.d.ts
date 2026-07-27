@@ -6,8 +6,16 @@ declare type AuthorizationHints = {
     scopes?: string[];
     /** Hint the account identifier to the identity provider. */
     loginHint?: string;
-    /** Skip the Deva provider chooser when the provider is already known. */
-    provider?: string;
+    /**
+     * Skip the Deva provider chooser when the provider is already known.
+     *
+     * The Deva IdP validates this against an allow-list — currently `"google"`,
+     * `"x"`, and `"email"` — and rejects the whole authorize request for any
+     * other value (interactively that renders a 400 page; in a silent probe it
+     * surfaces as `timeout`). The union keeps unknown strings assignable for
+     * forward compatibility with providers added after this SDK release.
+     */
+    provider?: "google" | "x" | "email" | (string & {});
 };
 
 declare interface components {
@@ -6690,17 +6698,6 @@ declare global {
 
 
 
-declare module 'micromark-util-types' {
-  interface TokenTypeMap {
-    strikethroughSequence: 'strikethroughSequence'
-    strikethroughSequenceTemporary: 'strikethroughSequenceTemporary'
-    strikethrough: 'strikethrough'
-    strikethroughText: 'strikethroughText'
-  }
-}
-
-
-
 /**
  * Augment types.
  */
@@ -6737,6 +6734,17 @@ declare module 'micromark-util-types' {
     gfmFootnoteDefinitionLabelString: 'gfmFootnoteDefinitionLabelString'
     gfmFootnoteDefinitionMarker: 'gfmFootnoteDefinitionMarker'
     gfmFootnoteDefinitionWhitespace: 'gfmFootnoteDefinitionWhitespace'
+  }
+}
+
+
+
+declare module 'micromark-util-types' {
+  interface TokenTypeMap {
+    strikethroughSequence: 'strikethroughSequence'
+    strikethroughSequenceTemporary: 'strikethroughSequenceTemporary'
+    strikethrough: 'strikethrough'
+    strikethroughText: 'strikethroughText'
   }
 }
 
@@ -6804,6 +6812,32 @@ declare module 'mdast' {
 
 
 
+declare module 'mdast-util-to-markdown' {
+  interface ConstructNameMap {
+    /**
+     * Footnote definition.
+     *
+     * ```markdown
+     * > | [^a]: B.
+     *     ^^^^^^^^
+     * ```
+     */
+    footnoteDefinition: 'footnoteDefinition'
+
+    /**
+     * Footnote reference.
+     *
+     * ```markdown
+     * > | A[^b].
+     *      ^^^^
+     * ```
+     */
+    footnoteReference: 'footnoteReference'
+  }
+}
+
+
+
 // Add custom data tracked to turn markdown into a tree.
 declare module 'mdast-util-from-markdown' {
   interface CompileData {
@@ -6852,32 +6886,6 @@ declare module 'mdast-util-to-markdown' {
      * ```
      */
     tableRow: 'tableRow'
-  }
-}
-
-
-
-declare module 'mdast-util-to-markdown' {
-  interface ConstructNameMap {
-    /**
-     * Footnote definition.
-     *
-     * ```markdown
-     * > | [^a]: B.
-     *     ^^^^^^^^
-     * ```
-     */
-    footnoteDefinition: 'footnoteDefinition'
-
-    /**
-     * Footnote reference.
-     *
-     * ```markdown
-     * > | A[^b].
-     *      ^^^^
-     * ```
-     */
-    footnoteReference: 'footnoteReference'
   }
 }
 

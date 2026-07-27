@@ -37,17 +37,6 @@ declare global {
 
 
 
-declare module 'micromark-util-types' {
-  interface TokenTypeMap {
-    strikethroughSequence: 'strikethroughSequence'
-    strikethroughSequenceTemporary: 'strikethroughSequenceTemporary'
-    strikethrough: 'strikethrough'
-    strikethroughText: 'strikethroughText'
-  }
-}
-
-
-
 /**
  * Augment types.
  */
@@ -84,6 +73,17 @@ declare module 'micromark-util-types' {
     gfmFootnoteDefinitionLabelString: 'gfmFootnoteDefinitionLabelString'
     gfmFootnoteDefinitionMarker: 'gfmFootnoteDefinitionMarker'
     gfmFootnoteDefinitionWhitespace: 'gfmFootnoteDefinitionWhitespace'
+  }
+}
+
+
+
+declare module 'micromark-util-types' {
+  interface TokenTypeMap {
+    strikethroughSequence: 'strikethroughSequence'
+    strikethroughSequenceTemporary: 'strikethroughSequenceTemporary'
+    strikethrough: 'strikethrough'
+    strikethroughText: 'strikethroughText'
   }
 }
 
@@ -151,6 +151,32 @@ declare module 'mdast' {
 
 
 
+declare module 'mdast-util-to-markdown' {
+  interface ConstructNameMap {
+    /**
+     * Footnote definition.
+     *
+     * ```markdown
+     * > | [^a]: B.
+     *     ^^^^^^^^
+     * ```
+     */
+    footnoteDefinition: 'footnoteDefinition'
+
+    /**
+     * Footnote reference.
+     *
+     * ```markdown
+     * > | A[^b].
+     *      ^^^^
+     * ```
+     */
+    footnoteReference: 'footnoteReference'
+  }
+}
+
+
+
 // Add custom data tracked to turn markdown into a tree.
 declare module 'mdast-util-from-markdown' {
   interface CompileData {
@@ -199,32 +225,6 @@ declare module 'mdast-util-to-markdown' {
      * ```
      */
     tableRow: 'tableRow'
-  }
-}
-
-
-
-declare module 'mdast-util-to-markdown' {
-  interface ConstructNameMap {
-    /**
-     * Footnote definition.
-     *
-     * ```markdown
-     * > | [^a]: B.
-     *     ^^^^^^^^
-     * ```
-     */
-    footnoteDefinition: 'footnoteDefinition'
-
-    /**
-     * Footnote reference.
-     *
-     * ```markdown
-     * > | A[^b].
-     *      ^^^^
-     * ```
-     */
-    footnoteReference: 'footnoteReference'
   }
 }
 
