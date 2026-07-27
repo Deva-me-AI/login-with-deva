@@ -1,5 +1,10 @@
 import { useContext } from "react";
-import { DevaContext, type LoginOptions } from "./DevaContext";
+import {
+  DevaContext,
+  type LoginOptions,
+  type TrySilentLoginOptions,
+  type TrySilentLoginResult,
+} from "./DevaContext";
 import type { UserInfo } from "./server";
 
 export type UseDevaReturn = {
@@ -8,6 +13,9 @@ export type UseDevaReturn = {
   accessToken: string | null;
   user: UserInfo | null;
   login: (options?: LoginOptions) => Promise<void>;
+  trySilentLogin: (
+    options?: TrySilentLoginOptions,
+  ) => Promise<TrySilentLoginResult>;
   logout: () => Promise<void>;
 };
 
@@ -25,6 +33,7 @@ export const useDeva = (): UseDevaReturn => {
 
     user: devaContext.user,
     login: devaContext.login,
+    trySilentLogin: devaContext.trySilentLogin,
     logout: devaContext.logout,
   };
 };

@@ -1,6 +1,6 @@
 {
   "name": "@deva-me/login-with-deva",
-  "version": "0.10.3",
+  "version": "0.11.0",
   "description": "Login with Deva React SDK for authentication, channel feeds, and interactive agent chat.",
   "repository": {
     "type": "git",

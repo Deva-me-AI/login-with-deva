@@ -8,6 +8,8 @@ import {
   type UserInfo,
   type LoginOptions,
   type LoginCompletePayload,
+  type TrySilentLoginOptions,
+  type TrySilentLoginResult,
 } from "../index";
 import { DevaContext } from "../DevaContext";
 
@@ -41,6 +43,9 @@ describe("SDK public exports", () => {
 
   it("returns auth/session helpers from context via useDeva", async () => {
     const login = vi.fn(async () => undefined);
+    const trySilentLogin = vi.fn(
+      async (): Promise<TrySilentLoginResult> => ({ status: "success" }),
+    );
     const logout = vi.fn(async () => undefined);
     const contextValue: PublicDevaContext = {
       clientId: "client",
@@ -49,6 +54,7 @@ describe("SDK public exports", () => {
       authInProgress: false,
       authError: null,
       login,
+      trySilentLogin,
       logout,
       idToken: null,
       accessToken: "token-123",
@@ -70,8 +76,10 @@ describe("SDK public exports", () => {
     expect(result?.isAuthenticated).toBe(true);
     expect(result?.accessToken).toBe("token-123");
     await result?.login();
+    await result?.trySilentLogin();
     await result?.logout();
     expect(login).toHaveBeenCalledTimes(1);
+    expect(trySilentLogin).toHaveBeenCalledTimes(1);
     expect(logout).toHaveBeenCalledTimes(1);
   });
 
@@ -97,13 +105,28 @@ describe("SDK public exports", () => {
     expectTypeOf<LoginOptions>().toMatchTypeOf<{
       prompt?: "login" | "consent" | "none" | "select_account";
       state?: string;
+      scopes?: string[];
+      loginHint?: string;
+      provider?: string;
     }>();
+    expectTypeOf<TrySilentLoginOptions>().toMatchTypeOf<{
+      scopes?: string[];
+      loginHint?: string;
+      provider?: string;
+      timeoutMs?: number;
+    }>();
+    expectTypeOf<TrySilentLoginResult["status"]>().toEqualTypeOf<
+      "success" | "no_session" | "timeout" | "unsupported"
+    >();
     expectTypeOf<LoginCompletePayload>().toMatchTypeOf<{
       access_token: string;
       state: string | null;
     }>();
-    expectTypeOf<PublicDevaContext["login"]>().parameter(0).toEqualTypeOf<
-      LoginOptions | undefined
-    >();
+    expectTypeOf<PublicDevaContext["login"]>()
+      .parameter(0)
+      .toEqualTypeOf<LoginOptions | undefined>();
+    expectTypeOf<PublicDevaContext["trySilentLogin"]>()
+      .parameter(0)
+      .toEqualTypeOf<TrySilentLoginOptions | undefined>();
   });
 });

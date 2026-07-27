@@ -54,6 +54,20 @@ describe("buildAuthorizeUrl", () => {
     expect(u.searchParams.get("state")).toBe("s-123");
   });
 
+  it("appends scopes, login hint, and provider when provided", () => {
+    const u = new URL(
+      buildAuthorizeUrl({
+        ...base,
+        scopes: ["openid", "profile"],
+        loginHint: "person@example.com",
+        provider: "google",
+      }),
+    );
+    expect(u.searchParams.get("scope")).toBe("openid profile");
+    expect(u.searchParams.get("login_hint")).toBe("person@example.com");
+    expect(u.searchParams.get("provider")).toBe("google");
+  });
+
   it("requires SDK-owned state", () => {
     expect(() => buildAuthorizeUrl({ ...base, state: "" })).toThrowError(
       "OAuth state is required",
