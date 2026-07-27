@@ -91,16 +91,6 @@ export function relaySilentLoginCallback(browserWindow: Window): boolean {
   return true;
 }
 
-export function silentAttemptStorageKeys(state: string): {
-  state: string;
-  codeVerifier: string;
-} {
-  return {
-    state: `deva_silent_oauth_state:${state}`,
-    codeVerifier: `deva_silent_code_verifier:${state}`,
-  };
-}
-
 /**
  * Navigate a hidden iframe to an authorize URL and wait for its callback page
  * to relay a state-bound result.

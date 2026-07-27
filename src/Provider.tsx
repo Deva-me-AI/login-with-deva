@@ -28,7 +28,6 @@ import {
 import {
   relaySilentLoginCallback,
   runSilentLoginProbe,
-  silentAttemptStorageKeys,
 } from "./lib/silent-login";
 import type { UseDevaReturn } from "./use-deva";
 
@@ -407,91 +406,67 @@ export function DevaProvider({
         return { status: "unsupported" };
       }
 
+      // The verifier and state live only in this closure: a silent attempt
+      // never navigates the top-level page, so nothing has to survive a
+      // reload, and staying off sessionStorage keeps every attempt isolated
+      // from the interactive flow's persisted PKCE state.
       const codeVerifier = generateCodeVerifier();
       const state = generateCodeVerifier();
       const codeChallenge = await generateCodeChallenge(codeVerifier);
-      const storageKeys = silentAttemptStorageKeys(state);
 
-      try {
-        window.sessionStorage.setItem(storageKeys.state, state);
-        window.sessionStorage.setItem(storageKeys.codeVerifier, codeVerifier);
-      } catch {
-        // The in-memory values still protect this attempt when storage is
-        // unavailable (for example, in a privacy-restricted browser).
-        try {
-          window.sessionStorage.removeItem(storageKeys.state);
-          window.sessionStorage.removeItem(storageKeys.codeVerifier);
-        } catch {
-          // Storage is unavailable, so there is nothing else to clean up.
-        }
+      const authorizeUrl = buildAuthorizeUrl({
+        authorizationEndpoint: discovery.authorization_endpoint,
+        clientId,
+        redirectUri,
+        codeChallenge,
+        scopes: options?.scopes,
+        loginHint: options?.loginHint,
+        provider: options?.provider,
+        prompt: "none",
+        state,
+      });
+      const callbackOrigin = new URL(redirectUri, window.location.href).origin;
+      const requestedTimeout = options?.timeoutMs ?? 5000;
+      const timeoutMs = Number.isFinite(requestedTimeout)
+        ? Math.max(0, requestedTimeout)
+        : 5000;
+
+      const probeResult = await runSilentLoginProbe({
+        authorizeUrl,
+        callbackOrigin,
+        expectedState: state,
+        timeoutMs,
+        browserWindow: window,
+        browserDocument: document,
+      });
+
+      if (probeResult.status !== "success") {
+        return probeResult;
       }
 
-      try {
-        const authorizeUrl = buildAuthorizeUrl({
-          authorizationEndpoint: discovery.authorization_endpoint,
-          clientId,
-          redirectUri,
-          codeChallenge,
-          scopes: options?.scopes,
-          loginHint: options?.loginHint,
-          provider: options?.provider,
-          prompt: "none",
-          state,
-        });
-        const callbackOrigin = new URL(redirectUri, window.location.href)
-          .origin;
-        const requestedTimeout = options?.timeoutMs ?? 5000;
-        const timeoutMs = Number.isFinite(requestedTimeout)
-          ? Math.max(0, requestedTimeout)
-          : 5000;
+      const res = await fetcher<OidcAccessTokenJWT>(discovery.token_endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+          client_id: clientId,
+          redirect_uri: redirectUri,
+          code: probeResult.code,
+          code_verifier: codeVerifier,
+          grant_type: "authorization_code",
+        }),
+      });
 
-        const probeResult = await runSilentLoginProbe({
-          authorizeUrl,
-          callbackOrigin,
-          expectedState: state,
-          timeoutMs,
-          browserWindow: window,
-          browserDocument: document,
-        });
-
-        if (probeResult.status !== "success") {
-          return probeResult;
-        }
-
-        const res = await fetcher<OidcAccessTokenJWT>(
-          discovery.token_endpoint,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded",
-            },
-            body: new URLSearchParams({
-              client_id: clientId,
-              redirect_uri: redirectUri,
-              code: probeResult.code,
-              code_verifier: codeVerifier,
-              grant_type: "authorization_code",
-            }),
-          },
-        );
-
-        const persist = resolvePersist(onLoginCompleteRef.current, {
-          ...res,
-          state: null,
-        });
-        if (persist) {
-          persistTokenResponse(res);
-        }
-        setAuthError(null);
-        return { status: "success" };
-      } finally {
-        try {
-          window.sessionStorage.removeItem(storageKeys.state);
-          window.sessionStorage.removeItem(storageKeys.codeVerifier);
-        } catch {
-          // Storage may have become unavailable while the attempt was active.
-        }
+      const persist = resolvePersist(onLoginCompleteRef.current, {
+        ...res,
+        state: null,
+      });
+      if (persist) {
+        persistTokenResponse(res);
       }
+      setAuthError(null);
+      return { status: "success" };
     },
     [clientId, openIdConfig, persistTokenResponse, redirectUri, url],
   );

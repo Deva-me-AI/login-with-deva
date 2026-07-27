@@ -3,7 +3,6 @@ import {
   relaySilentLoginCallback,
   runSilentLoginProbe,
   SILENT_LOGIN_CALLBACK_TYPE,
-  silentAttemptStorageKeys,
 } from "../lib/silent-login";
 
 type MessageHandler = (event: MessageEvent<unknown>) => void;
@@ -270,20 +269,5 @@ describe("relaySilentLoginCallback", () => {
     Object.defineProperty(browserWindow, "parent", { value: browserWindow });
 
     expect(relaySilentLoginCallback(browserWindow)).toBe(false);
-  });
-});
-
-describe("silentAttemptStorageKeys", () => {
-  it("namespaces every attempt away from interactive auth state", () => {
-    const first = silentAttemptStorageKeys("state-1");
-    const second = silentAttemptStorageKeys("state-2");
-
-    expect(first).toEqual({
-      state: "deva_silent_oauth_state:state-1",
-      codeVerifier: "deva_silent_code_verifier:state-1",
-    });
-    expect(first).not.toEqual(second);
-    expect(Object.values(first)).not.toContain("oauth_state");
-    expect(Object.values(first)).not.toContain("code_verifier");
   });
 });

@@ -97,6 +97,19 @@ the parent with `postMessage`. `no_session` is returned for
 `login_required`, `consent_required`, and `interaction_required`; a slow
 callback returns `timeout`. Server-side calls return `unsupported`.
 
+Two constraints to be aware of:
+
+- **`redirectUri` must be same-origin with the app calling `trySilentLogin()`.**
+  The relay targets the callback page's own origin, so a cross-origin redirect
+  URI is never delivered and every probe ends in `timeout`. The callback page
+  must also be frameable by the app itself — an `X-Frame-Options: DENY` or a
+  `frame-ancestors` policy that excludes `'self'` blocks the hidden iframe the
+  same way.
+- **The promise can reject.** Expected outcomes resolve with the statuses
+  above, but an unexpected OAuth error (for example `server_error`) or a
+  failed token exchange rejects — wrap the call in `try/catch` when a probe
+  failure must not bubble.
+
 ## Components
 
 ```tsx
