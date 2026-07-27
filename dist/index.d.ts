@@ -1,6 +1,15 @@
 import { Context } from 'react';
 import { JSX } from 'react';
 
+declare type AuthorizationHints = {
+    /** OAuth scopes to request. */
+    scopes?: string[];
+    /** Hint the account identifier to the identity provider. */
+    loginHint?: string;
+    /** Skip the Deva provider chooser when the provider is already known. */
+    provider?: string;
+};
+
 declare interface components {
     schemas: {
         /** AITensor */
@@ -6552,6 +6561,7 @@ export declare type DevaContext = {
     authInProgress: boolean;
     authError: string | null;
     login: (options?: LoginOptions) => Promise<void>;
+    trySilentLogin: (options?: TrySilentLoginOptions) => Promise<TrySilentLoginResult>;
     logout: () => Promise<void>;
     idToken: string | null;
     accessToken: string | null;
@@ -6597,7 +6607,7 @@ export declare type LoginCompletePayload = {
     state: string | null;
 };
 
-export declare type LoginOptions = {
+export declare type LoginOptions = AuthorizationHints & {
     /**
      * OpenID Connect `prompt`. Forwarded to the authorization endpoint and
      * bypasses the already-authenticated / silent-refresh guards so a fresh
@@ -6619,6 +6629,25 @@ export declare type LoginOptions = {
     state?: string;
 };
 
+export declare type SilentLoginNoSessionError = "login_required" | "consent_required" | "interaction_required";
+
+export declare type TrySilentLoginOptions = AuthorizationHints & {
+    /** Maximum time to wait for the hidden-iframe callback. Defaults to 5000ms. */
+    timeoutMs?: number;
+};
+
+/** Result of a background Deva session probe. */
+export declare type TrySilentLoginResult = {
+    status: "success";
+} | {
+    status: "no_session";
+    error: SilentLoginNoSessionError;
+} | {
+    status: "timeout";
+} | {
+    status: "unsupported";
+};
+
 export declare const useDeva: () => UseDevaReturn;
 
 declare type UseDevaReturn = {
@@ -6627,6 +6656,7 @@ declare type UseDevaReturn = {
     accessToken: string | null;
     user: UserInfo | null;
     login: (options?: LoginOptions) => Promise<void>;
+    trySilentLogin: (options?: TrySilentLoginOptions) => Promise<TrySilentLoginResult>;
     logout: () => Promise<void>;
 };
 
@@ -6639,13 +6669,13 @@ declare type UserPersonaInfo = components["schemas"]["UserPersonaInfo"];
 export { }
 
 
-declare namespace v5 {
+declare namespace v3 {
     var DNS: string;
     var URL: string;
 }
 
 
-declare namespace v3 {
+declare namespace v5 {
     var DNS: string;
     var URL: string;
 }

@@ -1,14 +1,14 @@
-import { jsx as we } from "react/jsx-runtime";
-import { useState as B, useCallback as m, useEffect as O, useLayoutEffect as ge, useRef as P, useContext as me } from "react";
-import { f as ne, D as oe, u as se, r as ye } from "./config-atmkCy3Z.js";
-const re = () => {
+import { jsx as Re } from "react/jsx-runtime";
+import { useState as X, useCallback as m, useEffect as T, useLayoutEffect as Pe, useRef as P, useContext as Te } from "react";
+import { f as q, D as ge, u as we, r as Ae, b as Oe } from "./config-BS7uiZu2.js";
+const J = () => {
   const e = new Uint8Array(32);
-  return crypto.getRandomValues(e), ae(e);
-}, ae = (e) => btoa(String.fromCharCode(...new Uint8Array(e))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""), ke = async (e) => {
-  const t = new TextEncoder().encode(e), n = await crypto.subtle.digest("SHA-256", t);
-  return ae(n);
-}, ve = (e) => Math.round(Date.now() / 1e3 + Number(e)), te = (e) => Math.round(Date.now()) / 1e3 + 60 >= e, z = typeof window < "u", Se = (e, r) => {
-  if (!z)
+  return crypto.getRandomValues(e), pe(e);
+}, pe = (e) => btoa(String.fromCharCode(...new Uint8Array(e))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""), le = async (e) => {
+  const t = new TextEncoder().encode(e), o = await crypto.subtle.digest("SHA-256", t);
+  return pe(o);
+}, Ie = (e) => Math.round(Date.now() / 1e3 + Number(e)), Z = (e) => Math.round(Date.now()) / 1e3 + 60 >= e, B = typeof window < "u", Le = (e, r) => {
+  if (!B)
     return r;
   try {
     const t = sessionStorage.getItem(e);
@@ -17,39 +17,39 @@ const re = () => {
     return console.error(t), r;
   }
 };
-function y(e, r) {
-  const [t, n] = B(
-    () => Se(e, r)
-  ), f = m(
+function v(e, r) {
+  const [t, o] = X(
+    () => Le(e, r)
+  ), l = m(
     (s) => {
       try {
-        n(s), z && sessionStorage.setItem(e, JSON.stringify(s));
+        o(s), B && sessionStorage.setItem(e, JSON.stringify(s));
       } catch (c) {
         console.error(c);
       }
     },
     [e]
   );
-  return O(() => {
-    if (!z)
+  return T(() => {
+    if (!B)
       return;
     const s = sessionStorage.getItem(e);
     if (s)
       try {
-        n(JSON.parse(s));
+        o(JSON.parse(s));
       } catch (c) {
         console.error(c);
       }
-  }, []), O(() => {
-    if (!z)
+  }, []), T(() => {
+    if (!B)
       return;
     const s = (c) => {
       if (c.storageArea === window.sessionStorage && c.key === e)
         if (c.newValue === null)
-          n(r);
+          o(r);
         else
           try {
-            n(JSON.parse(c.newValue));
+            o(JSON.parse(c.newValue));
           } catch {
             console.warn(
               `Failed to handle storageEvent's newValue='${c.newValue}' for key '${e}'`
@@ -57,18 +57,18 @@ function y(e, r) {
           }
     };
     return window.addEventListener("storage", s, !1), () => window.removeEventListener("storage", s, !1);
-  }, [e, r]), [t, f];
+  }, [e, r]), [t, l];
 }
 class N extends Error {
 }
 N.prototype.name = "InvalidTokenError";
-function _e(e) {
+function xe(e) {
   return decodeURIComponent(atob(e).replace(/(.)/g, (r, t) => {
-    let n = t.charCodeAt(0).toString(16).toUpperCase();
-    return n.length < 2 && (n = "0" + n), "%" + n;
+    let o = t.charCodeAt(0).toString(16).toUpperCase();
+    return o.length < 2 && (o = "0" + o), "%" + o;
   }));
 }
-function Re(e) {
+function Ne(e) {
   let r = e.replace(/-/g, "+").replace(/_/g, "/");
   switch (r.length % 4) {
     case 0:
@@ -83,74 +83,151 @@ function Re(e) {
       throw new Error("base64 string is not of the correct length");
   }
   try {
-    return _e(r);
+    return xe(r);
   } catch {
     return atob(r);
   }
 }
-function Ee(e, r) {
+function Ce(e, r) {
   if (typeof e != "string")
     throw new N("Invalid token specified: must be a string");
   r || (r = {});
-  const t = r.header === !0 ? 0 : 1, n = e.split(".")[t];
-  if (typeof n != "string")
+  const t = r.header === !0 ? 0 : 1, o = e.split(".")[t];
+  if (typeof o != "string")
     throw new N(`Invalid token specified: missing part #${t + 1}`);
-  let f;
+  let l;
   try {
-    f = Re(n);
+    l = Ne(o);
   } catch (s) {
     throw new N(`Invalid token specified: invalid base64 for part #${t + 1} (${s.message})`);
   }
   try {
-    return JSON.parse(f);
+    return JSON.parse(l);
   } catch (s) {
     throw new N(`Invalid token specified: invalid json for part #${t + 1} (${s.message})`);
   }
 }
-const Te = typeof window < "u" ? ge : O;
-function Ae(e, r, t = [], n, f) {
+const De = typeof window < "u" ? Pe : T;
+function $e(e, r, t = [], o, l) {
   const s = P(e);
-  Te(() => {
+  De(() => {
     s.current = e;
-  }, t), O(() => {
+  }, t), T(() => {
     if (!r && r !== 0)
       return;
-    const c = n(() => {
+    const c = o(() => {
       s.current();
     }, r);
     return () => {
-      f(c);
+      l(c);
     };
   }, [r]);
 }
-function Pe(e, r, t = []) {
-  Ae(e, r, t, setInterval, clearInterval);
+function Me(e, r, t = []) {
+  $e(e, r, t, setInterval, clearInterval);
 }
-function Oe(e) {
+function Ve(e) {
   return (e == null ? void 0 : e.prompt) !== void 0;
 }
-function be(e) {
+function Ue(e) {
+  return !!e.accessToken && Z(e.expiresIn);
+}
+function fe(e) {
+  var t;
   if (!e.state)
     throw new Error("OAuth state is required");
   const r = new URL(e.authorizationEndpoint);
-  return r.searchParams.append("client_id", e.clientId), r.searchParams.append("redirect_uri", e.redirectUri), r.searchParams.append("response_type", "code"), r.searchParams.append("code_challenge", e.codeChallenge), r.searchParams.append("code_challenge_method", "S256"), e.prompt && r.searchParams.append("prompt", e.prompt), r.searchParams.append("state", e.state), r.toString();
+  return r.searchParams.append("client_id", e.clientId), r.searchParams.append("redirect_uri", e.redirectUri), r.searchParams.append("response_type", "code"), r.searchParams.append("code_challenge", e.codeChallenge), r.searchParams.append("code_challenge_method", "S256"), (t = e.scopes) != null && t.length && r.searchParams.append("scope", e.scopes.join(" ")), e.loginHint && r.searchParams.append("login_hint", e.loginHint), e.provider && r.searchParams.append("provider", e.provider), e.prompt && r.searchParams.append("prompt", e.prompt), r.searchParams.append("state", e.state), r.toString();
 }
-function Ie(e) {
+function ze(e) {
   return e.expectedState ? e.returnedState ? e.returnedState !== e.expectedState ? { ok: !1, error: "OAuth state mismatch" } : { ok: !0, callerState: e.callerState } : { ok: !1, error: "Missing OAuth state" } : { ok: !1, error: "Missing stored OAuth state" };
 }
-function xe(e, r) {
+function he(e, r) {
   return (e == null ? void 0 : e(r)) !== !0;
 }
-const W = typeof window < "u" && typeof document < "u", D = (...e) => {
+const ee = "deva:silent-login-callback", Fe = [
+  "login_required",
+  "consent_required",
+  "interaction_required"
+], He = (e) => typeof e == "object" && e !== null, je = (e) => !He(e) || e.type !== ee || typeof e.state != "string" ? !1 : typeof e.code == "string" && e.code.length > 0 || typeof e.error == "string" && e.error.length > 0, Je = (e) => Fe.includes(e);
+function qe(e) {
+  if (e.parent === e)
+    return !1;
+  const r = new URLSearchParams(e.location.search), t = r.get("state") ?? "", o = r.get("code"), l = r.get("error");
+  let s = null;
+  return o ? s = {
+    type: ee,
+    code: o,
+    state: t
+  } : l && (s = {
+    type: ee,
+    error: l,
+    error_description: r.get("error_description") ?? void 0,
+    state: t
+  }), s ? (e.parent.postMessage(s, e.location.origin), !0) : !1;
+}
+function Be(e) {
+  return {
+    state: `deva_silent_oauth_state:${e}`,
+    codeVerifier: `deva_silent_code_verifier:${e}`
+  };
+}
+function We(e) {
+  return new Promise((r, t) => {
+    const o = e.browserDocument.createElement("iframe");
+    o.style.display = "none", o.setAttribute("aria-hidden", "true"), o.tabIndex = -1, o.title = "Deva silent sign-in";
+    let l = !1;
+    const s = () => {
+      e.browserWindow.clearTimeout(D), e.browserWindow.removeEventListener("message", y), o.remove();
+    }, c = () => l ? !1 : (l = !0, s(), !0), b = (i) => {
+      c() && r(i);
+    }, a = (i) => {
+      c() && t(i);
+    }, y = (i) => {
+      if (!(i.origin !== e.callbackOrigin || i.source !== o.contentWindow || !je(i.data) || i.data.state !== e.expectedState)) {
+        if ("code" in i.data) {
+          b({ status: "success", code: i.data.code });
+          return;
+        }
+        if (Je(i.data.error)) {
+          b({ status: "no_session", error: i.data.error });
+          return;
+        }
+        a(
+          new Error(
+            i.data.error_description ?? `Silent login failed: ${i.data.error}`
+          )
+        );
+      }
+    };
+    e.browserWindow.addEventListener("message", y);
+    const D = e.browserWindow.setTimeout(
+      () => b({ status: "timeout" }),
+      e.timeoutMs
+    );
+    o.src = e.authorizeUrl;
+    try {
+      e.browserDocument.body.appendChild(o);
+    } catch (i) {
+      a(
+        i instanceof Error ? i : new Error("Unable to create the silent login iframe")
+      );
+    }
+  });
+}
+const W = typeof window < "u" && typeof document < "u", C = (...e) => {
   console.log("[sdk/provider]", ...e);
-}, Ne = (e) => {
-  const { data: r, error: t, isLoading: n } = se(
+}, Ke = (e) => {
+  const { data: r, error: t, isLoading: o } = we(
     W ? `${e}/.well-known/openid-configuration` : null
   );
-  return { openIdConfig: r, isOpenIdConfigLoading: n, error: t };
-}, De = (e, r) => {
-  const { data: t, error: n, isLoading: f } = se(
-    r ? e : !1,
+  return { openIdConfig: r, isOpenIdConfigLoading: o, error: t };
+}, Ye = (e, r) => {
+  const { data: t, error: o, isLoading: l } = we(
+    // Tuple key carries the token: when the background refresh rotates the
+    // token, the key changes and SWR refetches userinfo with the new token
+    // instead of staying stuck on the revoked one (agent-key-web#56).
+    Oe(e, r),
     {
       headers: {
         Authorization: `Bearer ${r}`
@@ -160,15 +237,15 @@ const W = typeof window < "u" && typeof document < "u", D = (...e) => {
   );
   return {
     userInfo: t,
-    isUserInfoLoading: f,
-    userInfoError: n
+    isUserInfoLoading: l,
+    userInfoError: o
   };
-}, $e = (e, r, t) => m(async () => {
+}, Ge = (e, r, t) => m(async () => {
   if (!r || !t) {
-    D("no refresh token or token endpoint");
+    C("no refresh token or token endpoint");
     return;
   }
-  return ne(t, {
+  return q(t, {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded"
@@ -178,7 +255,7 @@ const W = typeof window < "u" && typeof document < "u", D = (...e) => {
       refresh_token: r
     })
   });
-}, [r, e, t]), Le = (e, r, t) => m(async () => {
+}, [r, e, t]), Qe = (e, r, t) => m(async () => {
   !t || !e || await fetch(t, {
     method: "POST",
     headers: {
@@ -190,21 +267,21 @@ const W = typeof window < "u" && typeof document < "u", D = (...e) => {
     })
   });
 }, [e, r, t]);
-function Me({
+function tr({
   clientId: e,
   redirectUri: r,
   children: t,
-  env: n,
-  baseUrl: f,
+  env: o,
+  baseUrl: l,
   onLoginComplete: s
 }) {
-  const c = ye(n, f), H = P(s);
-  H.current = s;
-  const { openIdConfig: a, isOpenIdConfigLoading: v, error: Y } = Ne(c);
-  Y && console.error("[sdk/provider] error fetching openid info: ", Y);
-  const F = P(!1), q = P(!1);
-  O(() => {
-    n === "development" && !q.current && (q.current = !0, console.warn(
+  const c = Ae(o, l), b = P(s);
+  b.current = s;
+  const { openIdConfig: a, isOpenIdConfigLoading: y, error: D } = Ke(c);
+  D && console.error("[sdk/provider] error fetching openid info: ", D);
+  const i = P(!1), re = P(!1), te = P(!1);
+  T(() => {
+    o === "development" && !te.current && (te.current = !0, console.warn(
       `
 ========================================
 ⚠️  WARNING: DEVELOPMENT ENVIRONMENT  ⚠️
@@ -217,227 +294,290 @@ Please verify your environment settings and use 'staging' or 'production' instea
 ========================================
 `
     ));
-  }, [n]);
-  const [ce, S] = y("code_verifier", ""), [ie, _] = y(
+  }, [o]);
+  const [me, $] = v("code_verifier", ""), [ye, M] = v(
     "oauth_state",
     null
-  ), [ue, R] = y(
+  ), [Se, V] = v(
     "oauth_caller_state",
     null
-  ), [J, b] = y(
+  ), [K, O] = v(
     "auth_in_progress",
     !1
-  ), [de, $] = y("id_token", null), [d, L] = y(
+  ), [_e, U] = v("id_token", null), [h, z] = v(
     "access_token",
     null
-  ), [k, C] = y(
+  ), [E, F] = v(
     "refresh_token",
     null
-  ), [E, U] = y("expires_in", 0), [G, h] = B(!0), T = m(
-    (o) => {
-      let i = E;
-      L(o.access_token), $(o.id_token);
+  ), [R, H] = v("expires_in", 0), [ne, p] = X(!0), k = m(
+    (n) => {
+      let u = R;
+      z(n.access_token), U(n.id_token);
       try {
-        const l = Ee(o.id_token);
-        i = Math.round(Number(l.exp) - Date.now() / 1e3);
-      } catch (l) {
+        const f = Ce(n.id_token);
+        u = Math.round(Number(f.exp) - Date.now() / 1e3);
+      } catch (f) {
         console.warn(
-          `[sdk/provider]: Failed to decode idToken: ${l.message}`
+          `[sdk/provider]: Failed to decode idToken: ${f.message}`
         );
       }
-      const u = o.expires_in ?? i;
-      U(ve(u)), C(o.refresh_token), S(""), _(null), R(null);
+      const d = n.expires_in ?? u;
+      H(Ie(d)), F(n.refresh_token);
     },
-    [
-      L,
-      $,
-      U,
-      C,
-      S,
-      _,
-      R,
-      E
-    ]
-  ), [le, V] = B(null), { userInfo: fe } = De(
+    [z, U, H, F, R]
+  ), [ke, I] = X(null), { userInfo: ve } = Ye(
     a == null ? void 0 : a.userinfo_endpoint,
-    d
-  ), I = m(() => {
-    S(""), b(!1), _(null), R(null);
-  }, [S, b, _, R]), A = m(() => {
-    I(), L(""), $(""), U(0), C("");
+    h
+  ), L = m(() => {
+    $(""), O(!1), M(null), V(null);
+  }, [$, O, M, V]), A = m(() => {
+    L(), z(""), U(""), H(0), F("");
   }, [
-    I,
     L,
-    $,
+    z,
     U,
-    C
-  ]), K = Le(
-    d,
+    H,
+    F
+  ]), oe = Qe(
+    h,
     e,
     a == null ? void 0 : a.revocation_endpoint
-  ), Q = m(async () => {
-    await K(), A(), V(null);
-  }, [A, K]), x = $e(
+  ), se = m(async () => {
+    await oe(), A(), I(null);
+  }, [A, oe]), x = Ge(
     e,
-    k,
+    E,
     a == null ? void 0 : a.token_endpoint
-  ), X = m(
-    async (o) => {
-      const i = Oe(o);
-      if (!i && d && !te(E))
+  ), ae = m(
+    async (n) => {
+      const u = Ve(n);
+      if (!u && h && !Z(R))
         return;
-      if (!i && k) {
-        if (v)
+      if (!u && E) {
+        if (y)
           return;
-        h(!0);
+        p(!0);
         try {
-          const g = await x();
-          if (g) {
-            T(g), p.current = 0;
+          const w = await x();
+          if (w) {
+            k(w), S.current = 0;
             return;
           }
-        } catch (g) {
+        } catch (w) {
           console.error(
             "[sdk/provider]: Error refreshing token during login",
-            g
+            w
           );
         } finally {
-          h(!1);
+          p(!1);
         }
         try {
-          await new Promise((pe) => setTimeout(pe, 2e3)), h(!0);
-          const g = await x();
-          if (g) {
-            T(g), p.current = 0;
+          await new Promise((G) => setTimeout(G, 2e3)), p(!0);
+          const w = await x();
+          if (w) {
+            k(w), S.current = 0;
             return;
           }
-        } catch (g) {
-          console.error("[sdk/provider]: Retry refresh also failed", g);
+        } catch (w) {
+          console.error("[sdk/provider]: Retry refresh also failed", w);
         } finally {
-          h(!1);
+          p(!1);
         }
       }
-      if (i || A(), b(!0), v)
+      if (u || A(), O(!0), y)
         return;
-      const u = re(), l = re(), w = await ke(u);
-      S(u), _(l), R((o == null ? void 0 : o.state) ?? null);
-      const ee = be({
+      const d = J(), f = J(), g = await le(d);
+      $(d), M(f), V((n == null ? void 0 : n.state) ?? null);
+      const _ = fe({
         authorizationEndpoint: (a == null ? void 0 : a.authorization_endpoint) ?? "",
         clientId: e,
         redirectUri: r,
-        codeChallenge: w,
-        prompt: o == null ? void 0 : o.prompt,
-        state: l
+        codeChallenge: g,
+        scopes: n == null ? void 0 : n.scopes,
+        loginHint: n == null ? void 0 : n.loginHint,
+        provider: n == null ? void 0 : n.provider,
+        prompt: n == null ? void 0 : n.prompt,
+        state: f
       });
-      window.location.assign(ee);
+      window.location.assign(_);
     },
     [
-      d,
-      E,
-      k,
-      x,
-      T,
       h,
+      R,
+      E,
+      x,
+      k,
+      p,
       e,
       r,
-      S,
-      _,
-      R,
+      $,
+      M,
+      V,
       A,
-      b,
-      v,
+      O,
+      y,
       a
     ]
-  ), p = P(0), Z = P(0), j = m(
-    async (o = !1) => {
-      if (!d) {
-        D("no access token");
+  ), ie = m(
+    async (n) => {
+      if (typeof window > "u" || typeof document > "u" || !document.body)
+        return { status: "unsupported" };
+      const u = a ?? await q(
+        `${c}/.well-known/openid-configuration`
+      );
+      if (!u.authorization_endpoint || !u.token_endpoint)
+        return { status: "unsupported" };
+      const d = J(), f = J(), g = await le(d), _ = Be(f);
+      try {
+        window.sessionStorage.setItem(_.state, f), window.sessionStorage.setItem(_.codeVerifier, d);
+      } catch {
+        try {
+          window.sessionStorage.removeItem(_.state), window.sessionStorage.removeItem(_.codeVerifier);
+        } catch {
+        }
+      }
+      try {
+        const w = fe({
+          authorizationEndpoint: u.authorization_endpoint,
+          clientId: e,
+          redirectUri: r,
+          codeChallenge: g,
+          scopes: n == null ? void 0 : n.scopes,
+          loginHint: n == null ? void 0 : n.loginHint,
+          provider: n == null ? void 0 : n.provider,
+          prompt: "none",
+          state: f
+        }), G = new URL(r, window.location.href).origin, ue = (n == null ? void 0 : n.timeoutMs) ?? 5e3, Ee = Number.isFinite(ue) ? Math.max(0, ue) : 5e3, Q = await We({
+          authorizeUrl: w,
+          callbackOrigin: G,
+          expectedState: f,
+          timeoutMs: Ee,
+          browserWindow: window,
+          browserDocument: document
+        });
+        if (Q.status !== "success")
+          return Q;
+        const de = await q(
+          u.token_endpoint,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: new URLSearchParams({
+              client_id: e,
+              redirect_uri: r,
+              code: Q.code,
+              code_verifier: d,
+              grant_type: "authorization_code"
+            })
+          }
+        );
+        return he(b.current, {
+          ...de,
+          state: null
+        }) && k(de), I(null), { status: "success" };
+      } finally {
+        try {
+          window.sessionStorage.removeItem(_.state), window.sessionStorage.removeItem(_.codeVerifier);
+        } catch {
+        }
+      }
+    },
+    [e, a, k, r, c]
+  ), S = P(0), ce = P(0), Y = m(
+    async (n = !1) => {
+      if (!h) {
+        C("no access token");
         return;
       }
-      if (!te(E) && !o) {
-        p.current = 0;
+      if (!Z(R) && !n) {
+        S.current = 0;
         return;
       }
-      if (G && !o) {
-        D("already refreshing");
+      if (ne && !n) {
+        C("already refreshing");
         return;
       }
-      if (!k) {
-        D("no refresh token");
+      if (!E) {
+        C("no refresh token");
         return;
       }
-      const i = p.current;
-      if (i > 0 && !o) {
-        const u = Math.min(
-          1e3 * Math.pow(2, i),
+      const u = S.current;
+      if (u > 0 && !n) {
+        const d = Math.min(
+          1e3 * Math.pow(2, u),
           3e5
         );
-        if (Date.now() - Z.current < u)
+        if (Date.now() - ce.current < d)
           return;
       }
-      Z.current = Date.now(), h(!0);
+      ce.current = Date.now(), p(!0);
       try {
-        const u = await x();
-        u ? (T(u), p.current = 0) : (p.current++, D(
-          `refresh returned empty response (attempt ${p.current})`
+        const d = await x();
+        d ? (k(d), S.current = 0) : (S.current++, C(
+          `refresh returned empty response (attempt ${S.current})`
         ));
-      } catch (u) {
-        p.current++, console.error(
-          `[sdk/provider]: Error refreshing token (attempt ${p.current})`,
-          u
+      } catch (d) {
+        S.current++, console.error(
+          `[sdk/provider]: Error refreshing token (attempt ${S.current})`,
+          d
         );
       } finally {
-        h(!1);
+        p(!1);
       }
     },
     [
-      d,
-      k,
-      x,
-      T,
-      G,
+      h,
       E,
-      h
+      x,
+      k,
+      ne,
+      R,
+      p
     ]
-  ), he = 1e4 * Math.random();
-  Pe(
+  ), be = 1e4 * Math.random();
+  Me(
     () => {
-      j();
+      Y();
     },
-    W && k ? 1e4 + he : null,
-    [j]
-  ), O(() => {
-    let o = "";
-    if (W && !v) {
-      if (J) {
-        h(!1);
-        const i = new URLSearchParams(window.location.search);
-        o = i.get("code") ?? "";
-        const u = i.get("state");
-        if (!o) {
-          const w = i.get("error_description") ?? "An unknown error occurred";
+    W && E ? 1e4 + be : null,
+    [Y]
+  ), T(() => {
+    !W || window.parent === window || (re.current = qe(window));
+  }, []), T(() => {
+    let n = "";
+    if (W && !re.current && !y) {
+      if (K) {
+        p(!1);
+        const u = new URLSearchParams(window.location.search);
+        n = u.get("code") ?? "";
+        const d = u.get("state");
+        if (!n) {
+          const g = u.get("error_description") ?? "An unknown error occurred";
           console.error(
-            `[sdk/provider]: ${w}
+            `[sdk/provider]: ${g}
 Expected  to find a '?code=' parameter in the URL but found none`
-          ), V(w), d ? I() : A();
+          ), I(g), h ? L() : A();
           return;
         }
-        const l = Ie({
-          returnedState: u,
-          expectedState: ie,
-          callerState: ue
+        const f = ze({
+          returnedState: d,
+          expectedState: ye,
+          callerState: Se
         });
-        if (!l.ok) {
-          console.error(`[sdk/provider]: ${l.error}`), V("Invalid OAuth state"), d ? I() : A(), window.history.replaceState(
+        if (!f.ok) {
+          console.error(`[sdk/provider]: ${f.error}`), I("Invalid OAuth state"), h ? L() : A(), window.history.replaceState(
             {},
             document.title,
             window.location.pathname
           );
           return;
         }
-        if (b(!1), F.current)
+        if (O(!1), i.current)
           return;
-        F.current = !0, ne((a == null ? void 0 : a.token_endpoint) ?? "", {
+        i.current = !0, q((a == null ? void 0 : a.token_endpoint) ?? "", {
           method: "POST",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
@@ -445,23 +585,23 @@ Expected  to find a '?code=' parameter in the URL but found none`
           body: new URLSearchParams({
             client_id: e,
             redirect_uri: r,
-            code: o,
-            code_verifier: ce,
+            code: n,
+            code_verifier: me,
             grant_type: "authorization_code"
           })
-        }).then((w) => {
-          xe(H.current, {
-            ...w,
-            state: l.callerState
-          }) ? T(w) : (F.current = !1, I());
-        }).catch((w) => {
-          console.error("[sdk/provider]: error in fetching", w), V("An error occurred while fetching tokens");
+        }).then((g) => {
+          he(b.current, {
+            ...g,
+            state: f.callerState
+          }) ? k(g) : i.current = !1, L();
+        }).catch((g) => {
+          console.error("[sdk/provider]: error in fetching", g), I("An error occurred while fetching tokens");
         }), window.history.replaceState({}, document.title, window.location.pathname);
       }
-      j(!0);
+      Ue({ accessToken: h, expiresIn: R }) ? Y(!0) : p(!1);
     }
-  }, [v]);
-  const M = {
+  }, [y]);
+  const j = {
     // A present access token means authenticated. Do NOT couple this to
     // `isRefreshing`: the proactive background refresh sets isRefreshing=true
     // for the token round-trip (~once per access-token lifetime, ~15min), and
@@ -470,38 +610,40 @@ Expected  to find a '?code=' parameter in the URL but found none`
     // the logged-out view and back, the "page refreshes every ~15min" bug.
     // The user becomes unauthenticated only when the token is cleared
     // (terminal refresh failure / logout), which nulls accessToken. See #19.
-    isAuthenticated: !!d,
-    accessToken: d,
-    user: fe ?? null,
-    login: X,
-    logout: Q,
-    isReady: !v && !J
+    isAuthenticated: !!h,
+    accessToken: h,
+    user: ve ?? null,
+    login: ae,
+    trySilentLogin: ie,
+    logout: se,
+    isReady: !y && !K
   };
-  return /* @__PURE__ */ we(
-    oe.Provider,
+  return /* @__PURE__ */ Re(
+    ge.Provider,
     {
       value: {
         clientId: e,
         redirectUri: r,
-        env: n,
-        login: X,
-        logout: Q,
-        authInProgress: J,
-        authError: le,
-        idToken: de,
-        accessToken: d,
-        refreshToken: k,
-        user: M.user,
-        isAuthenticated: M.isAuthenticated,
-        isReady: M.isReady,
+        env: o,
+        login: ae,
+        trySilentLogin: ie,
+        logout: se,
+        authInProgress: K,
+        authError: ke,
+        idToken: _e,
+        accessToken: h,
+        refreshToken: E,
+        user: j.user,
+        isAuthenticated: j.isAuthenticated,
+        isReady: j.isReady,
         url: c
       },
-      children: typeof t == "function" ? t(M) : t
+      children: typeof t == "function" ? t(j) : t
     }
   );
 }
-const ze = () => {
-  const e = me(oe);
+const nr = () => {
+  const e = Te(ge);
   if (!e)
     throw new Error("useDeva must be used within a DevaProvider");
   return {
@@ -510,10 +652,11 @@ const ze = () => {
     accessToken: e.accessToken,
     user: e.user,
     login: e.login,
+    trySilentLogin: e.trySilentLogin,
     logout: e.logout
   };
 };
 export {
-  Me as DevaProvider,
-  ze as useDeva
+  tr as DevaProvider,
+  nr as useDeva
 };

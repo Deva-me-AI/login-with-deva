@@ -31,6 +31,9 @@ export function buildAuthorizeUrl(params: {
   clientId: string;
   redirectUri: string;
   codeChallenge: string;
+  scopes?: LoginOptions["scopes"];
+  loginHint?: LoginOptions["loginHint"];
+  provider?: LoginOptions["provider"];
   prompt?: LoginOptions["prompt"];
   state: string;
 }): string {
@@ -39,13 +42,20 @@ export function buildAuthorizeUrl(params: {
   }
 
   const u = new URL(params.authorizationEndpoint);
-  // No `scope` param: matches the SDK's existing authorize URL; the IdP applies
-  // the client's configured default scopes.
   u.searchParams.append("client_id", params.clientId);
   u.searchParams.append("redirect_uri", params.redirectUri);
   u.searchParams.append("response_type", "code");
   u.searchParams.append("code_challenge", params.codeChallenge);
   u.searchParams.append("code_challenge_method", "S256");
+  if (params.scopes?.length) {
+    u.searchParams.append("scope", params.scopes.join(" "));
+  }
+  if (params.loginHint) {
+    u.searchParams.append("login_hint", params.loginHint);
+  }
+  if (params.provider) {
+    u.searchParams.append("provider", params.provider);
+  }
   if (params.prompt) u.searchParams.append("prompt", params.prompt);
   u.searchParams.append("state", params.state);
   return u.toString();

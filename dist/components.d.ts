@@ -16,13 +16,13 @@ export declare function Toaster(): JSX.Element;
 export { }
 
 
-declare namespace v5 {
+declare namespace v3 {
     var DNS: string;
     var URL: string;
 }
 
 
-declare namespace v3 {
+declare namespace v5 {
     var DNS: string;
     var URL: string;
 }

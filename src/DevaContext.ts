@@ -2,7 +2,16 @@ import { createContext, useContext } from "react";
 import type { UserInfo } from "./server";
 import type { Envs } from "./config";
 
-export type LoginOptions = {
+type AuthorizationHints = {
+  /** OAuth scopes to request. */
+  scopes?: string[];
+  /** Hint the account identifier to the identity provider. */
+  loginHint?: string;
+  /** Skip the Deva provider chooser when the provider is already known. */
+  provider?: string;
+};
+
+export type LoginOptions = AuthorizationHints & {
   /**
    * OpenID Connect `prompt`. Forwarded to the authorization endpoint and
    * bypasses the already-authenticated / silent-refresh guards so a fresh
@@ -23,6 +32,23 @@ export type LoginOptions = {
    */
   state?: string;
 };
+
+export type TrySilentLoginOptions = AuthorizationHints & {
+  /** Maximum time to wait for the hidden-iframe callback. Defaults to 5000ms. */
+  timeoutMs?: number;
+};
+
+export type SilentLoginNoSessionError =
+  | "login_required"
+  | "consent_required"
+  | "interaction_required";
+
+/** Result of a background Deva session probe. */
+export type TrySilentLoginResult =
+  | { status: "success" }
+  | { status: "no_session"; error: SilentLoginNoSessionError }
+  | { status: "timeout" }
+  | { status: "unsupported" };
 
 /** Shape handed to `onLoginComplete` on the redirect return leg. */
 export type LoginCompletePayload = {
@@ -46,6 +72,9 @@ export type DevaContext = {
   authError: string | null;
 
   login: (options?: LoginOptions) => Promise<void>;
+  trySilentLogin: (
+    options?: TrySilentLoginOptions,
+  ) => Promise<TrySilentLoginResult>;
   logout: () => Promise<void>;
 
   idToken: string | null;
@@ -70,6 +99,7 @@ const defaultDevaContext: DevaContext = {
   authError: null,
 
   login: () => Promise.resolve(),
+  trySilentLogin: () => Promise.resolve({ status: "unsupported" }),
   logout: () => Promise.resolve(),
 
   idToken: null,

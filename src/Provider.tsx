@@ -3,6 +3,8 @@ import {
   DevaContext,
   type LoginOptions,
   type LoginCompletePayload,
+  type TrySilentLoginOptions,
+  type TrySilentLoginResult,
 } from "./DevaContext";
 import {
   generateCodeVerifier,
@@ -23,6 +25,11 @@ import {
   shouldForceRefreshOnBootstrap,
   verifyOAuthState,
 } from "./lib/login-helpers";
+import {
+  relaySilentLoginCallback,
+  runSilentLoginProbe,
+  silentAttemptStorageKeys,
+} from "./lib/silent-login";
 import type { UseDevaReturn } from "./use-deva";
 
 // Check if we're running in a browser environment
@@ -160,6 +167,7 @@ export function DevaProvider({
   }
 
   const fetchingTokensRef = useRef(false);
+  const silentCallbackRelayedRef = useRef(false);
   const hasWarnedRef = useRef(false);
 
   // Warn when using development environment
@@ -206,7 +214,7 @@ export function DevaProvider({
 
   const [isRefreshing, setIsRefreshing] = useState(true);
 
-  const handleTokenResponse = useCallback(
+  const persistTokenResponse = useCallback(
     (res: OidcAccessTokenJWT) => {
       let tokenExp = expiresIn;
       setAccessToken(res.access_token);
@@ -225,20 +233,8 @@ export function DevaProvider({
 
       setExpiresIn(epochAtSecondsFromNow(tokenExpiresIn));
       setRefreshToken(res.refresh_token);
-      setCodeVerifier("");
-      setOauthState(null);
-      setOauthCallerState(null);
     },
-    [
-      setAccessToken,
-      setIdToken,
-      setExpiresIn,
-      setRefreshToken,
-      setCodeVerifier,
-      setOauthState,
-      setOauthCallerState,
-      expiresIn,
-    ],
+    [setAccessToken, setIdToken, setExpiresIn, setRefreshToken, expiresIn],
   );
 
   const [authError, setAuthError] = useState<string | null>(null);
@@ -307,7 +303,7 @@ export function DevaProvider({
         try {
           const res = await callRefreshApi();
           if (res) {
-            handleTokenResponse(res);
+            persistTokenResponse(res);
             refreshFailCountRef.current = 0;
             return;
           }
@@ -326,7 +322,7 @@ export function DevaProvider({
           setIsRefreshing(true);
           const retryRes = await callRefreshApi();
           if (retryRes) {
-            handleTokenResponse(retryRes);
+            persistTokenResponse(retryRes);
             refreshFailCountRef.current = 0;
             return;
           }
@@ -364,6 +360,9 @@ export function DevaProvider({
         clientId,
         redirectUri,
         codeChallenge,
+        scopes: options?.scopes,
+        loginHint: options?.loginHint,
+        provider: options?.provider,
         prompt: options?.prompt,
         state,
       });
@@ -375,7 +374,7 @@ export function DevaProvider({
       expiresIn,
       refreshToken,
       callRefreshApi,
-      handleTokenResponse,
+      persistTokenResponse,
       setIsRefreshing,
       clientId,
       redirectUri,
@@ -387,6 +386,114 @@ export function DevaProvider({
       isOpenIdConfigLoading,
       openIdConfig,
     ],
+  );
+
+  const trySilentLogin = useCallback(
+    async (options?: TrySilentLoginOptions): Promise<TrySilentLoginResult> => {
+      if (
+        typeof window === "undefined" ||
+        typeof document === "undefined" ||
+        !document.body
+      ) {
+        return { status: "unsupported" };
+      }
+
+      const discovery =
+        openIdConfig ??
+        (await fetcher<OpenIdConfig>(
+          `${url}/.well-known/openid-configuration`,
+        ));
+      if (!discovery.authorization_endpoint || !discovery.token_endpoint) {
+        return { status: "unsupported" };
+      }
+
+      const codeVerifier = generateCodeVerifier();
+      const state = generateCodeVerifier();
+      const codeChallenge = await generateCodeChallenge(codeVerifier);
+      const storageKeys = silentAttemptStorageKeys(state);
+
+      try {
+        window.sessionStorage.setItem(storageKeys.state, state);
+        window.sessionStorage.setItem(storageKeys.codeVerifier, codeVerifier);
+      } catch {
+        // The in-memory values still protect this attempt when storage is
+        // unavailable (for example, in a privacy-restricted browser).
+        try {
+          window.sessionStorage.removeItem(storageKeys.state);
+          window.sessionStorage.removeItem(storageKeys.codeVerifier);
+        } catch {
+          // Storage is unavailable, so there is nothing else to clean up.
+        }
+      }
+
+      try {
+        const authorizeUrl = buildAuthorizeUrl({
+          authorizationEndpoint: discovery.authorization_endpoint,
+          clientId,
+          redirectUri,
+          codeChallenge,
+          scopes: options?.scopes,
+          loginHint: options?.loginHint,
+          provider: options?.provider,
+          prompt: "none",
+          state,
+        });
+        const callbackOrigin = new URL(redirectUri, window.location.href)
+          .origin;
+        const requestedTimeout = options?.timeoutMs ?? 5000;
+        const timeoutMs = Number.isFinite(requestedTimeout)
+          ? Math.max(0, requestedTimeout)
+          : 5000;
+
+        const probeResult = await runSilentLoginProbe({
+          authorizeUrl,
+          callbackOrigin,
+          expectedState: state,
+          timeoutMs,
+          browserWindow: window,
+          browserDocument: document,
+        });
+
+        if (probeResult.status !== "success") {
+          return probeResult;
+        }
+
+        const res = await fetcher<OidcAccessTokenJWT>(
+          discovery.token_endpoint,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: new URLSearchParams({
+              client_id: clientId,
+              redirect_uri: redirectUri,
+              code: probeResult.code,
+              code_verifier: codeVerifier,
+              grant_type: "authorization_code",
+            }),
+          },
+        );
+
+        const persist = resolvePersist(onLoginCompleteRef.current, {
+          ...res,
+          state: null,
+        });
+        if (persist) {
+          persistTokenResponse(res);
+        }
+        setAuthError(null);
+        return { status: "success" };
+      } finally {
+        try {
+          window.sessionStorage.removeItem(storageKeys.state);
+          window.sessionStorage.removeItem(storageKeys.codeVerifier);
+        } catch {
+          // Storage may have become unavailable while the attempt was active.
+        }
+      }
+    },
+    [clientId, openIdConfig, persistTokenResponse, redirectUri, url],
   );
 
   // Track consecutive refresh failures for exponential backoff
@@ -436,7 +543,7 @@ export function DevaProvider({
         const res = await callRefreshApi();
 
         if (res) {
-          handleTokenResponse(res);
+          persistTokenResponse(res);
           refreshFailCountRef.current = 0; // success — reset backoff
         } else {
           refreshFailCountRef.current++;
@@ -458,7 +565,7 @@ export function DevaProvider({
       accessToken,
       refreshToken,
       callRefreshApi,
-      handleTokenResponse,
+      persistTokenResponse,
       isRefreshing,
       expiresIn,
       setIsRefreshing,
@@ -479,9 +586,23 @@ export function DevaProvider({
   );
 
   useEffect(() => {
+    if (!isBrowser || window.parent === window) {
+      return;
+    }
+    silentCallbackRelayedRef.current = relaySilentLoginCallback(window);
+  }, []);
+
+  useEffect(() => {
     let code = "";
 
     if (!isBrowser) {
+      return;
+    }
+
+    // A redirect callback inside the hidden iframe is relayed to the parent by
+    // the effect above. It must never exchange tokens or mutate interactive
+    // login state in the iframe itself.
+    if (silentCallbackRelayedRef.current) {
       return;
     }
 
@@ -567,15 +688,14 @@ export function DevaProvider({
             state: stateVerification.callerState,
           });
           if (persist) {
-            handleTokenResponse(res);
+            persistTokenResponse(res);
           } else {
             // Consumer handled storage (e.g. multi-account routing). Reset the
             // double-exchange guard so a later login() in the same session
-            // (without a page reload) can exchange a new code, and clear the
-            // spent PKCE verifier (handleTokenResponse would normally do this).
+            // (without a page reload) can exchange a new code.
             fetchingTokensRef.current = false;
-            clearTransientAuthState();
           }
+          clearTransientAuthState();
         })
         .catch((error) => {
           console.error("[sdk/provider]: error in fetching", error);
@@ -609,6 +729,7 @@ export function DevaProvider({
     accessToken: accessToken,
     user: userInfo ?? null,
     login,
+    trySilentLogin,
     logout,
     isReady: !isOpenIdConfigLoading && !authInProgress,
   };
@@ -621,6 +742,7 @@ export function DevaProvider({
         env,
 
         login,
+        trySilentLogin,
         logout,
 
         authInProgress,
