@@ -1,6 +1,8 @@
 import { Context } from 'react';
 import { JSX } from 'react';
 
+export declare const AI_COMPLETIONS = "AI_COMPLETIONS";
+
 declare type AuthorizationHints = {
     /** OAuth scopes to request. */
     scopes?: string[];
@@ -6562,6 +6564,38 @@ declare interface components {
     pathItems: never;
 }
 
+/** Non-streaming OpenAI-compatible chat input. */
+export declare type DevaChatInput = {
+    model?: string;
+    messages: Array<{
+        role: "system" | "user" | "assistant" | "tool";
+        content: string | null;
+        name?: string;
+        tool_call_id?: string;
+    }>;
+    max_tokens?: number;
+};
+
+export declare type DevaChatResponse = {
+    id: string;
+    object: "chat.completion";
+    created: number;
+    model: string;
+    choices: Array<{
+        index: number;
+        message: {
+            role: "assistant";
+            content: string | null;
+        };
+        finish_reason: string | null;
+    }>;
+    usage?: {
+        prompt_tokens: number;
+        completion_tokens: number;
+        total_tokens: number;
+    };
+};
+
 export declare type DevaContext = {
     clientId: string;
     redirectUri: string;
@@ -6582,9 +6616,9 @@ export declare type DevaContext = {
 
 export declare const DevaContext: Context<DevaContext | null>;
 
-export declare function DevaProvider({ clientId, redirectUri, children, env, baseUrl, onLoginComplete, }: DevaProviderProps): JSX.Element;
+export declare function DevaProvider({ clientId, redirectUri, children, env, baseUrl, onLoginComplete, scopes, }: DevaProviderProps): JSX.Element;
 
-declare type DevaProviderProps = {
+export declare type DevaProviderProps = {
     clientId: string;
     redirectUri: string;
     children: React.ReactNode | ((devaProps: UseDevaReturn) => React.ReactNode);
@@ -6595,6 +6629,8 @@ declare type DevaProviderProps = {
      * local development/testing. When omitted, the URL is derived from `env`.
      */
     baseUrl?: string;
+    /** Default authorize scopes. Login options override these. For credits, use a server callback. */
+    scopes?: string[];
     /**
      * Called on the redirect return leg with the freshly-exchanged tokens and
      * the round-tripped `state`. Return `true` to tell the SDK NOT to persist
@@ -6637,6 +6673,10 @@ export declare type LoginOptions = AuthorizationHints & {
     state?: string;
 };
 
+export declare const SCOPE_INFO: {
+    readonly AI_COMPLETIONS: "Use your Deva credits for AI, up to the monthly limit you approve.";
+};
+
 export declare type SilentLoginNoSessionError = "login_required" | "consent_required" | "interaction_required";
 
 export declare type TrySilentLoginOptions = AuthorizationHints & {
@@ -6657,6 +6697,15 @@ export declare type TrySilentLoginResult = {
 };
 
 export declare const useDeva: () => UseDevaReturn;
+
+/** Calls your own backend using its session cookie; accepts no Deva token. */
+export declare function useDevaAI({ endpoint, }?: {
+    endpoint?: string;
+}): {
+    chat: (input: DevaChatInput) => Promise<DevaChatResponse>;
+    loading: boolean;
+    error: Error | null;
+};
 
 declare type UseDevaReturn = {
     isAuthenticated: boolean;
@@ -6694,58 +6743,6 @@ declare global {
     interface Node {
         pmViewDesc?: ViewDesc;
     }
-}
-
-
-
-/**
- * Augment types.
- */
-declare module 'micromark-util-types' {
-  /**
-   * Compile data.
-   */
-  interface CompileData {
-    gfmFootnoteDefinitions?: Record<string, string>
-    gfmFootnoteDefinitionStack?: Array<string>
-    gfmFootnoteCallCounts?: Record<string, number>
-    gfmFootnoteCallOrder?: Array<string>
-  }
-
-  /**
-   * Parse context.
-   */
-  interface ParseContext {
-    gfmFootnotes?: Array<string>
-  }
-
-  /**
-   * Token types.
-   */
-  interface TokenTypeMap {
-    gfmFootnoteCall: 'gfmFootnoteCall'
-    gfmFootnoteCallLabelMarker: 'gfmFootnoteCallLabelMarker'
-    gfmFootnoteCallMarker: 'gfmFootnoteCallMarker'
-    gfmFootnoteCallString: 'gfmFootnoteCallString'
-    gfmFootnoteDefinition: 'gfmFootnoteDefinition'
-    gfmFootnoteDefinitionIndent: 'gfmFootnoteDefinitionIndent'
-    gfmFootnoteDefinitionLabel: 'gfmFootnoteDefinitionLabel'
-    gfmFootnoteDefinitionLabelMarker: 'gfmFootnoteDefinitionLabelMarker'
-    gfmFootnoteDefinitionLabelString: 'gfmFootnoteDefinitionLabelString'
-    gfmFootnoteDefinitionMarker: 'gfmFootnoteDefinitionMarker'
-    gfmFootnoteDefinitionWhitespace: 'gfmFootnoteDefinitionWhitespace'
-  }
-}
-
-
-
-declare module 'micromark-util-types' {
-  interface TokenTypeMap {
-    strikethroughSequence: 'strikethroughSequence'
-    strikethroughSequenceTemporary: 'strikethroughSequenceTemporary'
-    strikethrough: 'strikethrough'
-    strikethroughText: 'strikethroughText'
-  }
 }
 
 
@@ -6807,6 +6804,70 @@ declare module 'mdast' {
      * be used.
      */
     hProperties?: Properties | undefined
+  }
+}
+
+
+
+/**
+ * Augment types.
+ */
+declare module 'micromark-util-types' {
+  /**
+   * Compile data.
+   */
+  interface CompileData {
+    gfmFootnoteDefinitions?: Record<string, string>
+    gfmFootnoteDefinitionStack?: Array<string>
+    gfmFootnoteCallCounts?: Record<string, number>
+    gfmFootnoteCallOrder?: Array<string>
+  }
+
+  /**
+   * Parse context.
+   */
+  interface ParseContext {
+    gfmFootnotes?: Array<string>
+  }
+
+  /**
+   * Token types.
+   */
+  interface TokenTypeMap {
+    gfmFootnoteCall: 'gfmFootnoteCall'
+    gfmFootnoteCallLabelMarker: 'gfmFootnoteCallLabelMarker'
+    gfmFootnoteCallMarker: 'gfmFootnoteCallMarker'
+    gfmFootnoteCallString: 'gfmFootnoteCallString'
+    gfmFootnoteDefinition: 'gfmFootnoteDefinition'
+    gfmFootnoteDefinitionIndent: 'gfmFootnoteDefinitionIndent'
+    gfmFootnoteDefinitionLabel: 'gfmFootnoteDefinitionLabel'
+    gfmFootnoteDefinitionLabelMarker: 'gfmFootnoteDefinitionLabelMarker'
+    gfmFootnoteDefinitionLabelString: 'gfmFootnoteDefinitionLabelString'
+    gfmFootnoteDefinitionMarker: 'gfmFootnoteDefinitionMarker'
+    gfmFootnoteDefinitionWhitespace: 'gfmFootnoteDefinitionWhitespace'
+  }
+}
+
+
+
+declare module 'micromark-util-types' {
+  interface TokenTypeMap {
+    strikethroughSequence: 'strikethroughSequence'
+    strikethroughSequenceTemporary: 'strikethroughSequenceTemporary'
+    strikethrough: 'strikethrough'
+    strikethroughText: 'strikethroughText'
+  }
+}
+
+
+
+declare module 'micromark-util-types' {
+  interface TokenTypeMap {
+    listItem: 'listItem'
+  }
+
+  interface Token {
+    _spread?: boolean
   }
 }
 
@@ -6886,18 +6947,6 @@ declare module 'mdast-util-to-markdown' {
      * ```
      */
     tableRow: 'tableRow'
-  }
-}
-
-
-
-declare module 'micromark-util-types' {
-  interface TokenTypeMap {
-    listItem: 'listItem'
-  }
-
-  interface Token {
-    _spread?: boolean
   }
 }
 
