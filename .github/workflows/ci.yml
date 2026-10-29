@@ -29,11 +29,17 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Build SDK for example installation
+        run: pnpm run build
+
+      - name: Install credits example
+        run: pnpm --dir examples/nextjs-credits install --frozen-lockfile
+
       - name: Type check
         run: pnpm run typecheck
 
       - name: Test
         run: pnpm run test
 
-      - name: Build
-        run: pnpm run build
+      - name: Build credits example
+        run: pnpm --dir examples/nextjs-credits build
