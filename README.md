@@ -173,3 +173,52 @@ Gate UI on `isReady` before rendering auth-dependent content, otherwise you'll b
 | ---------------------------------- | ---------------------------------------------------------- |
 | [Development](docs/development.md) | Local dev loop, example app, source structure, testing     |
 | [Publishing](docs/publishing.md)   | Tag-release script, OIDC publish workflow, dry-run preview |
+
+## Let users pay for AI with their Deva credits
+
+Use a backend-for-frontend (BFF): your server requests `OPENID AI_COMPLETIONS`,
+validates OAuth state and exchanges the PKCE code. Keep access and refresh tokens
+in a server-side session store; the browser gets only an opaque HttpOnly session
+cookie. Deva asks the user to approve a monthly spending limit.
+
+```ts
+// Server callback: validate state, then exchange the PKCE code.
+import { exchangeCode, createDevaAI } from "@deva-me/login-with-deva/server";
+const tokens = await exchangeCode({ clientId, clientSecret, code, codeVerifier, redirectUri });
+await sessions.save(sessionId, tokens); // Your server-side session store.
+// In your authenticated POST /api/deva/chat route:
+const ai = createDevaAI({ accessToken: (await sessions.get(sessionId)).access_token });
+const result = await ai.chat({ messages: [{ role: "user", content: "Hello!" }] });
+// In your React component (a separate client file):
+const { chat, loading, error } = useDevaAI(); // Import from @deva-me/login-with-deva.
+await chat({ messages: [{ role: "user", content: "Hello!" }] });
+```
+
+`chat` defaults to `model: "user-default"`; its OpenAI-compatible response reports
+the actual model used. You can pass an explicit `model` and `max_tokens`.
+`ai.models()` returns the model catalog. `ai.allowance()` returns this app's
+`monthly_cap_usd`, `spent_usd_this_period`, `remaining_usd`, and `period_end`,
+never the user's total balance. The default API base URL is `https://api.deva.me`;
+`createDevaAI` accepts `baseUrl` for testing. `exchangeCode` uses the public Deva
+OIDC token endpoint and accepts an optional `tokenEndpoint` override.
+
+Catch `DevaAIError` on your backend and inspect `code`: `unauthenticated` (401),
+`missing_scope` (403), `app_budget_exceeded` or `insufficient_credits` (402),
+and `rate_limited` (429). Other HTTP failures, malformed responses, and network
+failures throw ordinary errors. Return only safe error information to the browser.
+
+`useDevaAI({ endpoint: "/api/deva/chat" })` POSTs JSON to a same-origin backend
+path using your app's session cookie. It accepts no access token. `chat` rejects
+on failure and also sets `error`; `loading` stays true while requests are pending.
+Authenticate and validate requests and enforce CSRF protection on that route.
+
+`DevaProvider` also accepts `scopes={["OPENID", "AI_COMPLETIONS"]}` as defaults
+for authorization requests; `login({ scopes })` and `trySilentLogin({ scopes })`
+override them. For credits, set `redirectUri` to your BFF callback and initiate
+authorization with server-owned state and PKCE as in the example. The existing
+provider's browser token exchange/storage flow is for browser authentication;
+do not use it to obtain or store spend tokens. The credits hook needs no provider.
+
+See [the runnable Next.js App Router example](examples/nextjs-credits) for login,
+a server-held token, CSRF validation, a model input, and a chat route. The
+`/server` entry is standalone and imports no React, chat, or rich-text components.

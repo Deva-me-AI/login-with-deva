@@ -51,6 +51,8 @@ export type DevaProviderProps = {
    * local development/testing. When omitted, the URL is derived from `env`.
    */
   baseUrl?: string;
+  /** Default authorize scopes. Login options override these. For credits, use a server callback. */
+  scopes?: string[];
   /**
    * Called on the redirect return leg with the freshly-exchanged tokens and
    * the round-tripped `state`. Return `true` to tell the SDK NOT to persist
@@ -154,6 +156,7 @@ export function DevaProvider({
   env,
   baseUrl,
   onLoginComplete,
+  scopes,
 }: DevaProviderProps) {
   const url = resolveDevaUrl(env, baseUrl);
   // Held in a ref so it can be read from the return-leg effect without
@@ -359,7 +362,7 @@ export function DevaProvider({
         clientId,
         redirectUri,
         codeChallenge,
-        scopes: options?.scopes,
+        scopes: options?.scopes ?? scopes,
         loginHint: options?.loginHint,
         provider: options?.provider,
         prompt: options?.prompt,
@@ -376,6 +379,7 @@ export function DevaProvider({
       persistTokenResponse,
       setIsRefreshing,
       clientId,
+      scopes,
       redirectUri,
       setCodeVerifier,
       setOauthState,
@@ -419,7 +423,7 @@ export function DevaProvider({
         clientId,
         redirectUri,
         codeChallenge,
-        scopes: options?.scopes,
+        scopes: options?.scopes ?? scopes,
         loginHint: options?.loginHint,
         provider: options?.provider,
         prompt: "none",
@@ -468,7 +472,7 @@ export function DevaProvider({
       setAuthError(null);
       return { status: "success" };
     },
-    [clientId, openIdConfig, persistTokenResponse, redirectUri, url],
+    [clientId, openIdConfig, persistTokenResponse, redirectUri, url, scopes],
   );
 
   // Track consecutive refresh failures for exponential backoff

@@ -5,7 +5,7 @@ import react from "eslint-plugin-react";
 import reactHooks from "eslint-plugin-react-hooks";
 
 const config = tseslint.config(
-  { ignores: ["dist", "node_modules", "example", "example2", "src/server/open-api-schema.ts"] },
+  { ignores: ["dist", "**/node_modules/**", "**/.next/**", "**/next-env.d.ts", "example", "example2", "src/server/open-api-schema.ts"] },
   {
     extends: [
       js.configs.recommended,

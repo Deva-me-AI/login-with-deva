@@ -17,6 +17,7 @@ export default defineConfig({
       entry: {
         index: "src/index.ts",
         components: "src/components.ts",
+        server: "src/ai-server.ts",
       },
       formats: ["es"],
     },
@@ -26,6 +27,7 @@ export default defineConfig({
       input: {
         index: path.resolve(__dirname, "src/index.ts"),
         components: path.resolve(__dirname, "src/components.ts"),
+        server: path.resolve(__dirname, "src/ai-server.ts"),
       },
       output: {
         globals: {
@@ -38,7 +40,7 @@ export default defineConfig({
         entryFileNames: "[name].es.js",
       },
       watch: {
-        exclude: ["example/**/*", "example2/**/*"],
+        exclude: ["example/**/*", "example2/**/*", "examples/**/*"],
       },
     },
   },
@@ -46,7 +48,7 @@ export default defineConfig({
     react(),
     dts({
       rollupTypes: true,
-      exclude: ["example/**/*", "example2/**/*"],
+      exclude: ["example/**/*", "example2/**/*", "examples/**/*"],
     }),
   ],
   resolve: {
@@ -56,6 +58,6 @@ export default defineConfig({
   },
   // Add type declaration for image imports
   optimizeDeps: {
-    exclude: ["example/**/*", "example2/**/*"],
+    exclude: ["example/**/*", "example2/**/*", "examples/**/*"],
   },
 });

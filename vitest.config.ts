@@ -6,6 +6,14 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
+      "next/headers": path.resolve(
+        __dirname,
+        "examples/nextjs-credits/node_modules/next/headers.js",
+      ),
+      "@deva-me/login-with-deva/server": path.resolve(
+        __dirname,
+        "./src/ai-server.ts",
+      ),
       "@": path.resolve(__dirname, "./src"),
     },
   },
